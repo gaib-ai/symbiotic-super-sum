@@ -34,6 +34,12 @@ Update submodules
 git submodule update --init --recursive
 ```
 
+Install dependencies
+
+```bash
+npm install
+```
+
 ## Running in docker
 
 ### Dependencies
@@ -122,7 +128,7 @@ rm -rf data-* && cd ..
 ### Create a task
 
 ```bash
-cast send 0x0E801D84Fa97b50751Dbf25036d067dCf18858bF "createTask(uint256,uint256)" 2 2 \
+cast send 0x4826533B4897376654Bb4d4AD88B7faFD0C98528 "createTask(uint256,uint256)" 2 2 \
   --rpc-url http://127.0.0.1:8545 \
   --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 ```
@@ -130,7 +136,7 @@ cast send 0x0E801D84Fa97b50751Dbf25036d067dCf18858bF "createTask(uint256,uint256
 ### Check task result
 
 ```bash
-cast call 0x0E801D84Fa97b50751Dbf25036d067dCf18858bF "allTaskResults(uint32)" 0 \
+cast call 0x4826533B4897376654Bb4d4AD88B7faFD0C98528 "allTaskResults(uint32)" 0 \
   --rpc-url http://127.0.0.1:8545
 ```
 
@@ -223,7 +229,7 @@ Note: By default anvil is using on-demand mining which is not compatible with re
 ```bash
 ./bin/symbiotic_relay_utils network \
     --chains http://127.0.0.1:8545 \
-    --driver-address 0x4826533B4897376654Bb4d4AD88B7faFD0C98528 \
+    --driver-address 0xb64F6B0A181De122bc2bEbfC343b3344b1C8dD6b \
     --driver-chainid 31337 \
   generate-genesis \
     --commit \
@@ -280,7 +286,7 @@ Node 1 (connected with sidecar 1):
 ```bash
 ./off-chain/sum_node --evm-rpc-url http://127.0.0.1:8545 \
     --relay-api-url http://localhost:8081/api/v1 \
-    --contract-address 0x0E801D84Fa97b50751Dbf25036d067dCf18858bF \
+    --contract-address 0x4826533B4897376654Bb4d4AD88B7faFD0C98528 \
     --private-key ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 ```
 
@@ -289,7 +295,7 @@ Node 2 (connected with sidecar 2):
 ```bash
 ./off-chain/sum_node --evm-rpc-url http://127.0.0.1:8545 \
     --relay-api-url http://localhost:8082/api/v1 \
-    --contract-address 0x0E801D84Fa97b50751Dbf25036d067dCf18858bF \
+    --contract-address 0x4826533B4897376654Bb4d4AD88B7faFD0C98528 \
     --private-key ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 ```
 
@@ -298,14 +304,14 @@ Node 3 (connected with sidecar 3):
 ```bash
 ./off-chain/sum_node --evm-rpc-url http://127.0.0.1:8545 \
     --relay-api-url http://localhost:8083/api/v1 \
-    --contract-address 0x0E801D84Fa97b50751Dbf25036d067dCf18858bF \
+    --contract-address 0x4826533B4897376654Bb4d4AD88B7faFD0C98528 \
     --private-key ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 ```
 
 ### Request task
 
 ```bash
-cast send 0x0E801D84Fa97b50751Dbf25036d067dCf18858bF "createTask(uint256,uint256)" 2 2  --rpc-url http://127.0.0.1:8545 --private-key ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+cast send 0x4826533B4897376654Bb4d4AD88B7faFD0C98528 "createTask(uint256,uint256)" 2 2  --rpc-url http://127.0.0.1:8545 --private-key ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 ```
 
 Note: It creates task to sum 2+2, in sum and sidecar nodes you can see related logs
@@ -315,7 +321,7 @@ Note: It creates task to sum 2+2, in sum and sidecar nodes you can see related l
 Don't forget to replace `{TASK_ID}`, it's sequential and starts with 0
 
 ```bash
-cast call 0x0E801D84Fa97b50751Dbf25036d067dCf18858bF "allTaskResults(uint32)" {TASK_ID} --rpc-url http://127.0.0.1:8545
+cast call 0x4826533B4897376654Bb4d4AD88B7faFD0C98528 "allTaskResults(uint32)" {TASK_ID} --rpc-url http://127.0.0.1:8545
 ```
 
 Note: It prints result in hex, results also might be found in sum node logs
