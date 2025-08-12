@@ -178,7 +178,7 @@ contract LocalDeploy is SymbioticCoreInit {
 
     function setupKeyRegistry() public returns (IValSetDriver.CrossChainAddress memory) {
         vm.startBroadcast(deployer);
-        KeyRegistry keyRegistry_ = new KeyRegistry();
+        KeyRegistry keyRegistry_ = new KeyRegistry{salt: "KeyRegistry"}();
         keyRegistry_.initialize(
             IKeyRegistry.KeyRegistryInitParams({
                 ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "KeyRegistry", version: "1"})
@@ -194,7 +194,7 @@ contract LocalDeploy is SymbioticCoreInit {
         IERC20 stakingToken = IERC20(stakingTokens.get(block.chainid));
 
         vm.startBroadcast(deployer);
-        VotingPowers votingPowers_ = new VotingPowers(
+        VotingPowers votingPowers_ = new VotingPowers{salt: "VotingPowers"}(
             address(symbioticCore.operatorRegistry),
             address(symbioticCore.vaultFactory),
             address(symbioticCore.vaultConfigurator)
@@ -247,7 +247,7 @@ contract LocalDeploy is SymbioticCoreInit {
 
     function setupSettlement() public returns (IValSetDriver.CrossChainAddress memory) {
         vm.startBroadcast(deployer);
-        Settlement settlement_ = new Settlement();
+        Settlement settlement_ = new Settlement{salt: "Settlement"}();
         settlement_.initialize(
             ISettlement.SettlementInitParams({
                 networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
@@ -267,7 +267,7 @@ contract LocalDeploy is SymbioticCoreInit {
 
     function setupDriver() public returns (IValSetDriver.CrossChainAddress memory) {
         vm.startBroadcast(deployer);
-        Driver driver_ = new Driver();
+        Driver driver_ = new Driver{salt: "Driver"}();
 
         IValSetDriver.CrossChainAddress[] memory votingPowerProviders_ =
             new IValSetDriver.CrossChainAddress[](votingPowerProviders.length());
