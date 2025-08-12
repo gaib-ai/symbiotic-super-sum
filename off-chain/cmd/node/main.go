@@ -29,10 +29,10 @@ import (
 )
 
 const (
-	TaskCreated   uint8 = 0
-	TaskResponded uint8 = 1
-	TaskExpired   uint8 = 2
-	TaskNotFound  uint8 = 3
+	TaskCreated uint8 = iota
+	TaskResponded
+	TaskExpired
+	TaskNotFound
 )
 
 type config struct {
