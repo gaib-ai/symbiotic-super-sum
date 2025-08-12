@@ -34,6 +34,12 @@ Update submodules
 git submodule update --init --recursive
 ```
 
+Install dependencies
+
+```bash
+npm install
+```
+
 ## Running in docker
 
 ### Dependencies
@@ -245,7 +251,7 @@ Note: By default anvil is using on-demand mining which is not compatible with re
 ```bash
 ./bin/symbiotic_relay_utils network \
     --chains http://127.0.0.1:8545,http://127.0.0.1:8546 \
-    --driver-address 0x1291Be112d480055DaFd8a610b7d1e203891C274 \
+    --driver-address 0xb64F6B0A181De122bc2bEbfC343b3344b1C8dD6b \
     --driver-chainid 31337 \
   generate-genesis \
     --commit \

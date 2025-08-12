@@ -17,6 +17,10 @@ echo "Setting interval mining..."
 cast rpc --rpc-url http://anvil:8545 evm_setIntervalMining 1
 cast rpc --rpc-url http://anvil-settlement:8546 evm_setIntervalMining 1
 
+echo "Mine a single block to finalize the deployment..."
+cast rpc --rpc-url http://anvil:8545 evm_mine
+cast rpc --rpc-url http://anvil-settlement:8546 evm_mine
+
 echo "Deployment completed successfully!"
 
 # Create deployment completion marker

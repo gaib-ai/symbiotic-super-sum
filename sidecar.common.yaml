@@ -1,6 +1,6 @@
 driver:
   chain-id: 31337
-  address: '0x1291Be112d480055DaFd8a610b7d1e203891C274'
+  address: '0xb64F6B0A181De122bc2bEbfC343b3344b1C8dD6b'
 log-level: 'debug'
 log-mode: 'pretty'
 signer: true
