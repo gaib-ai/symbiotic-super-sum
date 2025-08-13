@@ -151,7 +151,7 @@ func runProcesses(ctx context.Context, runSeparately bool) (processes, error) {
 
 	var prs processes
 
-	for i := range operatorsCount {
+	for i := 0; i < operatorsCount; i++ {
 		secretKey := fmt.Sprintf(secretKeyTemplate, common.Bytes2Hex(new(big.Int).SetUint64(firstKey+uint64(i)).Bytes()))
 		apiAddr := fmt.Sprintf(":%d", firstPort+i)
 		args := append(commonArgs, "--secret-keys", secretKey, "--http-listen", apiAddr, "--storage-dir", fmt.Sprintf(".data/%03d", firstData+i))

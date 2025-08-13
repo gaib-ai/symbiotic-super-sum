@@ -126,6 +126,9 @@ var rootCmd = &cobra.Command{
 		if len(cfg.evmRpcURLs) == 0 {
 			return errors.Errorf("no RPC URLs provided")
 		}
+		if len(cfg.contractAddresses) != len(cfg.evmRpcURLs) {
+			return errors.Errorf("mismatched lengths: evm-rpc-urls=%d, contract-addresses=%d", len(cfg.evmRpcURLs), len(cfg.contractAddresses))
+		}
 		evmClients = make(map[int64]*ethclient.Client)
 		sumContracts = make(map[int64]*contracts.SumTask)
 		tasks = make(map[common.Hash]TaskState)
@@ -140,9 +143,10 @@ var rootCmd = &cobra.Command{
 				return errors.Errorf("failed to get chain ID from RPC URL '%s': %w", evmRpcURL, err)
 			}
 
-			sumContract, err := contracts.NewSumTask(common.HexToAddress(cfg.contractAddresses[i]), evmClient)
+			addr := common.HexToAddress(cfg.contractAddresses[i])
+			sumContract, err := contracts.NewSumTask(addr, evmClient)
 			if err != nil {
-				return errors.Errorf("failed to create sum contract: %w", err)
+				return errors.Errorf("failed to create sum contract for %s on chain %d: %w", addr.Hex(), chainID, err)
 			}
 
 			evmClients[chainID.Int64()] = evmClient
