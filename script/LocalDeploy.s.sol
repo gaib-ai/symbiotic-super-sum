@@ -111,6 +111,7 @@ contract LocalDeploy is SymbioticCoreInit {
         setupKeyRegistry();
         setupVotingPowers();
         setupSettlement();
+        logAndDumpRelayContracts();
 
         setupSumTask();
         logAndDumpSumTaskContracts();
@@ -119,9 +120,6 @@ contract LocalDeploy is SymbioticCoreInit {
             addOperator(OPERATOR_STAKE_AMOUNT);
         }
         printOperatorsInfo();
-
-        setupDriver();
-        logAndDumpRelayContracts();
     }
 
     function setupCore() public {

@@ -198,7 +198,7 @@ func runProcesses(ctx context.Context, runSeparately bool) (processes, error) {
 func (prs processes) waitServerStarted(ctx context.Context) {
 	var startedCound int
 
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		startedCound = 0
 		for _, pr := range prs {
 			if strings.Contains(pr.stdOut.String(), "All missing epochs loaded") {
