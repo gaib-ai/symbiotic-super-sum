@@ -10,24 +10,6 @@
 git clone https://github.com/symbioticfi/symbiotic-super-sum.git
 ```
 
-### Install submodules
-
-Install Git LFS
-
-- macOS:
-
-  ```bash
-  brew install git-lfs
-  git lfs install
-  ```
-
-- Debian/Ubuntu:
-
-  ```bash
-  sudo apt update && sudo apt install git-lfs
-  git lfs install
-  ```
-
 Update submodules
 
 ```bash
