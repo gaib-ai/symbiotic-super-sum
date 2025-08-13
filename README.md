@@ -141,7 +141,7 @@ cast call 0x5FC8d32690cc91D4c39d9d3abcBD16989F875707 "responses(bytes32)" 0x556b
 ### Service Endpoints
 
 - **Anvil RPC**: http://localhost:8545
-- **Anvil Settlement RPC**: http://localhost:8545
+- **Anvil Settlement RPC**: http://localhost:8546
 - **Relay sidecar 1**: http://localhost:8081
 - **Relay sidecar 2**: http://localhost:8082
 - **Sum node 1**: http://localhost:9091
