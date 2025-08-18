@@ -11,7 +11,7 @@ import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap
 import {SymbioticCoreInit} from "@symbioticfi/core-contracts/script/integration/SymbioticCoreInit.sol";
 import {IVault} from "@symbioticfi/core-contracts/src/interfaces/vault/IVault.sol";
 import {INetworkMiddlewareService} from
-"@symbioticfi/core-contracts/src/interfaces/service/INetworkMiddlewareService.sol";
+    "@symbioticfi/core-contracts/src/interfaces/service/INetworkMiddlewareService.sol";
 
 import {INetwork} from "@symbioticfi/relay-contracts/interfaces/modules/network/INetwork.sol";
 import {INetworkManager} from "@symbioticfi/relay-contracts/interfaces/modules/base/INetworkManager.sol";
@@ -19,19 +19,21 @@ import {IKeyRegistry} from "@symbioticfi/relay-contracts/interfaces/modules/key-
 import {IEpochManager} from "@symbioticfi/relay-contracts/interfaces/modules/valset-driver/IEpochManager.sol";
 import {IValSetDriver} from "@symbioticfi/relay-contracts/interfaces/modules/valset-driver/IValSetDriver.sol";
 import {IVotingPowerProvider} from
-"@symbioticfi/relay-contracts/interfaces/modules/voting-power/IVotingPowerProvider.sol";
+    "@symbioticfi/relay-contracts/interfaces/modules/voting-power/IVotingPowerProvider.sol";
 import {IOpNetVaultAutoDeploy} from
-"@symbioticfi/relay-contracts/interfaces/modules/voting-power/extensions/IOpNetVaultAutoDeploy.sol";
+    "@symbioticfi/relay-contracts/interfaces/modules/voting-power/extensions/IOpNetVaultAutoDeploy.sol";
+import {SigVerifierBlsBn254ZK} from
+    "@symbioticfi/relay-contracts/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254ZK.sol";
 import {SigVerifierBlsBn254Simple} from
-"@symbioticfi/relay-contracts/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.sol";
+    "@symbioticfi/relay-contracts/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.sol";
 import {ISettlement} from "@symbioticfi/relay-contracts/interfaces/modules/settlement/ISettlement.sol";
 import {IOzOwnable} from "@symbioticfi/relay-contracts/interfaces/modules/common/permissions/IOzOwnable.sol";
 import {IOzEIP712} from "@symbioticfi/relay-contracts/interfaces/modules/base/IOzEIP712.sol";
 import {KeyTags} from "@symbioticfi/relay-contracts/contracts/libraries/utils/KeyTags.sol";
 import {KeyBlsBn254, BN254} from "@symbioticfi/relay-contracts/contracts/libraries/keys/KeyBlsBn254.sol";
 import {
-KEY_TYPE_BLS_BN254,
-KEY_TYPE_ECDSA_SECP256K1
+    KEY_TYPE_BLS_BN254,
+    KEY_TYPE_ECDSA_SECP256K1
 } from "@symbioticfi/relay-contracts/interfaces/modules/key-registry/IKeyRegistry.sol";
 
 import {BN254G2} from "./utils/BN254G2.sol";
@@ -201,9 +203,9 @@ contract LocalDeploy is SymbioticCoreInit {
         votingPowers_.initialize(
             IVotingPowerProvider.VotingPowerProviderInitParams({
                 networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
-                network: address(network),
-                subnetworkID: 0
-            }),
+                    network: address(network),
+                    subnetworkID: 0
+                }),
                 ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "VotingPowers", version: "1"}),
                 slashingWindow: SLASHING_WINDOW,
                 token: address(stakingToken)
@@ -211,12 +213,12 @@ contract LocalDeploy is SymbioticCoreInit {
             IOpNetVaultAutoDeploy.OpNetVaultAutoDeployInitParams({
                 isAutoDeployEnabled: true,
                 config: IOpNetVaultAutoDeploy.AutoDeployConfig({
-                epochDuration: SLASHING_WINDOW,
-                collateral: address(stakingToken),
-                burner: address(0),
-                withSlasher: true,
-                isBurnerHook: false
-            }),
+                    epochDuration: SLASHING_WINDOW,
+                    collateral: address(stakingToken),
+                    burner: address(0),
+                    withSlasher: true,
+                    isBurnerHook: false
+                }),
                 isSetMaxNetworkLimitHookEnabled: true
             }),
             IOzOwnable.OzOwnableInitParams({owner: deployer})
@@ -251,8 +253,15 @@ contract LocalDeploy is SymbioticCoreInit {
         address verifier;
 
         if (VERIFICATION_TYPE == 0) {
-            // TODO: change this to use actual SigVerifierBlsBn254ZK()
-            verifier = address(new SigVerifierBlsBn254Simple());
+            address[] memory verifiers = new address[](3);
+            verifiers[0] = deployCode("out/Verifier_10.sol/Verifier.json");
+            verifiers[1] = deployCode("out/Verifier_100.sol/Verifier.json");
+            verifiers[2] = deployCode("out/Verifier_1000.sol/Verifier.json");
+            uint256[] memory maxValidators = new uint256[](verifiers.length);
+            maxValidators[0] = 10;
+            maxValidators[1] = 100;
+            maxValidators[2] = 1000;
+            verifier = address(new SigVerifierBlsBn254ZK(verifiers, maxValidators));
         } else if (VERIFICATION_TYPE == 1) {
             verifier = address(new SigVerifierBlsBn254Simple());
         } else {
@@ -262,9 +271,9 @@ contract LocalDeploy is SymbioticCoreInit {
         settlement_.initialize(
             ISettlement.SettlementInitParams({
                 networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
-                network: address(network),
-                subnetworkID: 0
-            }),
+                    network: address(network),
+                    subnetworkID: 0
+                }),
                 ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "Settlement", version: "1"}),
                 sigVerifier: verifier
             }),
@@ -281,10 +290,11 @@ contract LocalDeploy is SymbioticCoreInit {
         Driver driver_ = new Driver{salt: "Driver"}();
 
         IValSetDriver.CrossChainAddress[] memory votingPowerProviders_ =
-                    new IValSetDriver.CrossChainAddress[](votingPowerProviders.length());
+            new IValSetDriver.CrossChainAddress[](votingPowerProviders.length());
         for (uint256 i; i < votingPowerProviders.length(); ++i) {
             (uint256 chainId, address votingPowerProvider) = votingPowerProviders.at(i);
-            votingPowerProviders_[i] = IValSetDriver.CrossChainAddress({chainId: uint64(chainId), addr: votingPowerProvider});
+            votingPowerProviders_[i] =
+                IValSetDriver.CrossChainAddress({chainId: uint64(chainId), addr: votingPowerProvider});
         }
         IValSetDriver.CrossChainAddress[] memory replicas = new IValSetDriver.CrossChainAddress[](settlements.length());
         for (uint256 i; i < settlements.length(); ++i) {
@@ -292,20 +302,21 @@ contract LocalDeploy is SymbioticCoreInit {
             replicas[i] = IValSetDriver.CrossChainAddress({chainId: uint64(chainId), addr: settlement});
         }
         IValSetDriver.QuorumThreshold[] memory quorumThresholds = new IValSetDriver.QuorumThreshold[](1);
-        quorumThresholds[0] = IValSetDriver.QuorumThreshold({keyTag: REQUIRED_KEY_TAG, quorumThreshold: QUORUM_THRESHOLD});
+        quorumThresholds[0] =
+            IValSetDriver.QuorumThreshold({keyTag: REQUIRED_KEY_TAG, quorumThreshold: QUORUM_THRESHOLD});
         uint8[] memory requiredKeyTags = new uint8[](1);
         requiredKeyTags[0] = REQUIRED_KEY_TAG;
 
         driver_.initialize(
             IValSetDriver.ValSetDriverInitParams({
                 networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
-                network: address(network),
-                subnetworkID: 0
-            }),
+                    network: address(network),
+                    subnetworkID: 0
+                }),
                 epochManagerInitParams: IEpochManager.EpochManagerInitParams({
-                epochDuration: EPOCH_DURATION,
-                epochDurationTimestamp: 0
-            }),
+                    epochDuration: EPOCH_DURATION,
+                    epochDurationTimestamp: 0
+                }),
                 votingPowerProviders: votingPowerProviders_,
                 keysProvider: keyRegistry,
                 replicas: replicas,
@@ -377,7 +388,8 @@ contract LocalDeploy is SymbioticCoreInit {
         for (uint256 i; i < votingPowerProviders.length(); ++i) {
             (uint256 chainId, address votingPowerProvider) = votingPowerProviders.at(i);
             vm.serializeUint("votingPowerProvider", "chainId", chainId);
-            string memory votingPowerProviderData = vm.serializeAddress("votingPowerProvider", "addr", votingPowerProvider);
+            string memory votingPowerProviderData =
+                vm.serializeAddress("votingPowerProvider", "addr", votingPowerProvider);
             votingPowerProvidersData[i] = votingPowerProviderData;
         }
         vm.serializeString(obj, "votingPowerProviders", votingPowerProvidersData);
@@ -427,7 +439,8 @@ contract LocalDeploy is SymbioticCoreInit {
             chainId: relayContracts.keyRegistry.chainId,
             addr: relayContracts.keyRegistry.addr
         });
-        driver = IValSetDriver.CrossChainAddress({chainId: relayContracts.driver.chainId, addr: relayContracts.driver.addr});
+        driver =
+            IValSetDriver.CrossChainAddress({chainId: relayContracts.driver.chainId, addr: relayContracts.driver.addr});
         stakingTokens.clear();
         for (uint256 i; i < relayContracts.stakingTokens.length; ++i) {
             stakingTokens.set(relayContracts.stakingTokens[i].chainId, relayContracts.stakingTokens[i].addr);
@@ -508,7 +521,8 @@ contract LocalDeploy is SymbioticCoreInit {
     function getBLSKeys(uint256 privateKey) public view returns (BN254.G1Point memory, BN254.G2Point memory) {
         BN254.G1Point memory G1Key = BN254.generatorG1().scalar_mul(privateKey);
         BN254.G2Point memory G2 = BN254.generatorG2();
-        (uint256 x1, uint256 x2, uint256 y1, uint256 y2) = BN254G2.ECTwistMul(privateKey, G2.X[1], G2.X[0], G2.Y[1], G2.Y[0]);
+        (uint256 x1, uint256 x2, uint256 y1, uint256 y2) =
+            BN254G2.ECTwistMul(privateKey, G2.X[1], G2.X[0], G2.Y[1], G2.Y[0]);
         return (G1Key, BN254.G2Point([x2, x1], [y2, y1]));
     }
 
