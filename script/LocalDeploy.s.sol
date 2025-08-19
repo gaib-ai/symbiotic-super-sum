@@ -22,6 +22,8 @@ import {IVotingPowerProvider} from
     "@symbioticfi/relay-contracts/interfaces/modules/voting-power/IVotingPowerProvider.sol";
 import {IOpNetVaultAutoDeploy} from
     "@symbioticfi/relay-contracts/interfaces/modules/voting-power/extensions/IOpNetVaultAutoDeploy.sol";
+import {SigVerifierBlsBn254ZK} from
+    "@symbioticfi/relay-contracts/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254ZK.sol";
 import {SigVerifierBlsBn254Simple} from
     "@symbioticfi/relay-contracts/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.sol";
 import {ISettlement} from "@symbioticfi/relay-contracts/interfaces/modules/settlement/ISettlement.sol";
@@ -71,15 +73,16 @@ contract LocalDeploy is SymbioticCoreInit {
 
     bytes32 internal constant KEY_OWNERSHIP_TYPEHASH = keccak256("KeyOwnership(address operator,bytes key)");
 
-    uint48 internal constant EPOCH_DURATION = 1 minutes; // 1 minute
+    uint48 internal immutable EPOCH_DURATION = uint48(vm.envOr("EPOCH_TIME", uint256(60)));
     uint48 internal constant SLASHING_WINDOW = 1 days; // 1 day
     uint208 internal constant MAX_VALIDATORS_COUNT = 1000; // 1000 validators
     uint256 internal constant MAX_VOTING_POWER = 2 ** 247; // no max limit
     uint256 internal constant MIN_INCLUSION_VOTING_POWER = 0; // include anyone
-    uint248 internal constant QUORUM_THRESHOLD = uint248(1e18) * 2 / 3 + 1; // 2/3 + 1
+    uint248 internal constant QUORUM_THRESHOLD = (uint248(1e18) * 2) / 3 + 1; // 2/3 + 1
     uint8 internal constant REQUIRED_KEY_TAG = 15; // 15 is the default key tag (BLS-BN254/15)
     uint256 internal constant OPERATOR_STAKE_AMOUNT = 100000;
     uint256 internal immutable OPERATOR_COUNT = vm.envOr("OPERATOR_COUNT", uint256(4));
+    uint8 internal immutable VERIFICATION_TYPE = uint8(vm.envOr("VERIFICATION_TYPE", uint256(1)));
 
     address internal deployer;
 
@@ -246,6 +249,25 @@ contract LocalDeploy is SymbioticCoreInit {
     function setupSettlement() public returns (IValSetDriver.CrossChainAddress memory) {
         vm.startBroadcast(deployer);
         Settlement settlement_ = new Settlement{salt: "Settlement"}();
+
+        address verifier;
+
+        if (VERIFICATION_TYPE == 0) {
+            address[] memory verifiers = new address[](3);
+            verifiers[0] = deployCode("out/Verifier_10.sol/Verifier.json");
+            verifiers[1] = deployCode("out/Verifier_100.sol/Verifier.json");
+            verifiers[2] = deployCode("out/Verifier_1000.sol/Verifier.json");
+            uint256[] memory maxValidators = new uint256[](verifiers.length);
+            maxValidators[0] = 10;
+            maxValidators[1] = 100;
+            maxValidators[2] = 1000;
+            verifier = address(new SigVerifierBlsBn254ZK(verifiers, maxValidators));
+        } else if (VERIFICATION_TYPE == 1) {
+            verifier = address(new SigVerifierBlsBn254Simple());
+        } else {
+            revert("Invalid verification type");
+        }
+
         settlement_.initialize(
             ISettlement.SettlementInitParams({
                 networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
@@ -253,7 +275,7 @@ contract LocalDeploy is SymbioticCoreInit {
                     subnetworkID: 0
                 }),
                 ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "Settlement", version: "1"}),
-                sigVerifier: address(new SigVerifierBlsBn254Simple())
+                sigVerifier: verifier
             }),
             deployer
         );
@@ -298,7 +320,7 @@ contract LocalDeploy is SymbioticCoreInit {
                 votingPowerProviders: votingPowerProviders_,
                 keysProvider: keyRegistry,
                 replicas: replicas,
-                verificationType: 1,
+                verificationType: VERIFICATION_TYPE,
                 maxVotingPower: MAX_VOTING_POWER,
                 minInclusionVotingPower: MIN_INCLUSION_VOTING_POWER,
                 maxValidatorsCount: MAX_VALIDATORS_COUNT,
