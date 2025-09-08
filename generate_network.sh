@@ -174,7 +174,7 @@ services:
 
   # Genesis generation service
   genesis-generator:
-    image: symbioticfi/relay:latest
+    image: symbioticfi/relay:$RELAY_IMAGE_TAG
     container_name: symbiotic-genesis-generator
     volumes:
       - ../:/workspace
