@@ -7,7 +7,7 @@
 set -e
 
 # Define the image tag for the relay service, that the current sum node is compatible with
-RELAY_IMAGE_TAG="0.2.1-20250802065445-3f8139849d3f"
+RELAY_IMAGE_TAG="0.2.1-20250906112320-ffdbab63501a"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -239,7 +239,7 @@ EOF
     container_name: symbiotic-relay-$i
     command:
       - /workspace/network-scripts/sidecar-start.sh 
-      - symb/0/15/0x$SYMB_PRIVATE_KEY_HEX,symb/1/15/0x$SYMB_PRIVATE_KEY_HEX,evm/1/31337/0x$SYMB_PRIVATE_KEY_HEX,evm/1/31338/0x$SYMB_PRIVATE_KEY_HEX,p2p/1/0/$SWARM_KEY,p2p/1/1/$SYMB_PRIVATE_KEY_HEX
+      - symb/0/15/0x$SYMB_PRIVATE_KEY_HEX,symb/1/0/0x$SYMB_PRIVATE_KEY_HEX,evm/1/31337/0x$SYMB_PRIVATE_KEY_HEX,evm/1/31338/0x$SYMB_PRIVATE_KEY_HEX,p2p/1/0/$SWARM_KEY,p2p/1/1/$SYMB_PRIVATE_KEY_HEX
       - /app/$storage_dir
       - $role_flags
     ports:
