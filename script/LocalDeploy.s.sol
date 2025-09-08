@@ -31,6 +31,7 @@ import {IOzOwnable} from "@symbioticfi/relay-contracts/interfaces/modules/common
 import {IOzEIP712} from "@symbioticfi/relay-contracts/interfaces/modules/base/IOzEIP712.sol";
 import {KeyTags} from "@symbioticfi/relay-contracts/contracts/libraries/utils/KeyTags.sol";
 import {KeyBlsBn254, BN254} from "@symbioticfi/relay-contracts/contracts/libraries/keys/KeyBlsBn254.sol";
+import {KeyEcdsaSecp256k1} from "@symbioticfi/relay-contracts/contracts/libraries/keys/KeyEcdsaSecp256k1.sol";
 import {
     KEY_TYPE_BLS_BN254,
     KEY_TYPE_ECDSA_SECP256K1
@@ -49,6 +50,9 @@ import {SumTask} from "../src/SumTask.sol";
 contract LocalDeploy is SymbioticCoreInit {
     using KeyTags for uint8;
     using KeyBlsBn254 for BN254.G1Point;
+    using KeyEcdsaSecp256k1 for address;
+    using KeyEcdsaSecp256k1 for KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1;
+    using KeyEcdsaSecp256k1 for bytes;
     using BN254 for BN254.G1Point;
     using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
     using EnumerableMap for EnumerableMap.UintToAddressMap;
@@ -500,6 +504,22 @@ contract LocalDeploy is SymbioticCoreInit {
         BN254.G1Point memory messageG1 = BN254.hashToG1(messageHash);
         BN254.G1Point memory sigG1 = messageG1.scalar_mul(operator.privateKey);
         keyRegistry_.setKey(KEY_TYPE_BLS_BN254.getKeyTag(15), keyBytes, abi.encode(sigG1), abi.encode(g2Key));
+
+        vm.stopBroadcast();
+
+        // Generate ECDSA key
+        keyBytes = KeyEcdsaSecp256k1.wrap(operator.addr).toBytes();
+        
+        vm.startBroadcast(operator.privateKey);
+        // Create ECDSA signature for key ownership
+        messageHash = keyRegistry_.hashTypedDataV4(
+            keccak256(abi.encode(KEY_OWNERSHIP_TYPEHASH, operator.addr, keccak256(keyBytes)))
+        );
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(operator.privateKey, messageHash);
+        bytes memory signature = abi.encodePacked(r, s, v);
+        
+        // Register ECDSA key
+        keyRegistry_.setKey(KEY_TYPE_ECDSA_SECP256K1.getKeyTag(31), keyBytes, signature, new bytes(0));
 
         vm.stopBroadcast();
 
