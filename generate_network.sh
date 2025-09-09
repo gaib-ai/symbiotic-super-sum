@@ -117,7 +117,7 @@ generate_docker_compose() {
 services:
   # Main Anvil local Ethereum network (Chain ID: 31337)
   anvil:
-    image: ghcr.io/foundry-rs/foundry:v1.2.3
+    image: ghcr.io/foundry-rs/foundry:v1.3.5
     container_name: symbiotic-anvil
     entrypoint: ["anvil"]
     command: "--port 8545 --chain-id 31337 --timestamp 1754051800 --auto-impersonate --slots-in-an-epoch 1 --accounts 10 --balance 10000 --gas-limit 30000000"
@@ -153,7 +153,7 @@ services:
 
   # Contract deployment service for main chain
   deployer:
-    image: ghcr.io/foundry-rs/foundry:v1.3.0
+    image: ghcr.io/foundry-rs/foundry:v1.3.5
     container_name: symbiotic-deployer
     volumes:
       - ../:/app
