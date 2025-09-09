@@ -239,7 +239,7 @@ EOF
     container_name: symbiotic-relay-$i
     command:
       - /workspace/network-scripts/sidecar-start.sh 
-      - symb/0/15/0x$SYMB_PRIVATE_KEY_HEX,symb/1/0/0x$SYMB_PRIVATE_KEY_HEX,evm/1/31337/0x$SYMB_PRIVATE_KEY_HEX,evm/1/31338/0x$SYMB_PRIVATE_KEY_HEX,p2p/1/0/$SWARM_KEY,p2p/1/1/$SYMB_PRIVATE_KEY_HEX
+      - symb/0/15/0x$SYMB_PRIVATE_KEY_HEX,symb/0/11/0x$SYMB_PRIVATE_KEY_HEX,symb/1/0/0x$SYMB_PRIVATE_KEY_HEX,evm/1/31337/0x$SYMB_PRIVATE_KEY_HEX,evm/1/31338/0x$SYMB_PRIVATE_KEY_HEX,p2p/1/0/$SWARM_KEY,p2p/1/1/$SYMB_PRIVATE_KEY_HEX
       - /app/$storage_dir
       - $role_flags
     ports:

@@ -85,6 +85,7 @@ contract LocalDeploy is SymbioticCoreInit {
     uint248 internal constant QUORUM_THRESHOLD = (uint248(1e18) * 2) / 3 + 1; // 2/3 + 1
     uint8 internal constant REQUIRED_KEY_TAG = 15; // 15 is the default key tag (BLS-BN254/15)
     uint8 internal constant REQUIRED_KEY_TAG_ECDSA = 16; // 16 is the default key tag for ecdsa keys (ECDSA-SECP256K1/0)
+    uint8 internal constant REQUIRED_KEY_TAG_SECONDARY_BLS = 11;
     uint256 internal constant OPERATOR_STAKE_AMOUNT = 100000;
     uint256 internal immutable OPERATOR_COUNT = vm.envOr("OPERATOR_COUNT", uint256(4));
     uint8 internal immutable VERIFICATION_TYPE = uint8(vm.envOr("VERIFICATION_TYPE", uint256(1)));
@@ -306,14 +307,17 @@ contract LocalDeploy is SymbioticCoreInit {
             (uint256 chainId, address settlement) = settlements.at(i);
             replicas[i] = IValSetDriver.CrossChainAddress({chainId: uint64(chainId), addr: settlement});
         }
-        IValSetDriver.QuorumThreshold[] memory quorumThresholds = new IValSetDriver.QuorumThreshold[](2);
+        IValSetDriver.QuorumThreshold[] memory quorumThresholds = new IValSetDriver.QuorumThreshold[](3);
         quorumThresholds[0] =
             IValSetDriver.QuorumThreshold({keyTag: REQUIRED_KEY_TAG, quorumThreshold: QUORUM_THRESHOLD});
         quorumThresholds[1] =
             IValSetDriver.QuorumThreshold({keyTag: REQUIRED_KEY_TAG_ECDSA, quorumThreshold: QUORUM_THRESHOLD});
-        uint8[] memory requiredKeyTags = new uint8[](2);
+        quorumThresholds[2] =
+            IValSetDriver.QuorumThreshold({keyTag: REQUIRED_KEY_TAG_SECONDARY_BLS, quorumThreshold: QUORUM_THRESHOLD});
+        uint8[] memory requiredKeyTags = new uint8[](3);
         requiredKeyTags[0] = REQUIRED_KEY_TAG;
         requiredKeyTags[1] = REQUIRED_KEY_TAG_ECDSA;
+        requiredKeyTags[2] = REQUIRED_KEY_TAG_SECONDARY_BLS;
 
         driver_.initialize(
             IValSetDriver.ValSetDriverInitParams({
@@ -508,6 +512,9 @@ contract LocalDeploy is SymbioticCoreInit {
         BN254.G1Point memory messageG1 = BN254.hashToG1(messageHash);
         BN254.G1Point memory sigG1 = messageG1.scalar_mul(operator.privateKey);
         keyRegistry_.setKey(KEY_TYPE_BLS_BN254.getKeyTag(15), keyBytes, abi.encode(sigG1), abi.encode(g2Key));
+
+        // Register BLS-BN254 key with tag 11, not related to header key tag
+        keyRegistry_.setKey(KEY_TYPE_BLS_BN254.getKeyTag(11), keyBytes, abi.encode(sigG1), abi.encode(g2Key));
 
         vm.stopBroadcast();
 
