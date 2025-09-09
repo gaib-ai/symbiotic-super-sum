@@ -171,6 +171,8 @@ services:
       - symbiotic-network
     environment:
       - OPERATOR_COUNT=$operators
+      - NUM_AGGREGATORS=$aggregators
+      - NUM_COMMITTERS=$commiters
 
   # Genesis generation service
   genesis-generator:
