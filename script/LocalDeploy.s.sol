@@ -31,6 +31,7 @@ import {IOzOwnable} from "@symbioticfi/relay-contracts/interfaces/modules/common
 import {IOzEIP712} from "@symbioticfi/relay-contracts/interfaces/modules/base/IOzEIP712.sol";
 import {KeyTags} from "@symbioticfi/relay-contracts/libraries/utils/KeyTags.sol";
 import {KeyBlsBn254, BN254} from "@symbioticfi/relay-contracts/libraries/keys/KeyBlsBn254.sol";
+import {KeyEcdsaSecp256k1} from "@symbioticfi/relay-contracts/libraries/keys/KeyEcdsaSecp256k1.sol";
 import {
     KEY_TYPE_BLS_BN254,
     KEY_TYPE_ECDSA_SECP256K1
@@ -49,6 +50,9 @@ import {SumTask} from "../src/SumTask.sol";
 contract LocalDeploy is SymbioticCoreInit {
     using KeyTags for uint8;
     using KeyBlsBn254 for BN254.G1Point;
+    using KeyEcdsaSecp256k1 for address;
+    using KeyEcdsaSecp256k1 for KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1;
+    using KeyEcdsaSecp256k1 for bytes;
     using BN254 for BN254.G1Point;
     using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
     using EnumerableMap for EnumerableMap.UintToAddressMap;
@@ -81,6 +85,8 @@ contract LocalDeploy is SymbioticCoreInit {
     uint248 internal constant QUORUM_THRESHOLD = (uint248(1e18) * 2) / 3 + 1; // 2/3 + 1
     uint8 internal constant REQUIRED_KEY_TAG = 15; // 15 is the default key tag (BLS-BN254/15)
     uint256 internal constant OPERATOR_STAKE_AMOUNT = 100_000;
+    uint8 internal constant REQUIRED_KEY_TAG_ECDSA = 16; // 16 is the default key tag for ecdsa keys (ECDSA-SECP256K1/0)
+    uint8 internal constant REQUIRED_KEY_TAG_SECONDARY_BLS = 11;
     uint256 internal immutable OPERATOR_COUNT = vm.envOr("OPERATOR_COUNT", uint256(4));
     uint8 internal immutable VERIFICATION_TYPE = uint8(vm.envOr("VERIFICATION_TYPE", uint256(1)));
     uint208 internal immutable NUM_AGGREGATORS = uint208(vm.envOr("NUM_AGGREGATORS", uint256(1)));
@@ -305,11 +311,17 @@ contract LocalDeploy is SymbioticCoreInit {
             (uint256 chainId, address settlement) = settlements.at(i);
             settlementsLocal[i] = IValSetDriver.CrossChainAddress({chainId: uint64(chainId), addr: settlement});
         }
-        IValSetDriver.QuorumThreshold[] memory quorumThresholds = new IValSetDriver.QuorumThreshold[](1);
+        IValSetDriver.QuorumThreshold[] memory quorumThresholds = new IValSetDriver.QuorumThreshold[](3);
         quorumThresholds[0] =
             IValSetDriver.QuorumThreshold({keyTag: REQUIRED_KEY_TAG, quorumThreshold: QUORUM_THRESHOLD});
-        uint8[] memory requiredKeyTags = new uint8[](1);
+        quorumThresholds[1] =
+            IValSetDriver.QuorumThreshold({keyTag: REQUIRED_KEY_TAG_ECDSA, quorumThreshold: QUORUM_THRESHOLD});
+        quorumThresholds[2] =
+            IValSetDriver.QuorumThreshold({keyTag: REQUIRED_KEY_TAG_SECONDARY_BLS, quorumThreshold: QUORUM_THRESHOLD});
+        uint8[] memory requiredKeyTags = new uint8[](3);
         requiredKeyTags[0] = REQUIRED_KEY_TAG;
+        requiredKeyTags[1] = REQUIRED_KEY_TAG_ECDSA;
+        requiredKeyTags[2] = REQUIRED_KEY_TAG_SECONDARY_BLS;
 
         driver_.initialize(
             IValSetDriver.ValSetDriverInitParams({
@@ -508,6 +520,34 @@ contract LocalDeploy is SymbioticCoreInit {
         BN254.G1Point memory messageG1 = BN254.hashToG1(messageHash);
         BN254.G1Point memory sigG1 = messageG1.scalar_mul(operator.privateKey);
         keyRegistry_.setKey(KEY_TYPE_BLS_BN254.getKeyTag(15), keyBytes, abi.encode(sigG1), abi.encode(g2Key));
+
+        // Register BLS-BN254 key with tag 11, not related to header key tag
+        uint256 secondaryBLSKey = operator.privateKey + 10000;
+        (g1Key, g2Key) = getBLSKeys(secondaryBLSKey);
+        keyBytes = KeyBlsBn254.wrap(g1Key).toBytes();
+        messageHash = keyRegistry_.hashTypedDataV4(
+            keccak256(abi.encode(KEY_OWNERSHIP_TYPEHASH, operator.addr, keccak256(keyBytes)))
+        );
+        messageG1 = BN254.hashToG1(messageHash);
+        sigG1 = messageG1.scalar_mul(secondaryBLSKey);
+
+        keyRegistry_.setKey(KEY_TYPE_BLS_BN254.getKeyTag(11), keyBytes, abi.encode(sigG1), abi.encode(g2Key));
+
+        vm.stopBroadcast();
+
+        // Generate ECDSA key
+        keyBytes = KeyEcdsaSecp256k1.wrap(operator.addr).toBytes();
+
+        vm.startBroadcast(operator.privateKey);
+        // Create ECDSA signature for key ownership
+        messageHash = keyRegistry_.hashTypedDataV4(
+            keccak256(abi.encode(KEY_OWNERSHIP_TYPEHASH, operator.addr, keccak256(keyBytes)))
+        );
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(operator.privateKey, messageHash);
+        bytes memory signature = abi.encodePacked(r, s, v);
+
+        // Register ECDSA key
+        keyRegistry_.setKey(KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0), keyBytes, signature, new bytes(0));
 
         vm.stopBroadcast();
 

@@ -7,7 +7,7 @@
 set -e
 
 # Define the image tag for the relay service, that the current sum node is compatible with
-RELAY_IMAGE_TAG="0.2.1-20250802065445-3f8139849d3f"
+RELAY_IMAGE_TAG="0.2.1-20250906112320-ffdbab63501a"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -117,7 +117,7 @@ generate_docker_compose() {
 services:
   # Main Anvil local Ethereum network (Chain ID: 31337)
   anvil:
-    image: ghcr.io/foundry-rs/foundry:v1.2.3
+    image: ghcr.io/foundry-rs/foundry:v1.3.5
     container_name: symbiotic-anvil
     entrypoint: ["anvil"]
     command: "--port 8545 --chain-id 31337 --timestamp 1754051800 --auto-impersonate --slots-in-an-epoch 1 --accounts 10 --balance 10000 --gas-limit 30000000"
@@ -153,7 +153,7 @@ services:
 
   # Contract deployment service for main chain
   deployer:
-    image: ghcr.io/foundry-rs/foundry:v1.3.0
+    image: ghcr.io/foundry-rs/foundry:v1.3.5
     container_name: symbiotic-deployer
     volumes:
       - ../:/app
@@ -176,7 +176,7 @@ services:
 
   # Genesis generation service
   genesis-generator:
-    image: symbioticfi/relay:latest
+    image: symbioticfi/relay:$RELAY_IMAGE_TAG
     container_name: symbiotic-genesis-generator
     volumes:
       - ../:/workspace
@@ -224,8 +224,10 @@ EOF
         fi
         
         SYMB_PRIVATE_KEY_DECIMAL=$(($BASE_PRIVATE_KEY + $key_index))
+        SYMB_SECONDARY_PRIVATE_KEY_DECIMAL=$(($BASE_PRIVATE_KEY + $key_index + 10000))
         SYMB_PRIVATE_KEY_HEX=$(printf "%064x" $SYMB_PRIVATE_KEY_DECIMAL)
-        
+        SYMB_SECONDARY_PRIVATE_KEY_HEX=$(printf "%064x" $SYMB_SECONDARY_PRIVATE_KEY_DECIMAL)
+
         # Validate ECDSA secp256k1 private key range (must be between 1 and n-1)
         # Maximum valid key: 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364140
         if [ $SYMB_PRIVATE_KEY_DECIMAL -eq 0 ]; then
@@ -241,7 +243,7 @@ EOF
     container_name: symbiotic-relay-$i
     command:
       - /workspace/network-scripts/sidecar-start.sh 
-      - symb/0/15/0x$SYMB_PRIVATE_KEY_HEX,evm/1/31337/0x$SYMB_PRIVATE_KEY_HEX,evm/1/31338/0x$SYMB_PRIVATE_KEY_HEX,p2p/1/0/$SWARM_KEY,p2p/1/1/$SYMB_PRIVATE_KEY_HEX
+      - symb/0/15/0x$SYMB_PRIVATE_KEY_HEX,symb/0/11/0x$SYMB_SECONDARY_PRIVATE_KEY_HEX,symb/1/0/0x$SYMB_PRIVATE_KEY_HEX,evm/1/31337/0x$SYMB_PRIVATE_KEY_HEX,evm/1/31338/0x$SYMB_PRIVATE_KEY_HEX,p2p/1/0/$SWARM_KEY,p2p/1/1/$SYMB_PRIVATE_KEY_HEX
       - /app/$storage_dir
       - $role_flags
     ports:
