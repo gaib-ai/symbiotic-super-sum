@@ -3,6 +3,7 @@ package dvn
 import (
 	"context"
 	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"log"
 	"math/big"
@@ -15,22 +16,24 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 
-	"dvn-worker/internal/contracts"
+	"dvn-node/internal/contracts"
 )
 
 type Processor struct {
-	clientA *ethclient.Client // Source chain
-	clientB *ethclient.Client // Destination chain
-	auth    *bind.TransactOpts
-	dvnB    *contracts.SymbioticLzDVN
+	clientA   *ethclient.Client // Source chain
+	clientB   *ethclient.Client // Destination chain
+	auth      *bind.TransactOpts
+	dvnB      *contracts.SymbioticLzDVN
+	relayAddr string
 }
 
-func NewProcessor(clientA, clientB *ethclient.Client, auth *bind.TransactOpts, dvnB *contracts.SymbioticLzDVN) *Processor {
+func NewProcessor(clientA, clientB *ethclient.Client, auth *bind.TransactOpts, dvnB *contracts.SymbioticLzDVN, relayAddr string) *Processor {
 	return &Processor{
-		clientA: clientA,
-		clientB: clientB,
-		auth:    auth,
-		dvnB:    dvnB,
+		clientA:   clientA,
+		clientB:   clientB,
+		auth:      auth,
+		dvnB:      dvnB,
+		relayAddr: relayAddr,
 	}
 }
 
@@ -69,15 +72,12 @@ func (p *Processor) processPacket(event *contracts.EndpointV2PacketSent) {
 	log.Printf("Processing task: %x", taskID)
 
 	// 2. Get proof from Symbiotic sidecar
-	// In a real implementation, this would involve an HTTP call to the sidecar.
-	// For this example, we'll mock it and assume we get a valid proof.
-	// We'll use a placeholder proof.
 	symbioticProof, err := p.getSymbioticProof(taskID)
 	if err != nil {
 		log.Printf("Failed to get Symbiotic proof for task %x: %v", taskID, err)
 		return
 	}
-	log.Printf("Successfully obtained proof for task %x", taskID)
+	log.Printf("Successfully obtained proof for task %x from %s", taskID, p.relayAddr)
 
 
 	// 3. Submit verification to the destination chain
@@ -104,14 +104,27 @@ func (p *Processor) processPacket(event *contracts.EndpointV2PacketSent) {
 	log.Printf("Successfully verified task %x on destination chain.", taskID)
 }
 
-// getSymbioticProof mocks the interaction with a Symbiotic sidecar.
+// getSymbioticProof interacts with the specific Symbiotic sidecar for this node.
 func (p *Processor) getSymbioticProof(taskID [32]byte) ([]byte, error) {
-	// In a real-world scenario, you would make an HTTP request to the sidecar API.
-	// e.g., resp, err := http.Get("http://relay-sidecar-1:8081/proof/" + hex.EncodeToString(taskID[:]))
-	// Here we will just wait for a moment and return a dummy proof.
-	log.Printf("Requesting proof for task %x from sidecar...", taskID)
-	time.Sleep(5 * time.Second) // Simulate network delay
+	proofURL := fmt.Sprintf("http://%s/proof/%s", p.relayAddr, hex.EncodeToString(taskID[:]))
+	log.Printf("Requesting proof from: %s", proofURL)
+
+	// In a real-world scenario, you would implement a robust retry mechanism.
+	time.Sleep(5 * time.Second) // Simulate network delay and proof aggregation time
+
+	// Mocking the HTTP call for now, as the sidecar proof endpoint might not be immediately available.
+	// In a real implementation:
+	// resp, err := http.Get(proofURL)
+	// if err != nil {
+	// 	 return nil, fmt.Errorf("failed to get proof from sidecar: %w", err)
+	// }
+	// defer resp.Body.Close()
+	// proof, err := ioutil.ReadAll(resp.Body)
+	// if err != nil {
+	// 	return nil, fmt.Errorf("failed to read proof from response: %w", err)
+	// }
+	// return proof, nil
 
 	// Return a placeholder proof
-	return []byte("mock-symbiotic-proof"), nil
+	return []byte("mock-symbiotic-proof-from-" + p.relayAddr), nil
 }

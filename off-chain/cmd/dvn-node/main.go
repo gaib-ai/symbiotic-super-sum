@@ -121,5 +121,11 @@ func setupProcessor() (*dvn.Processor, error) {
 		return nil, fmt.Errorf("failed to instantiate DVN contract: %w", err)
 	}
 
-	return dvn.NewProcessor(clientA, clientB, auth, dvnB), nil
+	// Get relay address from environment
+	relayAddr := os.Getenv("RELAY_ADDR")
+	if relayAddr == "" {
+		return nil, fmt.Errorf("RELAY_ADDR environment variable not set")
+	}
+
+	return dvn.NewProcessor(clientA, clientB, auth, dvnB, relayAddr), nil
 }
