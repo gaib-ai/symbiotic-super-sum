@@ -211,6 +211,17 @@ EOF
         SYMB_PRIVATE_KEY_HEX=$(printf "%064x" $SYMB_PRIVATE_KEY_DECIMAL)
         SYMB_SECONDARY_PRIVATE_KEY_HEX=$(printf "%064x" $SYMB_SECONDARY_PRIVATE_KEY_DECIMAL)
 
+        local role_name="Signer"
+        local role_params=""
+
+        if [ $i -le $commiters ]; then
+            role_name="Committer"
+            role_params="      - --committer\n      - \"true\""
+        elif [ $i -le $((commiters + aggregators)) ]; then
+            role_name="Aggregator"
+            role_params="      - --aggregator\n      - \"true\""
+        fi
+
         # Validate ECDSA secp256k1 private key range (must be between 1 and n-1)
         # Maximum valid key: 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364140
         if [ $SYMB_PRIVATE_KEY_DECIMAL -eq 0 ]; then
@@ -228,6 +239,7 @@ EOF
       - /workspace/network-scripts/sidecar-start.sh 
       - symb/0/15/0x$SYMB_PRIVATE_KEY_HEX,symb/0/11/0x$SYMB_SECONDARY_PRIVATE_KEY_HEX,symb/1/0/0x$SYMB_PRIVATE_KEY_HEX,evm/1/31337/0x$SYMB_PRIVATE_KEY_HEX,evm/1/31338/0x$SYMB_PRIVATE_KEY_HEX,p2p/1/0/$SWARM_KEY,p2p/1/1/$SYMB_PRIVATE_KEY_HEX
       - /app/$storage_dir
+$(echo -e "$role_params")
     ports:
       - "$port:8080"
     volumes:
