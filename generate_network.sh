@@ -265,37 +265,36 @@ PRIVATE_KEY=ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 EOF
 
     # Generate the dvn-worker service
-    cat >> "$network_dir/docker-compose.yml" << EOF
+    for i in $(seq 1 $operators); do
+        local sum_port=$((sum_start_port + i - 1))
+        
+        cat >> "$network_dir/docker-compose.yml" << EOF
 
-  # DVN Worker Service
-  dvn-worker:
+  # DVN Node $i
+  dvn-node-$i:
     build:
       context: ../off-chain
       dockerfile: Dockerfile
-    container_name: symbiotic-dvn-worker
-    entrypoint: ["/go/bin/dvn-worker"]
+    container_name: symbiotic-dvn-node-$i
+    entrypoint: ["/workspace/network-scripts/dvn-node-start.sh"]
     volumes:
+      - ../:/workspace
       - ./deploy-data:/app/temp-network/deploy-data
+    ports:
+      - "$sum_port:$sum_port"
     depends_on:
-EOF
-
-    # Add dependencies on all relay sidecars
-    for i in $(seq 1 $operators); do
-        cat >> "$network_dir/docker-compose.yml" << EOF
       relay-sidecar-$i:
         condition: service_started
-EOF
-    done
-
-    # Add remaining docker-compose config
-    cat >> "$network_dir/docker-compose.yml" << EOF
     networks:
       - symbiotic-network
     restart: unless-stopped
     env_file:
       - .env
 EOF
-
+    done
+    
+    # Remove the single dvn-worker and its .env file generation
+    
     cat >> "$network_dir/docker-compose.yml" << EOF
 
 networks:

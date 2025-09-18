@@ -26,13 +26,13 @@ The system runs a local, containerized network consisting of two independent blo
 -   **Symbiotic Stack**: The full suite of Symbiotic contracts (`Settlement`, `ValSetDriver`, `KeyRegistry`, etc.) are deployed on both chains to manage the validator set and verify aggregated BLS signatures.
 -   **LayerZero Stack**: The standard `EndpointV2` and `SendUln302` contracts are deployed, along with the `AID` OFT application as the example cross-chain app.
 
-### Off-Chain Worker (`dvn-worker`)
+### Off-Chain Nodes (`dvn-node`)
 
-This is a Go application that acts as the bridge between the two protocols. It performs the following steps:
+This project runs multiple instances of a Go application that acts as the bridge between the two protocols. Each `dvn-node` performs the following steps:
 1.  **Listens** for `PacketSent` events on the source chain's LayerZero `EndpointV2`.
-2.  Upon receiving an event, it **constructs a task** for the Symbiotic relay network.
-3.  It **requests a proof** (an aggregated BLS signature) from the local `relay-sidecar` network, confirming that Symbiotic operators have validated the packet.
-4.  Once the proof is obtained, it **submits a transaction** to the `SymbioticLzDVN` contract on the destination chain, calling `verifyWithSymbiotic`.
+2.  Upon receiving an event, all nodes will **construct a task** for the Symbiotic relay network.
+3.  Each node **requests a proof** (an aggregated BLS signature) from its local `relay-sidecar` network.
+4.  The nodes then **race to submit a transaction** to the `SymbioticLzDVN` contract on the destination chain. Only the first transaction will succeed; others will fail, which is expected behavior in a decentralized network simulation.
 5.  This action completes the verification, allowing the cross-chain message to be executed by a separate Executor.
 
 ### Workflow Sequence Diagram
@@ -203,13 +203,13 @@ forge script script/Bridge.s.sol --rpc-url http://localhost:8545 --broadcast --f
 
 This step simulates the roles of both the DVN and the Executor.
 
-1.  **Run the DVN Worker**: The `dvn-worker` is already running via Docker. Watch its logs to see the process in action:
+1.  **Observe the DVN Nodes**: The `dvn-node` services are already running via Docker. Watch their logs to see them compete to process the packet:
     ```bash
-    docker compose logs -f dvn-worker
+    docker compose logs -f dvn-node-1 dvn-node-2 #... and so on
     ```
-    You should see output indicating that a `PacketSent` event was received, a proof was requested, and a verification transaction was submitted to the `SymbioticLzDVN` contract. The worker's job is now done.
+    You should see one node successfully submit the verification transaction, while others will report a (safe and expected) failure because the task was already processed.
 
-2.  **Run the Executor**: After the DVN worker has successfully submitted the verification, run the `Executor` script to complete the message delivery.
+2.  **Run the Executor**: After one of the DVN nodes has successfully submitted the verification, run the `Executor` script to complete the message delivery.
     ```bash
     forge script script/Executor.s.sol --rpc-url http://localhost:8546 --broadcast --ffi
     ```
@@ -248,7 +248,7 @@ The local environment consists of the following services:
 -   `deployer`: A short-lived service that waits for the chains to be healthy.
 -   `genesis-generator`: A short-lived service that generates the configuration for the Symbiotic relay network.
 -   `relay-sidecar-*`: The nodes of the Symbiotic relay network.
--   `dvn-worker`: The off-chain worker that listens for LayerZero events and submits Symbiotic-backed verifications.
+-   `dvn-node-*`: The off-chain nodes that listen for LayerZero events and compete to submit Symbiotic-backed verifications.
 
 ## Cleanup
 

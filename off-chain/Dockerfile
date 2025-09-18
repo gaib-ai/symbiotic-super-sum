@@ -18,9 +18,7 @@ RUN go mod download
 COPY . .
 
 # Build the application with optimizations for production
-RUN CGO_ENABLED=0 GOOS=linux go build -o /go/bin/benchmark ./cmd/benchmark
-RUN CGO_ENABLED=0 GOOS=linux go build -o /go/bin/node ./cmd/node
-RUN CGO_ENABLED=0 GOOS=linux go build -o /go/bin/dvn-worker ./cmd/dvn-worker
+RUN CGO_ENABLED=0 GOOS=linux go build -o /go/bin/dvn-node ./cmd/dvn-node
 
 # Runtime stage
 FROM alpine:3.19
