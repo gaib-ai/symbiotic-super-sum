@@ -1,181 +1,258 @@
-# Sum task network example
+# LayerZero DVN Secured by Symbiotic
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/symbioticfi/symbiotic-super-sum)
+This project demonstrates a powerful integration between LayerZero's omnichain messaging protocol and Symbiotic's economic security framework. It replaces a standard LayerZero Decentralized Verifier Network (DVN) with one whose security is derived directly from the economic stake managed by a Symbiotic validator set.
 
-## Prerequisites
+This repository is a fusion of two core concepts:
+-   **[aid-contracts](https://github.com/gaib-ai/aid-contracts)**: Provides a high-fidelity local testing environment for a complete LayerZero V2 deployment, including a cross-chain application (OApp).
+-   **[symbiotic-super-sum](https://github.com/symbioticfi/symbiotic-super-sum)**: Provides a Dockerized, multi-chain local testnet and an off-chain worker infrastructure powered by the Symbiotic Relay SDK.
 
-### Clone the repository
+By combining these, we create a fully-functional prototype of a DVN where packet verification is backed by real economic stake, rather than a simple multi-sig of trusted addresses.
 
-```bash
-git clone https://github.com/symbioticfi/symbiotic-super-sum.git
+---
+
+## Architecture Overview
+
+The system runs a local, containerized network consisting of two independent blockchains (Anvil instances), a full Symbiotic Relay network, and a dedicated off-chain worker that acts as the DVN.
+
+### Key On-Chain Components
+
+-   **`SymbioticLzDVN.sol`**: A custom LayerZero DVN contract.
+    -   **On the source chain**, it implements the `IDVN` interface to provide fee quotes for its verification services.
+    -   **On the destination chain**, it exposes a `verifyWithSymbiotic` function, which accepts a proof from the Symbiotic network.
+-   **`ReceiveUlnSymbiotic.sol`**: A custom LayerZero Message Library (ULN).
+    -   This library replaces the standard `ReceiveUln302`.
+    -   It is configured to trust *only* the `SymbioticLzDVN` contract as a valid verifier.
+    -   When `verifyWithSymbiotic` is successfully called on the DVN contract, the DVN contract then calls this library to officially record the verification for LayerZero's `EndpointV2`.
+-   **Symbiotic Stack**: The full suite of Symbiotic contracts (`Settlement`, `ValSetDriver`, `KeyRegistry`, etc.) are deployed on both chains to manage the validator set and verify aggregated BLS signatures.
+-   **LayerZero Stack**: The standard `EndpointV2` and `SendUln302` contracts are deployed, along with the `AID` OFT application as the example cross-chain app.
+
+### Off-Chain Worker (`dvn-worker`)
+
+This is a Go application that acts as the bridge between the two protocols. It performs the following steps:
+1.  **Listens** for `PacketSent` events on the source chain's LayerZero `EndpointV2`.
+2.  Upon receiving an event, it **constructs a task** for the Symbiotic relay network.
+3.  It **requests a proof** (an aggregated BLS signature) from the local `relay-sidecar` network, confirming that Symbiotic operators have validated the packet.
+4.  Once the proof is obtained, it **submits a transaction** to the `SymbioticLzDVN` contract on the destination chain, calling `verifyWithSymbiotic`.
+5.  This action completes the verification, allowing the cross-chain message to be executed by a separate Executor.
+
+### Workflow Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant ChainA as "Anvil Chain A (Src)"
+    participant dvn-worker as "Off-Chain DVN Worker"
+    participant relay-network as "Symbiotic Relay Network"
+    participant ChainB as "Anvil Chain B (Dst)"
+    participant Executor as "Executor Script"
+
+    User->>ChainA: 1. OApp.send() (pays fee)
+    activate ChainA
+    ChainA-->>dvn-worker: 2. Emits PacketSent Event
+    deactivate ChainA
+
+    dvn-worker->>relay-network: 3. Request proof for packet
+    activate relay-network
+    relay-network-->>dvn-worker: 4. Returns aggregated BLS signature (proof)
+    deactivate relay-network
+    
+    dvn-worker->>ChainB: 5. SymbioticLzDVN.verifyWithSymbiotic(proof)
+    activate ChainB
+    ChainB-->>ChainB: 6. DVN calls Settlement.verify() & ReceiveUln.verify()
+    ChainB-->>Executor: 7. Emits PayloadVerified Event
+    deactivate ChainB
+
+    User->>Executor: 8. Runs executor script
+    Executor->>ChainB: 9. commitVerification() & lzReceive()
+    activate ChainB
+    ChainB-->>User: 10. Message Delivered
+    deactivate ChainB
 ```
 
-Update submodules
+### Deployed Contracts in the Local Environment
+
+The `SymbioticLzDvnDeploy.s.sol` script deploys a complete set of contracts on *each* of the two local chains.
+
+#### Application Layer Contracts (OApp)
+| Contract | Role |
+| :--- | :--- |
+| `AID` | The core ERC-20 token contract, using upgradeable proxies. |
+| `Minter` | Mints new `AID` tokens against a stablecoin (`MockERC20`). |
+| `MockERC20` | A mock stablecoin used as collateral. |
+| `AidOFTAdapter` | The OApp entry point, initiating cross-chain transfers. |
+| `AidOFTMintBurner` | Handles the burning and minting of `AID` across chains. |
+
+#### LayerZero v2 Protocol Stack
+| Contract | Role |
+| :--- | :--- |
+| `EndpointV2` | The main LayerZero entry point on each chain. |
+| `SendUln302` | The "send" message library for fee calculation and packet formatting. |
+| `ReceiveUlnSymbiotic`| **Custom** "receive" library that verifies proofs via the `SymbioticLzDVN`.|
+| `PriceFeed` | Provides gas price data for fee calculation. |
+| `SymbioticLzDVN`| **Custom** DVN contract that provides fee quotes and verifies proofs against the Symbiotic `Settlement` contract. |
+| `Executor` | A standard LayerZero contract for message delivery (simulated via script). |
+
+#### Symbiotic Protocol Stack
+| Contract | Role |
+| :--- | :--- |
+| `SymbioticCore` | The set of core contracts managing vaults, operators, and networks. |
+| `KeyRegistry` | Stores operators’ BLS and ECDSA keys. |
+| `VotingPowers` | Derives validator voting power from vault stakes. |
+| `ValSetDriver` | Exposes epoched validator sets to the off-chain relay nodes. |
+| `Settlement` | Per-chain contract that verifies aggregated BLS signatures from the relay network. |
+
+---
+
+## Local Simulation vs. Production System
+
+It is crucial to understand that this project provides a **high-fidelity logical simulation**, not a production-ready system. The `dvn-worker` and Forge-based `Executor` are designed for local testing and verification of on-chain logic. Building and operating resilient, secure off-chain services requires significant additional engineering effort.
+
+**What's Not Included (The Path to a Production System):**
+
+*   **Production-Grade Service Architecture:** The `dvn-worker` is a simple application. A real-world system requires continuously running, fault-tolerant services with robust process management, automated restarts, and comprehensive logging.
+*   **Persistent State Management:** Production workers need a robust database (e.g., PostgreSQL) to track in-flight messages, transaction statuses, and retry counts to ensure data integrity during service restarts.
+*   **Secure Private Key Management:** Using private keys from a local `.env` file is insecure. A live system demands a secure key management solution like HashiCorp Vault.
+*   **RPC Redundancy and Error Handling:** Production services must handle RPC provider downtime by implementing logic for failover to redundant nodes and sophisticated retry mechanisms.
+*   **Dynamic Gas Price Management:** A production worker must implement a dynamic gas fee strategy, likely integrating with gas station APIs, to ensure transactions are mined in a timely and cost-effective manner.
+*   **Real Economic Security:** This simulation uses mock staking tokens. A production system involves real assets and a carefully designed economic model with staking rewards and slashing conditions for misbehavior.
+
+---
+
+## Quick Start: End-to-End Local Test
+
+This guide will walk you through setting up the local network, deploying all contracts, and sending a cross-chain transaction.
+
+### Prerequisites
+
+-   [Docker](https://www.docker.com/get-started) and Docker Compose
+-   [Foundry](https://getfoundry.sh/)
+
+### Installation and Setup
+
+1.  **Clone the Repository**
+    ```bash
+    git clone --recursive <your-repo-url>
+    cd <your-repo-name>
+    ```
+    *Note: The `--recursive` flag is important as it automatically initializes and clones the git submodules.*
+
+2.  **Install Submodules Manually (if needed)**
+    If you cloned the repository without the `--recursive` flag, you can initialize the submodules manually:
+    ```bash
+    git submodule update --init --recursive
+    ```
+
+3.  **Install LayerZero Dependencies**
+    The LayerZero v2 library requires certain NodeJS packages.
+    ```bash
+    cd lib/LayerZero-v2
+    npm install
+    cd ../..
+    ```
+
+4.  **Fix OpenZeppelin v5 Import Paths**
+    This project uses both v4 and v5 of OpenZeppelin contracts to maintain compatibility with its dependencies while using modern features. The default import path points to v4, which causes compilation errors in the v5 upgradeable contracts. Run the following command to fix the import paths:
+    ```bash
+    find lib/openzeppelin-contracts-upgradeable-v5 -type f -name "*.sol" -exec sed -i '' 's|from "@openzeppelin/contracts/|from "@openzeppelin-v5/contracts/|g' {} +
+    ```
+
+### Step 1: Setup Environment File
+
+The Forge scripts require a `PRIVATE_KEY` to be set in the environment. Copy the provided example file.
 
 ```bash
-git submodule update --init --recursive
+cp .env.example .env
 ```
 
-Install dependencies
+### Step 2: Generate Network Configuration
+
+This script creates a `temp-network` directory containing a `docker-compose.yml` file and a `.env` file for the DVN worker. You can configure the number of operators in the Symbiotic network.
 
 ```bash
-npm install
+./generate_network.sh
 ```
 
-## Running in Docker
+### Step 3: Start the Local Network
 
-### Dependencies
-
-- Docker
-
-### Quick Start
-
-1. **Generate the network configuration:**
-
-   ```bash
-   ./generate_network.sh
-   ```
-
-2. **Start the network:**
-
-   ```bash
-   cd temp-network && docker compose up -d && cd ..
-   ```
-
-3. **Check status:**
-   ```bash
-   cd temp-network && docker compose ps && cd ..
-   ```
-
-### Services
-
-#### Core Services
-
-- **anvil**: Local Ethereum network (port 8545)
-- **anvil-settlement**: Local Ethereum network (port 8546)
-- **deployer**: Contract deployment service
-- **genesis-generator**: Network genesis generation service
-- **network-validator**: intermediary service to mark network setup completion for all nodes
-
-#### Relay Sidecars
-
-- **relay-sidecar-1**: First relay sidecar (port 8081)
-- **relay-sidecar-2**: Second relay sidecar (port 8082)
-- **relay-sidecar-N**: Nth relay sidecar (port 808N)
-
-#### Sum Nodes
-
-- **sum-node-1**: First sum node (port 9091)
-- **sum-node-2**: Second sum node (port 9092)
-- **sum-node-N**: Nth sum node (port 909N)
-
-### Start the network
+Navigate into the newly created directory and start all services in the background. This will pull necessary Docker images, build the `dvn-worker`, and start the two blockchains, the Symbiotic relay sidecars, and the DVN worker.
 
 ```bash
-cd temp-network && docker compose up -d && cd ..
+cd temp-network
+docker compose up --build -d
+```
+The first startup may take a few minutes. You can monitor the progress with `docker compose logs -f`.
+
+### Step 4: Deploy and Configure Contracts
+
+Once all services are running, run the unified deployment script. This Forge script will deploy and configure the entire Symbiotic and LayerZero stack on both local chains.
+
+```bash
+forge script script/SymbioticLzDvnDeploy.s.sol --rpc-url http://localhost:8545 --broadcast --ffi
+```
+This will create a `dvn_deployment.json` file in `temp-network/deploy-data/` with the addresses of all deployed contracts.
+
+### Step 5: Initiate a Cross-Chain Transaction
+
+With everything deployed and running, use the `Bridge` script to send 50 `AID` tokens from Chain A (31337) to Chain B (31338).
+
+```bash
+forge script script/Bridge.s.sol --rpc-url http://localhost:8545 --broadcast --ffi
 ```
 
-### Check status
+### Step 6: Process the Packet with Off-Chain Services
 
+This step simulates the roles of both the DVN and the Executor.
+
+1.  **Run the DVN Worker**: The `dvn-worker` is already running via Docker. Watch its logs to see the process in action:
+    ```bash
+    docker compose logs -f dvn-worker
+    ```
+    You should see output indicating that a `PacketSent` event was received, a proof was requested, and a verification transaction was submitted to the `SymbioticLzDVN` contract. The worker's job is now done.
+
+2.  **Run the Executor**: After the DVN worker has successfully submitted the verification, run the `Executor` script to complete the message delivery.
+    ```bash
+    forge script script/Executor.s.sol --rpc-url http://localhost:8546 --broadcast --ffi
+    ```
+    This script will commit the verification to the LayerZero Endpoint and execute the final `lzReceive` call.
+
+### Step 7: Verify the Result
+
+1.  **Watch the logs** of the `dvn-worker` to see the process in action:
+    ```bash
+    docker compose logs -f dvn-worker
+    ```
+    You should see output indicating that a `PacketSent` event was received, a proof was requested, and a verification transaction was submitted.
+
+2.  **Verify the balance** on Chain B. Once the worker's logs show the transaction as successful, use `cast` to check your `AID` token balance on the destination chain.
+
+    ```bash
+    # Get your address from the private key
+    SENDER=$(cast wallet address --private-key $(grep PRIVATE_KEY .env | cut -d '=' -f2))
+
+    # Get the AID contract address on Chain B from the deployment file
+    AID_B=$(jq -r '.chainB.aid' deploy-data/dvn_deployment.json)
+
+    # Check the balance
+    cast call $AID_B "balanceOf(address)" $SENDER --rpc-url http://localhost:8546 | cast --to-dec
+    ```
+    The result should be `50000000000000000000` (50 tokens with 18 decimals).
+
+---
+
+## Network Services
+
+The local environment consists of the following services:
+
+-   `anvil`: The source blockchain (Chain A, EID 31337) running on port `8545`.
+-   `anvil-settlement`: The destination blockchain (Chain B, EID 31338) running on port `8546`.
+-   `deployer`: A short-lived service that waits for the chains to be healthy.
+-   `genesis-generator`: A short-lived service that generates the configuration for the Symbiotic relay network.
+-   `relay-sidecar-*`: The nodes of the Symbiotic relay network.
+-   `dvn-worker`: The off-chain worker that listens for LayerZero events and submits Symbiotic-backed verifications.
+
+## Cleanup
+
+To stop and remove all running containers and networks, run the following command from within the `temp-network` directory:
 ```bash
-cd temp-network && docker compose ps && cd ..
-```
-
-### View logs
-
-```bash
-# View all logs
-cd temp-network && docker compose logs -f
-
-# View specific service logs
-cd temp-network && docker compose logs -f anvil
-cd temp-network && docker compose logs -f anvil-settlement
-cd temp-network && docker compose logs -f deployer && cd ..
-cd temp-network && docker compose logs -f genesis-generator && cd ..
-cd temp-network && docker compose logs -f relay-sidecar-1
-cd temp-network && docker compose logs -f sum-node-1
-```
-
-### Stop the network
-
-```bash
-cd temp-network && docker compose down && cd ..
-```
-
-### Clean up data
-
-```bash
-cd temp-network && docker compose down
-rm -rf data-* && cd ..
-```
-
-### Create a task
-
-```bash
-cast send 0x99bbA657f2BbC93c02D617f8bA121cB8Fc104Acf "createTask(uint256,uint256)" 2 2 \
-  --rpc-url http://127.0.0.1:8545 \
-  --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
-```
-
-### Check task result
-
-Don't forget to replace `{TASK_ID}`, you can find it in sum node's logs (e.g., `0x556b8b8eec9bc205e200fe8109800d09f66774f659322c71f9df42f668d18416`)
-
-```bash
-cast call 0x99bbA657f2BbC93c02D617f8bA121cB8Fc104Acf "responses(bytes32)" {TASK_ID} \
-  --rpc-url http://127.0.0.1:8545
-```
-
-or
-
-```bash
-cast call 0x0165878A594ca255338adfa4d48449f69242Eb8F "responses(bytes32)" {TASK_ID} \
-  --rpc-url http://127.0.0.1:8546
-```
-
-### Troubleshooting
-
-1. **Services not starting**: Check logs with `cd temp-network && docker compose logs [service-name]`
-2. **Port conflicts**: Ensure ports 8545-8546 8081-8099, 9091-9099 are available
-3. **Build issues**: Rebuild with `cd temp-network && docker compose build && cd ..`
-4. **Reset everything**: `cd temp-network && docker compose down -v && rm -rf data-* && docker compose up -d && cd ..`
-
-### Service Endpoints
-
-- **Anvil RPC**: http://localhost:8545
-- **Anvil Settlement RPC**: http://localhost:8546
-- **Relay sidecar 1**: http://localhost:8081
-- **Relay sidecar 2**: http://localhost:8082
-- **Sum node 1**: http://localhost:9091
-- **Sum node 2**: http://localhost:9092
-
-### Network Configuration
-
-The network supports:
-
-- **Up to 999 operators** (configurable via `generate_network.sh`)
-- **Committers**: Operators that commit to the network
-- **Aggregators**: Operators that aggregate results
-- **Signers**: Regular operators that sign messages
-
-### Debugging
-
-```bash
-# Access container shell
-cd temp-network && docker compose exec anvil sh
-cd temp-network && docker compose exec relay-sidecar-1 sh
-cd temp-network && docker compose exec sum-node-1 sh
-
-# View real-time logs
-cd temp-network && docker compose logs -f --tail=100
-```
-
-### Performance Monitoring
-
-```bash
-# Check resource usage
-docker stats
-
-# Monitor specific container
-docker stats symbiotic-anvil symbiotic-relay-1 symbiotic-sum-node-1
+docker compose down -v
 ```

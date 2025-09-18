@@ -254,35 +254,48 @@ $(echo -e "$role_params")
     restart: unless-stopped
 
 EOF
+    done
 
-        local relay_port=$((relay_start_port + i - 1))
-        local sum_port=$((sum_start_port + i - 1))
-        
-        cat >> "$network_dir/docker-compose.yml" << EOF
+    # Create .env file for the dvn-worker
+    cat > "$network_dir/.env" << EOF
+RPC_URL_A=http://anvil:8545
+RPC_URL_B=http://anvil-settlement:8546
+# This is the default anvil private key for the deployer
+PRIVATE_KEY=ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+EOF
 
-  # Sum node $i
-  sum-node-$i:
+    # Generate the dvn-worker service
+    cat >> "$network_dir/docker-compose.yml" << EOF
+
+  # DVN Worker Service
+  dvn-worker:
     build:
       context: ../off-chain
       dockerfile: Dockerfile
-    container_name: symbiotic-sum-node-$i
-    entrypoint: ["/workspace/network-scripts/sum-node-start.sh"]
-    command: ["relay-sidecar-$i:8080", "$SYMB_PRIVATE_KEY_HEX"]
+    container_name: symbiotic-dvn-worker
+    entrypoint: ["/go/bin/dvn-worker"]
     volumes:
-      - ../:/workspace
-      - ./deploy-data:/deploy-data
-    ports:
-      - "$sum_port:8080"
+      - ./deploy-data:/app/temp-network/deploy-data
     depends_on:
+EOF
+
+    # Add dependencies on all relay sidecars
+    for i in $(seq 1 $operators); do
+        cat >> "$network_dir/docker-compose.yml" << EOF
       relay-sidecar-$i:
         condition: service_started
+EOF
+    done
+
+    # Add remaining docker-compose config
+    cat >> "$network_dir/docker-compose.yml" << EOF
     networks:
       - symbiotic-network
     restart: unless-stopped
-
+    env_file:
+      - .env
 EOF
-    done
-    
+
     cat >> "$network_dir/docker-compose.yml" << EOF
 
 networks:

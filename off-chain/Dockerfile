@@ -18,10 +18,9 @@ RUN go mod download
 COPY . .
 
 # Build the application with optimizations for production
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
-    -ldflags="-w -s" \
-    -o /app/sum-node \
-    ./cmd/node
+RUN CGO_ENABLED=0 GOOS=linux go build -o /go/bin/benchmark ./cmd/benchmark
+RUN CGO_ENABLED=0 GOOS=linux go build -o /go/bin/node ./cmd/node
+RUN CGO_ENABLED=0 GOOS=linux go build -o /go/bin/dvn-worker ./cmd/dvn-worker
 
 # Runtime stage
 FROM alpine:3.19
