@@ -151,29 +151,6 @@ services:
       timeout: 1s
       retries: 10
 
-  # Contract deployment service for main chain
-  deployer:
-    image: ghcr.io/foundry-rs/foundry:v1.3.5
-    container_name: symbiotic-deployer
-    volumes:
-      - ../:/app
-      - ../cache:/app/cache
-      - ../broadcast:/app/broadcast
-      - ./deploy-data:/deploy-data
-    working_dir: /app
-    command: ./network-scripts/deploy.sh
-    depends_on:
-      anvil:
-        condition: service_healthy
-      anvil-settlement:
-        condition: service_healthy
-    networks:
-      - symbiotic-network
-    environment:
-      - OPERATOR_COUNT=$operators
-      - NUM_AGGREGATORS=$aggregators
-      - NUM_COMMITTERS=$commiters
-
   # Genesis generation service
   genesis-generator:
     image: symbioticfi/relay:$RELAY_IMAGE_TAG

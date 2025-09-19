@@ -1,9 +1,9 @@
 [profile.default]
 evm_version = "prague"
-solc = "0.8.22"
+solc = "0.8.28" # Updated to ensure consistency
 optimizer = true
 optimizer_runs = 200
-via_ir = true
+via_ir = true # Enabled by default for compatibility
 bytecode_hash = "none"
 src = "src"
 out = "out"
@@ -15,6 +15,7 @@ dynamic_test_linking = true
 ignored_warnings_from = ["test/","script/"]
 
 remappings = [
+    # Remappings from aid-contracts
     '@layerzerolabs/oft-evm/=lib/devtools/packages/oft-evm/',
     '@layerzerolabs/oapp-evm/=lib/devtools/packages/oapp-evm/',
     '@layerzerolabs/lz-evm-oapp-v2/=lib/LayerZero-v2/packages/layerzero-v2/evm/oapp/',
@@ -28,11 +29,15 @@ remappings = [
     '@openzeppelin-v5/contracts/=lib/openzeppelin-contracts-v5/contracts/',
     'solidity-bytes-utils/=lib/solidity-bytes-utils/',
     '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol=lib/openzeppelin-contracts-upgradeable-v4/contracts/access/OwnableUpgradeable.sol',
-    # Add remappings from original symbiotic-super-sum
-    "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
-    "@symbioticfi/core-contracts/=lib/symbiotic-core-contracts/src/",
-    "@symbioticfi/relay-contracts/=lib/symbiotic-relay-contracts/src/",
-    "forge-std/=lib/forge-std/src/"
+    'forge-std/=lib/forge-std/src/',
+
+    # Remappings from original symbiotic-super-sum
+    "node_modules/@symbioticfi/relay-contracts:@openzeppelin/contracts/=node_modules/@symbioticfi/relay-contracts/node_modules/@openzeppelin/contracts/",
+    "node_modules/@symbioticfi/relay-contracts:@openzeppelin/contracts-upgradeable/=node_modules/@symbioticfi/relay-contracts/node_modules/@openzeppelin/contracts-upgradeable/",
+    "node_modules/@symbioticfi/relay-contracts:@symbioticfi/rewards/=node_modules/@symbioticfi/rewards/",
+    "node_modules/@symbioticfi/relay-contracts:@symbioticfi/core/=node_modules/@symbioticfi/relay-contracts/node_modules/@symbioticfi/core/",
+    "@symbioticfi/relay-contracts/=node_modules/@symbioticfi/relay-contracts/src/",
+    "@symbioticfi/core-contracts/=node_modules/@symbioticfi/core/"
 ]
 
 [rpc_endpoints]

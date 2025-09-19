@@ -46,18 +46,23 @@ contract SymbioticLzDvnDeploy is LocalDeploy {
         localChainA_PrivateKey = vm.envOr("PRIVATE_KEY", 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80);
         localChainB_PrivateKey = vm.envOr("PRIVATE_KEY", 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80);
 
-        uint256 forkA = vm.createFork(localChainA_Rpc, 1);
-        uint256 forkB = vm.createFork(localChainB_Rpc, 1);
+        uint256 forkA = vm.createFork(localChainA_Rpc, 0);
+        uint256 forkB = vm.createFork(localChainB_Rpc, 0);
 
-        address deployer = vm.addr(localChainA_PrivateKey);
-        console.log("Deploying contracts with the account:", deployer);
+        address deployerAddr = vm.addr(localChainA_PrivateKey);
+        console.log("Deploying contracts with the account:", deployerAddr);
         
         // --- Step 1: Deploy on Local Chain A ---
         vm.selectFork(forkA);
         vm.startBroadcast(localChainA_PrivateKey);
         console.log("\n--- Deploying on Local Chain A (%d) ---", block.chainid);
+        
         // Deploy Symbiotic Stack
-        _deploySymbioticStack(deployer);
+        _deploySymbioticStack(deployerAddr);
+        for (uint256 i; i < OPERATOR_COUNT; ++i) {
+            addOperator(OPERATOR_STAKE_AMOUNT);
+        }
+
         // Deploy LayerZero Stack
         (
             EndpointV2 endpointA,
@@ -66,9 +71,10 @@ contract SymbioticLzDvnDeploy is LocalDeploy {
             SymbioticLzDVN dvnA,
             PriceFeed priceFeedA,
             Executor executorA
-        ) = _deployLzStack(deployer);
+        ) = _deployLzStack(deployerAddr);
+        
         // Deploy Application
-        (AID aidA, Minter minterA, AidOFTAdapter adapterA, MockERC20 assetA) = _deployAppContracts(deployer, address(endpointA));
+        (AID aidA, Minter minterA, AidOFTAdapter adapterA, MockERC20 assetA) = _deployAppContracts(deployerAddr, address(endpointA));
         vm.stopBroadcast();
 
 
@@ -76,8 +82,13 @@ contract SymbioticLzDvnDeploy is LocalDeploy {
         vm.selectFork(forkB);
         vm.startBroadcast(localChainB_PrivateKey);
         console.log("\n--- Deploying on Local Chain B (%d) ---", block.chainid);
-         // Deploy Symbiotic Stack
-        _deploySymbioticStack(deployer);
+        
+        // Deploy Symbiotic Stack
+        _deploySymbioticStack(deployerAddr);
+        for (uint256 i; i < OPERATOR_COUNT; ++i) {
+            addOperator(OPERATOR_STAKE_AMOUNT);
+        }
+
         // Deploy LayerZero Stack
         (
             EndpointV2 endpointB,
@@ -86,9 +97,10 @@ contract SymbioticLzDvnDeploy is LocalDeploy {
             SymbioticLzDVN dvnB,
             PriceFeed priceFeedB,
             Executor executorB
-        ) = _deployLzStack(deployer);
+        ) = _deployLzStack(deployerAddr);
+        
         // Deploy Application
-        (AID aidB, Minter minterB, AidOFTAdapter adapterB, MockERC20 assetB) = _deployAppContracts(deployer, address(endpointB));
+        (AID aidB, Minter minterB, AidOFTAdapter adapterB, MockERC20 assetB) = _deployAppContracts(deployerAddr, address(endpointB));
         vm.stopBroadcast();
 
 
@@ -144,6 +156,7 @@ contract SymbioticLzDvnDeploy is LocalDeploy {
         setupVotingPowers();
         setupSettlement();
         setupDriver();
+        // We don't call setupSumTask as it's replaced by the DVN
     }
 
     function _deployLzStack(address _deployer)
@@ -157,6 +170,7 @@ contract SymbioticLzDvnDeploy is LocalDeploy {
         priceFeed.initialize(_deployer);
 
         address settlementContract = settlements.get(block.chainid);
+        require(settlementContract != address(0), "Settlement contract not found for this chain");
         SymbioticLzDVN dvn = new SymbioticLzDVN(uint32(block.chainid), address(priceFeed), settlementContract, address(receiveLib));
 
         // Deploy Executor
