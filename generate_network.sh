@@ -92,14 +92,14 @@ generate_docker_compose() {
     local commiters=$2
     local aggregators=$3
     
-    local network_dir="temp-network"
-    
-    if [ -d "$network_dir" ]; then
-        print_status "Cleaning up existing $network_dir directory..."
-        rm -rf "$network_dir"
-    fi
-    
-    mkdir -p "$network_dir/deploy-data"
+    # Generate a directory for the network
+    network_dir="temp-network"
+    rm -rf "$network_dir"
+    mkdir -p "$network_dir"
+    mkdir -p "$network_dir/deploy-data/keys"
+
+    # Copy the common sidecar config
+    cp sidecar.common.yaml "$network_dir/sidecar.common.yaml"
     
     for i in $(seq 1 $operators); do
         local storage_dir="$network_dir/data-$(printf "%02d" $i)"
@@ -269,7 +269,7 @@ EOF
         local sum_port=$((sum_start_port + i - 1))
         
         # Generate DVN node key if it doesn't exist
-        DVN_NODE_KEY_FILE="deploy-data/keys/dvn-node-$i.key"
+        DVN_NODE_KEY_FILE="$network_dir/deploy-data/keys/dvn-node-$i.key"
         if [ ! -f $DVN_NODE_KEY_FILE ]; then
             echo "Generating key for DVN Node $i..."
             cast wallet new > $DVN_NODE_KEY_FILE
