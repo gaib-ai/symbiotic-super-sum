@@ -17,8 +17,8 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/joho/godotenv"
 
-	"dvn-worker/internal/contracts"
-	"dvn-worker/internal/dvn"
+	"dvn-node/internal/contracts"
+	"dvn-node/internal/dvn"
 )
 
 type DvnDeployment struct {
