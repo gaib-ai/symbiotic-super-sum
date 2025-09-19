@@ -28,8 +28,11 @@ import {Minter} from "../src/Minter.sol";
 import {AidOFTAdapter} from "../src/OFT/AidOFTAdapter.sol";
 import {AidOFTMintBurner} from "../src/OFT/AidOFTMintBurner.sol";
 import {MockERC20} from "./mock/MockERC20.sol";
+import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
 
 contract SymbioticLzDvnDeploy is LocalDeploy {
+    using EnumerableMap for EnumerableMap.UintToAddressMap;
+
     // Local Chain A (e.g., Anvil Fork 1)
     uint32 internal constant localChainA_Eid = 31337;
     string internal localChainA_Rpc = "http://localhost:8545";
