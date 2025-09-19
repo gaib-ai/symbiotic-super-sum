@@ -8,9 +8,8 @@ import {IReceiveUlnE2} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/i
 import {ReceiveUlnBase, Verification} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/ReceiveUlnBase.sol";
 import {ReceiveLibBaseE2} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/ReceiveLibBaseE2.sol";
 import {UlnConfig} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/UlnBase.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
-contract ReceiveUlnSymbiotic is IReceiveUlnE2, ReceiveUlnBase, ReceiveLibBaseE2, Ownable {
+contract ReceiveUlnSymbiotic is IReceiveUlnE2, ReceiveUlnBase, ReceiveLibBaseE2 {
     using PacketV1Codec for bytes;
 
     uint32 internal constant CONFIG_TYPE_ULN = 2;
