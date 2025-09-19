@@ -11,6 +11,10 @@ import {Packet} from "@layerzerolabs/lz-evm-protocol-v2/contracts/interfaces/ISe
 import {Origin} from "@layerzerolabs/lz-evm-protocol-v2/contracts/interfaces/ILayerZeroEndpointV2.sol";
 import {AddressCast} from "@layerzerolabs/lz-evm-protocol-v2/contracts/protocol/libs/AddressCast.sol";
 import {ReceiveUlnSymbiotic} from "../src/uln/ReceiveUlnSymbiotic.sol";
+import {EndpointV2View} from "@layerzerolabs/lz-evm-protocol-v2/contracts/EndpointV2View.sol";
+import {ExecutionState} from "@layerzerolabs/lz-evm-protocol-v2/contracts/EndpointV2ViewUpgradeable.sol";
+import {ReceiveUln302View, VerificationState} from "@layerzerolabs/lz-evm-protocol-v2/contracts/messagelib/uln/uln302/ReceiveUln302View.sol";
+
 
 contract Executor is Script {
     using stdJson for string;
@@ -30,9 +34,9 @@ contract Executor is Script {
         address endpointA_Addr = deploymentJson.readAddress(".chainA.endpoint");
 
         // --- Chain B Setup ---
-        string memory rpcB = "http://localhost:8456"; // Note: Port mismatch corrected from 8546 in original script
+        string memory rpcB = "http://localhost:8546";
         address endpointB_Addr = deploymentJson.readAddress(".chainB.endpoint");
-        address receiveLibB_Addr = deploymentJson.readAddress(".chainB.receiveLib");
+        address receiveLibB_Addr = deploymentJson.readAddress(".chainB.receiveUln");
 
         // --- 2. Find the latest PacketSent event on Chain A ---
         vm.createSelectFork(rpcA);
@@ -61,29 +65,59 @@ contract Executor is Script {
         bytes32 payloadHash = keccak256(abi.encodePacked(packet.guid, packet.message));
         Origin memory origin = Origin({srcEid: packet.srcEid, sender: AddressCast.toBytes32(packet.sender), nonce: packet.nonce});
         address receiver = AddressCast.toAddress(packet.receiver);
-        bytes memory packetHeader = slice(encodedPacket, 0, 81);
+        bytes memory packetHeader = slice(encodedPacket, 1, 112); // Skip 1 version byte, take 112 bytes for header
 
         // --- 4. Switch to Chain B for execution ---
         vm.createSelectFork(rpcB);
         console.log("\nSwitched to Chain B to simulate Executor...");
 
+        // Deploy View contracts for off-chain simulation
+        EndpointV2View endpointViewB = new EndpointV2View();
+        endpointViewB.initialize(endpointB_Addr);
+        ReceiveUln302View receiveUln302ViewB = new ReceiveUln302View();
+        // Our ReceiveUlnSymbiotic is compatible with the view for getUlnConfig and verifiable states
+        receiveUln302ViewB.initialize(endpointB_Addr, receiveLibB_Addr); 
+        
         ReceiveUlnSymbiotic receiveLibB = ReceiveUlnSymbiotic(receiveLibB_Addr);
         EndpointV2 endpointB = EndpointV2(endpointB_Addr);
 
-        // --- 5. Commit Verification ---
-        console.log("Broadcasting 'commitVerification'...");
-        vm.startBroadcast(deployerPrivateKey);
-        receiveLibB.commitVerification(packetHeader, payloadHash);
-        vm.stopBroadcast();
-        console.log("Verification committed successfully.");
+        // --- 5. Check Verification Status and Commit ---
+        console.log("\n--- Committer Role ---");
+        VerificationState vState = receiveUln302ViewB.verifiable(packetHeader, payloadHash);
+
+        if (vState == VerificationState.Verified) {
+            console.log("Info: Packet verification already committed. Skipping commit.");
+        } else if (vState == VerificationState.Verifying) {
+            // In our setup, with only one DVN, it should go from NotVerified to Verifiable directly.
+            // This state implies something is wrong or more DVNs are needed.
+            console.log("Error: Packet is still verifying. Not enough DVN signatures aggregated?");
+            return;
+        } else { // State is Verifiable (or NotVerified and we will try to commit)
+            console.log("Packet is verifiable. Broadcasting 'commitVerification'...");
+            vm.startBroadcast(deployerPrivateKey);
+            receiveLibB.commitVerification(packetHeader, payloadHash);
+            vm.stopBroadcast();
+            console.log("Verification committed successfully.");
+        }
+
+        // --- 6. Check Executable Status and Execute Message ---
+        console.log("\n--- Executor Role ---");
+        ExecutionState eState = endpointViewB.executable(origin, receiver);
         
-        // --- 6. Execute Message ---
-        console.log("Broadcasting 'lzReceive'...");
-        vm.startBroadcast(deployerPrivateKey);
-        bytes memory extraData = abi.encodePacked(bytes32(0), bytes32(0));
-        endpointB.lzReceive(origin, receiver, packet.guid, packet.message, extraData);
-        vm.stopBroadcast();
-        console.log("Message delivered successfully via lzReceive.");
+        if (eState == ExecutionState.Executed) {
+            console.log("Info: Packet has already been executed. Skipping execution.");
+            return;
+        } else if (eState == ExecutionState.NotExecutable) {
+            console.log("Error: Packet is not executable even after commit. Check nonce order or other issues.");
+            return;
+        } else { // State is Executable
+            console.log("Packet is executable. Broadcasting 'lzReceive'...");
+            vm.startBroadcast(deployerPrivateKey);
+            bytes memory extraData = abi.encodePacked(bytes32(0), bytes32(0));
+            endpointB.lzReceive(origin, receiver, packet.guid, packet.message, extraData);
+            vm.stopBroadcast();
+            console.log("Message delivered successfully via lzReceive.");
+        }
 
         console.log("\n-------------------------------------------------");
         console.log("Done. Executor successful. Message has been delivered!");
@@ -115,7 +149,9 @@ contract Executor is Script {
         packet.receiver = receiver;
         packet.guid = guid;
         
-        uint256 messageOffset = 113;
+        // The packetHeader is everything up to and including the guid.
+        // There is no version byte in the packed header for verify, but there is in the full encodedPacket for parsing.
+        uint256 messageOffset = 113; // 1 byte version + 112 byte header
         uint256 messageLength = encodedPacket.length - messageOffset;
         packet.message = slice(encodedPacket, messageOffset, messageLength);
     }
