@@ -10,7 +10,7 @@ import {ReceiveLibBaseE2} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/Re
 import {UlnConfig} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/UlnBase.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
-contract ReceiveUlnSymbiotic is IReceiveUlnE2, ReceiveUlnBase, ReceiveLibBaseE2 {
+contract ReceiveUlnSymbiotic is IReceiveUlnE2, ReceiveUlnBase, ReceiveLibBaseE2, Ownable {
     using PacketV1Codec for bytes;
 
     uint32 internal constant CONFIG_TYPE_ULN = 2;
@@ -18,7 +18,7 @@ contract ReceiveUlnSymbiotic is IReceiveUlnE2, ReceiveUlnBase, ReceiveLibBaseE2 
     error LZ_ULN_InvalidConfigType(uint32 configType);
     error ReceiveUlnSymbiotic_InvalidDVN();
 
-    constructor(address _endpoint) ReceiveLibBaseE2(_endpoint) Ownable(msg.sender) {}
+    constructor(address _endpoint) ReceiveLibBaseE2(_endpoint) {}
 
     function supportsInterface(bytes4 _interfaceId) public view override returns (bool) {
         return _interfaceId == type(IReceiveUlnE2).interfaceId || super.supportsInterface(_interfaceId);
