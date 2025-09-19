@@ -188,8 +188,7 @@ This script creates a `temp-network` directory containing a `docker-compose.yml`
 Navigate into the newly created directory and start all services in the background. This will pull necessary Docker images, build the `dvn-worker`, and start the two blockchains, the Symbiotic relay sidecars, and the DVN worker.
 
 ```bash
-cd temp-network
-docker compose up --build -d
+cd temp-network && docker compose up --build -d && cd ..
 ```
 The first startup may take a few minutes. You can monitor the progress with `docker compose logs -f`.
 
