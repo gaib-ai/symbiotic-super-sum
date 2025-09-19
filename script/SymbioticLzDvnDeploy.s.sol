@@ -60,7 +60,7 @@ contract SymbioticLzDvnDeploy is LocalDeploy {
         vm.startBroadcast(localChainA_PrivateKey);
         console.log("\n--- Deploying on Local Chain A (%d) ---", block.chainid);
         // Deploy Symbiotic Stack
-        _deploySymbioticStack(deployer);
+        // _deploySymbioticStack(deployer);
         // Deploy LayerZero Stack
         (
             EndpointV2 endpointA,
@@ -80,7 +80,7 @@ contract SymbioticLzDvnDeploy is LocalDeploy {
         vm.startBroadcast(localChainB_PrivateKey);
         console.log("\n--- Deploying on Local Chain B (%d) ---", block.chainid);
          // Deploy Symbiotic Stack
-        _deploySymbioticStack(deployer);
+        // _deploySymbioticStack(deployer);
         // Deploy LayerZero Stack
         (
             EndpointV2 endpointB,
