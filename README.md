@@ -134,6 +134,8 @@ This guide will walk you through setting up the local network, deploying all con
 
 -   [Docker](https://www.docker.com/get-started) and Docker Compose
 -   [Foundry](https://getfoundry.sh/)
+-   [Node.js](https://nodejs.org/en) and [npm](https://www.npmjs.com/get-npm)
+-   [yarn](https://classic.yarnpkg.com/en/docs/install)
 
 ### Installation and Setup
 
@@ -150,9 +152,10 @@ This guide will walk you through setting up the local network, deploying all con
     git submodule update --init --recursive
     ```
 
-3.  **Install LayerZero Dependencies**
-    The LayerZero v2 library requires certain NodeJS packages.
+3.  **Install NodeJS Dependencies**
+    Install the root project dependencies and the required packages for the LayerZero v2 library.
     ```bash
+    npm i
     cd lib/LayerZero-v2
     yarn
     cd ../..
