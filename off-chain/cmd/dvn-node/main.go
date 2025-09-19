@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/big"
 	"os"
 	"os/signal"
 	"syscall"
@@ -22,22 +23,16 @@ import (
 )
 
 type ChainConfig struct {
-	Endpoint string `json:"endpoint"`
-	DVN      string `json:"dvn"`
-	Adapter  string `json:"adapter"`
-	AID      string `json:"aid"`
+	Endpoint   string `json:"endpoint"`
 	ReceiveUln string `json:"receiveUln"`
+	DVN        string `json:"dvn"`
+	Adapter    string `json:"adapter"`
+	AID        string `json:"aid"`
 }
 
 type DeploymentConfig struct {
-	ChainA struct {
-		Endpoint string `json:"endpoint"`
-		Dvn      string `json:"dvn"`
-	} `json:"chainA"`
-	ChainB struct {
-		Endpoint string `json:"endpoint"`
-		Dvn      string `json:"dvn"`
-	} `json:"chainB"`
+	ChainA ChainConfig `json:"chainA"`
+	ChainB ChainConfig `json:"chainB"`
 }
 
 func main() {
@@ -59,7 +54,7 @@ func main() {
 	}
 
 	// Initialize clients and processor
-	processor, err := setupProcessor()
+	processor, err := setupProcessor(deployment)
 	if err != nil {
 		log.Fatalf("Failed to setup processor: %v", err)
 	}
@@ -87,7 +82,7 @@ func main() {
 	log.Println("Shutting down DVN Worker...")
 }
 
-func setupProcessor() (*dvn.Processor, error) {
+func setupProcessor(config DeploymentConfig) (*dvn.Processor, error) {
 	// Setup for Chain A (Source)
 	clientA, err := ethclient.Dial(os.Getenv("RPC_URL_A"))
 	if err != nil {
@@ -103,11 +98,11 @@ func setupProcessor() (*dvn.Processor, error) {
 	// Get private key for signing transactions on the destination chain
 	privateKey, err := crypto.HexToECDSA(os.Getenv("PRIVATE_KEY"))
 	if err != nil {
-		return nil, fmt.Errorf("failed to load private key: %w", err)
+		return nil, fmt.Errorf("failed to get private key: %w", err)
 	}
 
 	// Create authenticated transaction signer
-	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, big.NewInt(31338)) // Assuming Chain B ID is 31338
+	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, big.NewInt(31338)) // Chain B ID
 	if err != nil {
 		return nil, fmt.Errorf("failed to create transactor: %w", err)
 	}
@@ -123,8 +118,8 @@ func setupProcessor() (*dvn.Processor, error) {
 		log.Fatalf("Failed to parse deployment config: %v", err)
 	}
 
-	dvnBAddress := common.HexToAddress(deployment.ChainB.Dvn)
-	dvnB, err := contracts.NewSymbioticLzDVN(dvnBAddress, clientB)
+	dvnBAddr := common.HexToAddress(deployment.ChainB.DVN)
+	dvnB, err := contracts.NewSymbioticLzDVN(dvnBAddr, clientB)
 	if err != nil {
 		return nil, fmt.Errorf("failed to instantiate DVN contract: %w", err)
 	}
@@ -143,5 +138,14 @@ func setupProcessor() (*dvn.Processor, error) {
 		return nil, fmt.Errorf("RELAY_ADDR environment variable not set")
 	}
 
-	return dvn.NewProcessor(clientA, clientB, auth, dvnB, receiveUlnB, relayAddr), nil
+	processor := dvn.NewProcessor(clientA, clientB, auth, dvnB, receiveUlnB, relayAddr)
+
+	go func() {
+		err := processor.ListenForPackets(context.Background(), endpointAAddr)
+		if err != nil {
+			log.Fatalf("Processor listener failed: %v", err)
+		}
+	}()
+
+	return processor, nil
 }
