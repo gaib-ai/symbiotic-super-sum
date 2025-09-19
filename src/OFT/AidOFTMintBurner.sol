@@ -17,7 +17,7 @@ contract AidOFTMintBurner is Ownable, IMintableBurnable {
 
     error NotAdapter();
 
-    constructor(address _aid, address _owner) Ownable(_owner) {
+    constructor(address _aid) {
         aid = _aid;
     }
 

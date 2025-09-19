@@ -10,12 +10,12 @@ import {ISettlement} from "@symbioticfi/relay-contracts/interfaces/modules/settl
 
 // LayerZero Contracts
 import {EndpointV2} from "@layerzerolabs/lz-evm-protocol-v2/contracts/EndpointV2.sol";
-import {SendUln302} from "@layerzerolabs/lz-evm-protocol-v2/contracts/messagelib/uln/uln302/SendUln302.sol";
-import {UlnConfig, SetDefaultUlnConfigParam} from "@layerzerolabs/lz-evm-protocol-v2/contracts/messagelib/uln/UlnBase.sol";
+import {SendUln302} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/uln302/SendUln302.sol";
+import {UlnConfig, SetDefaultUlnConfigParam} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/UlnBase.sol";
 import {SetConfigParam} from "@layerzerolabs/lz-evm-protocol-v2/contracts/interfaces/IMessageLibManager.sol";
-import {ExecutorConfig} from "@layerzerolabs/lz-evm-protocol-v2/contracts/messagelib/SendLibBase.sol";
-import {PriceFeed} from "@layerzerolabs/lz-evm-protocol-v2/contracts/messagelib/PriceFeed.sol";
-import {Executor} from "@layerzerolabs/lz-evm-protocol-v2/contracts/messagelib/Executor.sol";
+import {ExecutorConfig} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/SendLibBase.sol";
+import {PriceFeed} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/PriceFeed.sol";
+import {Executor} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/Executor.sol";
 import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
 // Custom Integrated Contracts
@@ -43,8 +43,8 @@ contract SymbioticLzDvnDeploy is LocalDeploy {
     string constant DEPLOYMENT_INFO_FILE = "temp-network/deploy-data/dvn_deployment.json";
 
     function run() public override {
-        localChainA_PrivateKey = vm.envOr("PRIVATE_KEY", 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80);
-        localChainB_PrivateKey = vm.envOr("PRIVATE_KEY", 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80);
+        localChainA_PrivateKey = vm.envOr("PRIVATE_KEY", uint256(0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80));
+        localChainB_PrivateKey = vm.envOr("PRIVATE_KEY", uint256(0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80));
 
         uint256 forkA = vm.createFork(localChainA_Rpc, 1);
         uint256 forkB = vm.createFork(localChainB_Rpc, 1);
