@@ -21,7 +21,15 @@ import (
 	"dvn-node/internal/dvn"
 )
 
-type DvnDeployment struct {
+type ChainConfig struct {
+	Endpoint string `json:"endpoint"`
+	DVN      string `json:"dvn"`
+	Adapter  string `json:"adapter"`
+	AID      string `json:"aid"`
+	ReceiveUln string `json:"receiveUln"`
+}
+
+type DeploymentConfig struct {
 	ChainA struct {
 		Endpoint string `json:"endpoint"`
 		Dvn      string `json:"dvn"`
@@ -44,7 +52,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to read deployment config: %v", err)
 	}
-	var deployment DvnDeployment
+	var deployment DeploymentConfig
 	err = json.Unmarshal(configFile, &deployment)
 	if err != nil {
 		log.Fatalf("Failed to parse deployment config: %v", err)
@@ -109,7 +117,7 @@ func setupProcessor() (*dvn.Processor, error) {
 	if err != nil {
 		log.Fatalf("Failed to read deployment config: %v", err)
 	}
-	var deployment DvnDeployment
+	var deployment DeploymentConfig
 	err = json.Unmarshal(configFile, &deployment)
 	if err != nil {
 		log.Fatalf("Failed to parse deployment config: %v", err)
@@ -121,11 +129,19 @@ func setupProcessor() (*dvn.Processor, error) {
 		return nil, fmt.Errorf("failed to instantiate DVN contract: %w", err)
 	}
 
+	receiveUlnBAddr := common.HexToAddress(deployment.ChainB.ReceiveUln)
+	receiveUlnB, err := contracts.NewReceiveUln(receiveUlnBAddr, clientB)
+	if err != nil {
+		return nil, fmt.Errorf("failed to instantiate ReceiveUln contract: %w", err)
+	}
+
+	endpointAAddr := common.HexToAddress(deployment.ChainA.Endpoint)
+
 	// Get relay address from environment
 	relayAddr := os.Getenv("RELAY_ADDR")
 	if relayAddr == "" {
 		return nil, fmt.Errorf("RELAY_ADDR environment variable not set")
 	}
 
-	return dvn.NewProcessor(clientA, clientB, auth, dvnB, relayAddr), nil
+	return dvn.NewProcessor(clientA, clientB, auth, dvnB, receiveUlnB, relayAddr), nil
 }
