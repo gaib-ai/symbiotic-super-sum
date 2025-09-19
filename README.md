@@ -154,7 +154,7 @@ This guide will walk you through setting up the local network, deploying all con
     The LayerZero v2 library requires certain NodeJS packages.
     ```bash
     cd lib/LayerZero-v2
-    npm install
+    yarn
     cd ../..
     ```
 
