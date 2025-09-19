@@ -15,7 +15,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/joho/godotenv"
+	// "github.com/joho/godotenv"
 
 	"dvn-node/internal/contracts"
 	"dvn-node/internal/dvn"
@@ -36,10 +36,10 @@ type DeploymentConfig struct {
 
 func main() {
 	// Load environment variables
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("Warning: .env file not found")
-	}
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	log.Println("Warning: .env file not found")
+	// }
 
 	// Read deployment configuration
 	configFile, err := ioutil.ReadFile("temp-network/deploy-data/dvn_deployment.json")

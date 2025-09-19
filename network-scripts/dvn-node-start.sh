@@ -15,4 +15,4 @@ export RPC_URL_B
 export PRIVATE_KEY
 
 # Execute the main application
-/go/bin/dvn-node
+/app/dvn-node
