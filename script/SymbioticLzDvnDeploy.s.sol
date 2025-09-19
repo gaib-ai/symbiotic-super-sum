@@ -3,10 +3,13 @@ pragma solidity ^0.8.25;
 
 import {Vm} from "forge-std/Vm.sol";
 import {console} from "forge-std/console.sol";
+import {Script} from "forge-std/Script.sol";
 
 // Symbiotic Contracts
-import {LocalDeploy} from "./LocalDeploy.s.sol";
 import {ISettlement} from "@symbioticfi/relay-contracts/interfaces/modules/settlement/ISettlement.sol";
+// Copied from LocalDeploy.s.sol to support loading existing deployment
+import {IValSetDriver} from "@symbioticfi/relay-contracts/interfaces/modules/valset-driver/IValSetDriver.sol";
+import {Network} from "@symbioticfi/relay-contracts/modules/network/Network.sol";
 
 // LayerZero Contracts
 import {EndpointV2} from "@layerzerolabs/lz-evm-protocol-v2/contracts/EndpointV2.sol";
@@ -30,8 +33,30 @@ import {AidOFTMintBurner} from "../src/OFT/AidOFTMintBurner.sol";
 import {MockERC20} from "./mock/MockERC20.sol";
 import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
 
-contract SymbioticLzDvnDeploy is LocalDeploy {
+contract SymbioticLzDvnDeploy is Script {
     using EnumerableMap for EnumerableMap.UintToAddressMap;
+
+    // --- State and Structs from LocalDeploy for loading contracts ---
+    struct CrossChainAddress {
+        address addr;
+        uint64 chainId;
+    }
+
+    struct RelayContracts {
+        CrossChainAddress driver;
+        CrossChainAddress keyRegistry;
+        address network;
+        CrossChainAddress[] settlements;
+        CrossChainAddress[] stakingTokens;
+        CrossChainAddress[] votingPowerProviders;
+    }
+
+    Network internal network;
+    IValSetDriver.CrossChainAddress internal keyRegistry;
+    IValSetDriver.CrossChainAddress internal driver;
+    EnumerableMap.UintToAddressMap internal stakingTokens;
+    EnumerableMap.UintToAddressMap internal votingPowerProviders;
+    EnumerableMap.UintToAddressMap internal settlements;
 
     // Local Chain A (e.g., Anvil Fork 1)
     uint32 internal constant localChainA_Eid = 31337;
@@ -45,15 +70,18 @@ contract SymbioticLzDvnDeploy is LocalDeploy {
     
     string constant DEPLOYMENT_INFO_FILE = "temp-network/deploy-data/dvn_deployment.json";
 
-    function run() public override {
+    function run() public {
         localChainA_PrivateKey = vm.envOr("PRIVATE_KEY", uint256(0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80));
         localChainB_PrivateKey = vm.envOr("PRIVATE_KEY", uint256(0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80));
 
-        uint256 forkA = vm.createFork(localChainA_Rpc, 1);
-        uint256 forkB = vm.createFork(localChainB_Rpc, 1);
+        uint256 forkA = vm.createFork(localChainA_Rpc);
+        uint256 forkB = vm.createFork(localChainB_Rpc);
 
         address deployer = vm.addr(localChainA_PrivateKey);
         console.log("Deploying contracts with the account:", deployer);
+        
+        // --- Load existing Symbiotic deployment ---
+        loadRelayContracts();
         
         // --- Step 1: Deploy on Local Chain A ---
         vm.selectFork(forkA);
@@ -136,17 +164,54 @@ contract SymbioticLzDvnDeploy is LocalDeploy {
         console.log("Full local deployment and setup complete!");
         console.log("Deployment info saved to:", DEPLOYMENT_INFO_FILE);
     }
-    
-    function _deploySymbioticStack(address _deployer) internal {
-        deployer = _deployer; // Set deployer for LocalDeploy context
-        SYMBIOTIC_CORE_PROJECT_ROOT = "node_modules/@symbioticfi/core/";
-        setupCore();
-        setupStakingToken();
-        setupNetwork();
-        setupKeyRegistry();
-        setupVotingPowers();
-        setupSettlement();
-        setupDriver();
+
+    // --- Function from LocalDeploy for loading contracts ---
+    function loadRelayContracts() public {
+        string memory root = vm.projectRoot();
+        string memory path = string.concat(root, "/temp-network/deploy-data/relay_contracts.json");
+        string memory json = vm.readFile(path);
+        bytes memory data = vm.parseJson(json);
+        RelayContracts memory relayContracts = abi.decode(data, (RelayContracts));
+
+        network = Network(payable(relayContracts.network));
+        keyRegistry = IValSetDriver.CrossChainAddress({
+            chainId: relayContracts.keyRegistry.chainId,
+            addr: relayContracts.keyRegistry.addr
+        });
+        driver =
+            IValSetDriver.CrossChainAddress({chainId: relayContracts.driver.chainId, addr: relayContracts.driver.addr});
+
+        // Manual clear since OpenZeppelin v4 EnumerableMap doesn't have a clear() function.
+        uint256[] memory stakingTokensKeys = stakingTokens.keys();
+        for (uint256 i = 0; i < stakingTokensKeys.length; i++) {
+            stakingTokens.remove(stakingTokensKeys[i]);
+        }
+
+        for (uint256 i; i < relayContracts.stakingTokens.length; ++i) {
+            stakingTokens.set(relayContracts.stakingTokens[i].chainId, relayContracts.stakingTokens[i].addr);
+        }
+
+        // Manual clear since OpenZeppelin v4 EnumerableMap doesn't have a clear() function.
+        uint256[] memory votingPowerProvidersKeys = votingPowerProviders.keys();
+        for (uint256 i = 0; i < votingPowerProvidersKeys.length; i++) {
+            votingPowerProviders.remove(votingPowerProvidersKeys[i]);
+        }
+
+        for (uint256 i; i < relayContracts.votingPowerProviders.length; ++i) {
+            votingPowerProviders.set(
+                relayContracts.votingPowerProviders[i].chainId, relayContracts.votingPowerProviders[i].addr
+            );
+        }
+
+        // Manual clear since OpenZeppelin v4 EnumerableMap doesn't have a clear() function.
+        uint256[] memory settlementsKeys = settlements.keys();
+        for (uint256 i = 0; i < settlementsKeys.length; i++) {
+            settlements.remove(settlementsKeys[i]);
+        }
+
+        for (uint256 i; i < relayContracts.settlements.length; ++i) {
+            settlements.set(relayContracts.settlements[i].chainId, relayContracts.settlements[i].addr);
+        }
     }
 
     function _deployLzStack(address _deployer)
@@ -226,6 +291,22 @@ contract SymbioticLzDvnDeploy is LocalDeploy {
 
         address[] memory requiredDvns = new address[](1);
         requiredDvns[0] = address(_dvn);
+
+        // Set a default ULN configuration for the peer. This also enables the EID.
+        SetDefaultUlnConfigParam[] memory defaultConfig = new SetDefaultUlnConfigParam[](1);
+        defaultConfig[0] = SetDefaultUlnConfigParam({
+            eid: _peerEid,
+            config: UlnConfig({
+                confirmations: 1,
+                requiredDVNCount: 1,
+                optionalDVNCount: 0,
+                optionalDVNThreshold: 0,
+                requiredDVNs: requiredDvns,
+                optionalDVNs: new address[](0)
+            })
+        });
+        _sendLib.setDefaultUlnConfigs(defaultConfig);
+        _receiveLib.setDefaultUlnConfigs(defaultConfig);
 
         // Configure Send Library for Quoting
         UlnConfig memory sendConfig = UlnConfig({
