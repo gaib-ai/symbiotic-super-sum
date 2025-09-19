@@ -4,10 +4,11 @@ pragma solidity ^0.8.25;
 import {PacketV1Codec} from "@layerzerolabs/lz-evm-protocol-v2/contracts/messagelib/libs/PacketV1Codec.sol";
 import {SetConfigParam} from "@layerzerolabs/lz-evm-protocol-v2/contracts/interfaces/IMessageLibManager.sol";
 import {ILayerZeroEndpointV2, Origin} from "@layerzerolabs/lz-evm-protocol-v2/contracts/interfaces/ILayerZeroEndpointV2.sol";
-import {IReceiveUlnE2} from "@layerzerolabs/lz-evm-protocol-v2/contracts/messagelib/uln/interfaces/IReceiveUlnE2.sol";
-import {ReceiveUlnBase} from "@layerzerolabs/lz-evm-protocol-v2/contracts/messagelib/uln/ReceiveUlnBase.sol";
-import {ReceiveLibBaseE2} from "@layerzerolabs/lz-evm-protocol-v2/contracts/messagelib/ReceiveLibBaseE2.sol";
-import {UlnConfig} from "@layerzerolabs/lz-evm-protocol-v2/contracts/messagelib/uln/UlnBase.sol";
+import {IReceiveUlnE2} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/interfaces/IReceiveUlnE2.sol";
+import {ReceiveUlnBase, Verification} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/ReceiveUlnBase.sol";
+import {ReceiveLibBaseE2} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/ReceiveLibBaseE2.sol";
+import {UlnConfig} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/UlnBase.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 contract ReceiveUlnSymbiotic is IReceiveUlnE2, ReceiveUlnBase, ReceiveLibBaseE2 {
     using PacketV1Codec for bytes;
@@ -17,7 +18,7 @@ contract ReceiveUlnSymbiotic is IReceiveUlnE2, ReceiveUlnBase, ReceiveLibBaseE2 
     error LZ_ULN_InvalidConfigType(uint32 configType);
     error ReceiveUlnSymbiotic_InvalidDVN();
 
-    constructor(address _endpoint) ReceiveLibBaseE2(_endpoint) {}
+    constructor(address _endpoint) ReceiveLibBaseE2(_endpoint) Ownable(msg.sender) {}
 
     function supportsInterface(bytes4 _interfaceId) public view override returns (bool) {
         return _interfaceId == type(IReceiveUlnE2).interfaceId || super.supportsInterface(_interfaceId);
