@@ -161,8 +161,10 @@ services:
     working_dir: /workspace
     command: ./network-scripts/genesis-generator.sh
     depends_on:
-      deployer:
-        condition: service_completed_successfully
+      anvil:
+        condition: service_healthy
+      anvil-settlement:
+        condition: service_healthy
     networks:
       - symbiotic-network
 
