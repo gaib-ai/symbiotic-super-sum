@@ -10,7 +10,7 @@ import {EndpointV2} from "@layerzerolabs/lz-evm-protocol-v2/contracts/EndpointV2
 import {Packet} from "@layerzerolabs/lz-evm-protocol-v2/contracts/interfaces/ISendLib.sol";
 import {Origin} from "@layerzerolabs/lz-evm-protocol-v2/contracts/interfaces/ILayerZeroEndpointV2.sol";
 import {AddressCast} from "@layerzerolabs/lz-evm-protocol-v2/contracts/libs/AddressCast.sol";
-import {ReceiveUlnSymbiotic} from "../src/uln/ReceiveUlnSymbiotic.sol";
+import {ReceiveUln302} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/uln302/ReceiveUln302.sol";
 import {EndpointV2View} from "@layerzerolabs/lz-evm-protocol-v2/contracts/EndpointV2View.sol";
 import {ExecutionState} from "@layerzerolabs/lz-evm-protocol-v2/contracts/EndpointV2ViewUpgradeable.sol";
 // Using the 302 view as it's compatible for checking verification state
@@ -79,7 +79,7 @@ contract Executor is Script {
         // Our ReceiveUlnSymbiotic is compatible with the view for getUlnConfig and verifiable states
         receiveUln302ViewB.initialize(endpointB_Addr, receiveLibB_Addr); 
         
-        ReceiveUlnSymbiotic receiveLibB = ReceiveUlnSymbiotic(receiveLibB_Addr);
+        ReceiveUln302 receiveLibB = ReceiveUln302(receiveLibB_Addr);
         EndpointV2 endpointB = EndpointV2(endpointB_Addr);
 
         // --- 5. Check Verification Status and Commit ---
@@ -114,9 +114,9 @@ contract Executor is Script {
         if (vState == VerificationState.Verified) {
             console.log("Info: Packet verification already committed. Skipping commit.");
         } else if (vState == VerificationState.Verifying) {
-            console.log("Error: Packet is still verifying.");
+            console.log("Error: Packet is still verifying. Not enough DVN signatures aggregated?");
             return;
-        } else { // State is Verifiable (or NotVerified and we will try to commit)
+        } else { // State is Verifiable
             console.log("Packet is verifiable. Broadcasting 'commitVerification'...");
             vm.startBroadcast(deployerPrivateKey);
             receiveLibB.commitVerification(packetHeader, payloadHash);

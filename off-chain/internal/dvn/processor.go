@@ -29,13 +29,25 @@ const deploymentConfigPath = "/app/temp-network/deploy-data/dvn_deployment.json"
 
 type DvnConfig struct {
 	ChainA struct {
-		Endpoint string `json:"endpoint"`
-		Dvn      string `json:"dvn"`
+		Endpoint   string `json:"endpoint"`
+		ReceiveUln string `json:"receiveUln"`
+		Dvn        string `json:"dvn"`
 	} `json:"chainA"`
 	ChainB struct {
-		Endpoint string `json:"endpoint"`
-		Dvn      string `json:"dvn"`
+		Endpoint   string `json:"endpoint"`
+		ReceiveUln string `json:"receiveUln"`
+		Dvn        string `json:"dvn"`
 	} `json:"chainB"`
+}
+
+func (c *DvnConfig) GetReceiveUln(eid uint32) (string, error) {
+	if eid == 31337 {
+		return c.ChainA.ReceiveUln, nil
+	}
+	if eid == 31338 {
+		return c.ChainB.ReceiveUln, nil
+	}
+	return "", errors.Errorf("unknown eid for receive uln: %d", eid)
 }
 
 // Packet struct mirrors the structure in LayerZero's ISendLib.sol
@@ -307,6 +319,29 @@ SUBMIT_PROOF:
 	if !ok {
 		return errors.Errorf("no DVN contract found for destination EID: %d", dstEid)
 	}
+	client := p.ethClients[dstEid]
+
+	// Get the required confirmations from the on-chain ULN config
+	receiveUlnAddrString, err := p.config.GetReceiveUln(dstEid)
+	if err != nil {
+		return err
+	}
+	receiveUlnAddr := common.HexToAddress(receiveUlnAddrString)
+	receiveUlnContract, err := contracts.NewReceiveUlnSymbiotic(receiveUlnAddr, client)
+
+	if err != nil {
+		return errors.Errorf("failed to instantiate ReceiveUlnSymbiotic contract: %w", err)
+	}
+
+	// The config is keyed by the receiver OApp address on the destination chain and the source EID.
+	receiverAddress := common.BytesToAddress(packet.Receiver.Bytes())
+	ulnConfig, err := receiveUlnContract.GetUlnConfig(&bind.CallOpts{Context: ctx}, receiverAddress, packet.SrcEid)
+	if err != nil {
+		return errors.Errorf("failed to get ULN config from destination chain for oapp %s: %w", receiverAddress.Hex(), err)
+	}
+	requiredConfirmations := ulnConfig.Confirmations
+	p.logger.Info("Got required confirmations from on-chain config", "confirmations", requiredConfirmations)
+
 
 	pk, err := crypto.HexToECDSA(p.privateKey)
 	if err != nil {
@@ -332,7 +367,7 @@ SUBMIT_PROOF:
 		txOpts,
 		packet.PacketHeader,
 		packet.PayloadHash,
-		uint64(1), // confirmations - this is not used in our custom logic, but required by the interface
+		requiredConfirmations, // Use the dynamically fetched confirmations
 		symbioticProof,
 	)
 

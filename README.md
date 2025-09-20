@@ -18,13 +18,11 @@ The system runs a local, containerized network consisting of two independent blo
 
 -   **`SymbioticLzDVN.sol`**: A custom LayerZero DVN contract.
     -   **On the source chain**, it implements the `IDVN` interface to provide fee quotes for its verification services.
-    -   **On the destination chain**, it exposes a `verifyWithSymbiotic` function, which accepts a proof from the Symbiotic network.
--   **`ReceiveUlnSymbiotic.sol`**: A custom LayerZero Message Library (ULN).
-    -   This library replaces the standard `ReceiveUln302`.
-    -   It is configured to trust *only* the `SymbioticLzDVN` contract as a valid verifier.
-    -   When `verifyWithSymbiotic` is successfully called on the DVN contract, the DVN contract then calls this library to officially record the verification for LayerZero's `EndpointV2`.
--   **Symbiotic Stack**: The full suite of Symbiotic contracts (`Settlement`, `ValSetDriver`, `KeyRegistry`, etc.) are deployed on both chains to manage the validator set and verify aggregated BLS signatures.
--   **LayerZero Stack**: The standard `EndpointV2` and `SendUln302` contracts are deployed, along with the `AID` OFT application as the example cross-chain app.
+    -   **On the destination chain**, it exposes a `verifyWithSymbiotic` function, which accepts a proof from the Symbiotic network. After successfully verifying this proof against the on-chain `Settlement` contract, it calls the standard `ReceiveUln302.verify()` function.
+-   **`ReceiveUln302.sol`**: The **standard** LayerZero "receive" Message Library.
+    - It is *not* a custom contract. We use the official, audited version.
+    - Through standard LayerZero configuration, it is set up to trust *only* the `SymbioticLzDVN` contract's address as a valid verifier for our application.
+-   **Symbiotic & LayerZero Stacks**: The full suite of Symbiotic contracts (`Settlement`, `ValSetDriver`, etc.) and the standard LayerZero contracts (`EndpointV2`, `SendUln302`, etc.) are deployed, along with the `AID` OApp.
 
 ### Off-Chain Nodes (`dvn-node`)
 
@@ -66,7 +64,7 @@ sequenceDiagram
     
     dvn-node->>ChainB: 5. SymbioticLzDVN.verifyWithSymbiotic(proof)
     activate ChainB
-    ChainB-->>ChainB: 6. DVN calls Settlement.verify() & ReceiveUln.verify()
+    ChainB-->>ChainB: 6. DVN calls Settlement.verify() & ReceiveUln302.verify()
     ChainB-->>Executor: 7. Emits PayloadVerified Event
     deactivate ChainB
 
@@ -95,7 +93,7 @@ The `SymbioticLzDvnDeploy.s.sol` script deploys a complete set of contracts on *
 | :--- | :--- |
 | `EndpointV2` | The main LayerZero entry point on each chain. |
 | `SendUln302` | The "send" message library for fee calculation and packet formatting. |
-| `ReceiveUlnSymbiotic`| **Custom** "receive" library that verifies proofs via the `SymbioticLzDVN`.|
+| `ReceiveUln302`| **Standard** "receive" library, configured to trust our `SymbioticLzDVN`.|
 | `PriceFeed` | Provides gas price data for fee calculation. |
 | `SymbioticLzDVN`| **Custom** DVN contract that provides fee quotes and verifies proofs against the Symbiotic `Settlement` contract. |
 | `Executor` | A standard LayerZero contract for message delivery (simulated via script). |

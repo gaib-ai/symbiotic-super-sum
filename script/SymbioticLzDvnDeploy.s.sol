@@ -23,10 +23,10 @@ import {ExecutorFeeLib} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/Exec
 import {DVNFeeLib} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/dvn/DVNFeeLib.sol";
 import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import {IDVN} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/interfaces/IDVN.sol";
+import {ReceiveUln302} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/uln302/ReceiveUln302.sol";
 
 // Custom Integrated Contracts
 import {SymbioticLzDVN} from "../src/SymbioticLzDVN.sol";
-import {ReceiveUlnSymbiotic} from "../src/uln/ReceiveUlnSymbiotic.sol";
 
 // Application Contracts
 import {AID} from "../src/AID.sol";
@@ -96,7 +96,7 @@ contract SymbioticLzDvnDeploy is Script {
         (
             EndpointV2 endpointA,
             SendUln302 sendLibA,
-            ReceiveUlnSymbiotic receiveLibA,
+            ReceiveUln302 receiveLibA,
             SymbioticLzDVN dvnA,
             PriceFeed priceFeedA,
             Executor executorA
@@ -116,7 +116,7 @@ contract SymbioticLzDvnDeploy is Script {
         (
             EndpointV2 endpointB,
             SendUln302 sendLibB,
-            ReceiveUlnSymbiotic receiveLibB,
+            ReceiveUln302 receiveLibB,
             SymbioticLzDVN dvnB,
             PriceFeed priceFeedB,
             Executor executorB
@@ -142,7 +142,22 @@ contract SymbioticLzDvnDeploy is Script {
         _configureLayerZero(endpointB, sendLibB, receiveLibB, dvnB, priceFeedB, executorB, adapterB, address(adapterA), localChainA_Eid);
         vm.stopBroadcast();
         
-        // --- Step 4: Write deployment file ---
+        // --- Step 4: Configure Contracts ---
+        console.log("\n--- Configuring Contracts ---");
+
+        // Set the SymbioticDVN address on the ReceiveUlnSymbiotic contracts
+        vm.selectFork(forkA);
+        vm.startBroadcast(localChainA_PrivateKey);
+        console.log("Configuring ReceiveUlnSymbiotic on Chain A...");
+        vm.stopBroadcast();
+
+        vm.selectFork(forkB);
+        vm.startBroadcast(localChainB_PrivateKey);
+        console.log("Configuring ReceiveUlnSymbiotic on Chain B...");
+        vm.stopBroadcast();
+
+
+        // --- Step 5: Write deployment file ---
         string memory root = '{"chainA":{';
         // Serialize for chain A
         root = string.concat(root, '"endpoint":"', vm.toString(address(endpointA)), '",');
@@ -224,12 +239,12 @@ contract SymbioticLzDvnDeploy is Script {
 
     function _deployLzStack(address _deployer)
         internal
-        returns (EndpointV2, SendUln302, ReceiveUlnSymbiotic, SymbioticLzDVN, PriceFeed, Executor)
+        returns (EndpointV2, SendUln302, ReceiveUln302, SymbioticLzDVN, PriceFeed, Executor)
     {
         uint32 eid = uint32(block.chainid);
         EndpointV2 endpoint = new EndpointV2(eid, _deployer);
         SendUln302 sendLib = new SendUln302(address(endpoint), 200000, 250000);
-        ReceiveUlnSymbiotic receiveLib = new ReceiveUlnSymbiotic(address(endpoint));
+        ReceiveUln302 receiveLib = new ReceiveUln302(address(endpoint));
         PriceFeed priceFeed = new PriceFeed();
         priceFeed.initialize(_deployer);
 
@@ -301,7 +316,7 @@ contract SymbioticLzDvnDeploy is Script {
     function _configureLayerZero(
         EndpointV2 _endpoint,
         SendUln302 _sendLib,
-        ReceiveUlnSymbiotic _receiveLib,
+        ReceiveUln302 _receiveLib,
         SymbioticLzDVN _dvn,
         PriceFeed _priceFeed,
         Executor _executor,

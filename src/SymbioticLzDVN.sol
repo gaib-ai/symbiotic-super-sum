@@ -3,7 +3,7 @@ pragma solidity ^0.8.25;
 
 import {DVN} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/dvn/DVN.sol";
 import {ISettlement} from "@symbioticfi/relay-contracts/interfaces/modules/settlement/ISettlement.sol";
-import {ReceiveUlnSymbiotic} from "./uln/ReceiveUlnSymbiotic.sol";
+import {IReceiveUlnE2} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/interfaces/IReceiveUlnE2.sol";
 
 
 // This contract extends the standard LayerZero DVN to use Symbiotic's settlement contract for verification,
@@ -54,11 +54,7 @@ contract SymbioticLzDVN is DVN {
         require(success, "SymbioticLzDVN: symbiotic verification failed");
 
         // Step 2: If symbiotic verification is successful, submit the verification to the custom ReceiveUln library.
-        ReceiveUlnSymbiotic(receiveUlnContract).verifyWithSymbiotic(
-            _packetHeader,
-            _payloadHash,
-            _confirmations,
-            address(this) // Pass this contract's address as the "signer"
-        );
+        // The receiveUlnContract will verify that msg.sender is the trusted symbiotic DVN.
+        IReceiveUlnE2(receiveUlnContract).verify(_packetHeader, _payloadHash, _confirmations);
     }
 }
