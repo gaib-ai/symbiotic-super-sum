@@ -21,10 +21,11 @@ import (
 	v1 "github.com/symbioticfi/relay/api/client/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"math/big"
 )
 
 // Use a fixed, absolute path inside the container
-const deploymentConfigPath = "/app/temp-network/deploy-data/dvn_deployment.json"
+const deploymentConfigPath = "/deploy-data/dvn_deployment.json"
 
 type DvnConfig struct {
 	ChainA struct {
@@ -35,6 +36,19 @@ type DvnConfig struct {
 		Endpoint string `json:"endpoint"`
 		Dvn      string `json:"dvn"`
 	} `json:"chainB"`
+}
+
+// Packet struct mirrors the structure in LayerZero's ISendLib.sol
+type Packet struct {
+	Nonce       uint64
+	SrcEid      uint32
+	Sender      common.Address
+	DstEid      uint32
+	Receiver    common.Hash
+	Guid        common.Hash
+	Message     []byte
+	PacketHeader []byte
+	PayloadHash common.Hash
 }
 
 type Processor struct {
@@ -186,62 +200,22 @@ func (p *Processor) pollForPackets(ctx context.Context, eid uint32, client *ethc
 
 	for iterator.Next() {
 		event := iterator.Event
-		go func(e *contracts.EndpointV2PacketSent, endpoint *contracts.EndpointV2) {
-			// The PacketSent event in the latest EndpointV2 ABI doesn't contain the full packet details directly.
-			// It only contains the encodedPayload. We need to parse this payload.
-			// NOTE: A robust production implementation would likely require a call to the Endpoint contract
-			// to decode this payload or fetch the packet details from another source.
-			// For this simulation, we'll derive the necessary info from what we can,
-			// assuming a simplified packet structure for demonstration.
-
-			// Let's create a placeholder for the packet details.
-			// In a real scenario, you'd parse e.EncodedPayload
-			// For now, we cannot get these details from the event, so we cannot proceed with the old logic.
-			// We will need to adapt the logic to get the packet details.
-
-			// This is a significant change. Let's first check if we can get the payload hash, which is what we need to sign.
-			// The payload hash is not directly in the event. Let's assume for now that we hash the encoded payload.
-			payloadHash := crypto.Keccak256Hash(e.EncodedPayload)
-
-			// We also can't get the destination EID from the event anymore. This is a critical piece of information.
-			// This implies a larger architectural change is needed than just fixing the Go code.
-			// The event structure has fundamentally changed.
-
-			// Given the constraints, I will have to make an assumption. The PacketSent event is not enough.
-			// We probably need to look at the transaction receipt that emitted this event to find the destination.
-
-			// However, since this is a simulation, I will proceed with a major assumption:
-			// I'll need to parse the EncodedPayload. The original contract had a `Packet` struct.
-			// Let's assume the new contract has a way to decode this. I'll search for `decode` in the contract binding.
-
-			// After checking, there is no `decodePayload` function available in the generated Go binding.
-			// This means the logic must be simpler.
-			// The PacketSent event itself in LZv2 is minimal. The full packet details are in the transaction logs.
-			// A real DVN would need to parse the full transaction receipt.
-
-			// Let's proceed with just the payload hash for now and see where that takes us.
-			// We still need the destination EID. Without it, we don't know where to send the verification.
-
-			// Let's check the SymbioticLzDvnDeploy script to see how it's configured.
-			// The configuration is peer-to-peer. So chain A knows about chain B and vice-versa.
-			// This means if we get an event on chain A, the destination is chain B.
-
-			var dstEid uint32
-			if eid == 31337 {
-				dstEid = 31338
-			} else {
-				dstEid = 31337
+		// Process each event in a separate goroutine to avoid blocking the polling loop.
+		go func(e *contracts.EndpointV2PacketSent) {
+			p.logger.Info("-> Detected PacketSent event", "srcEID", eid, "txHash", e.Raw.TxHash.Hex())
+			
+			// The PacketSent event contains the full encoded packet (header + message).
+			// We need to parse it to extract the components for verification.
+			packet, err := parsePacket(e.Payload)
+			if err != nil {
+				p.logger.Error("Error parsing packet", "txHash", e.Raw.TxHash.Hex(), "error", err)
+				return
 			}
 
-			p.logger.Info("-> Detected PacketSent event",
-				"srcEID", eid,
-				"txHash", e.Raw.TxHash.Hex(),
-			)
-
-			if err := p.handlePacket(context.Background(), payloadHash, dstEid); err != nil {
-				p.logger.Error("Error handling packet", "payloadHash", hexutil.Encode(payloadHash[:]), "error", err)
+			if err := p.handlePacket(context.Background(), packet); err != nil {
+				p.logger.Error("Error handling packet", "payloadHash", hexutil.Encode(packet.PayloadHash[:]), "error", err)
 			}
-		}(event, endpoint)
+		}(event)
 	}
 
 	if err := iterator.Error(); err != nil {
@@ -254,29 +228,30 @@ func (p *Processor) pollForPackets(ctx context.Context, eid uint32, client *ethc
 	return nil
 }
 
-func (p *Processor) handlePacket(ctx context.Context, payloadHash common.Hash, dstEid uint32) error {
+func (p *Processor) handlePacket(ctx context.Context, packet *Packet) error {
 	// 1. Construct the message to be signed by the Symbiotic Relay network.
-	// This should match the format expected by the SymbioticLzDVN.verifyWithSymbiotic function.
-	bytes32T, err := abi.NewType("bytes32", "", nil)
-	if err != nil {
-		return errors.Errorf("failed to create bytes32 type: %w", err)
-	}
-
+	// This must match *exactly* the hashing logic inside SymbioticLzDVN.sol:
+	// keccak256(abi.encode(_packetHeader, _payloadHash))
+	bytesT, _ := abi.NewType("bytes", "", nil)
+	bytes32T, _ := abi.NewType("bytes32", "", nil)
 	args := abi.Arguments{
-		{Type: bytes32T}, // payloadHash
+		{Type: bytesT},
+		{Type: bytes32T},
 	}
-
-	message, err := args.Pack(payloadHash)
+	message, err := args.Pack(packet.PacketHeader, packet.PayloadHash)
 	if err != nil {
 		return errors.Errorf("failed to pack message for signing: %w", err)
 	}
+	messageHash := crypto.Keccak256Hash(message)
 
-	p.logger.Info("Requesting signature from Symbiotic Relay", "payloadHash", hexutil.Encode(payloadHash[:]), "message", hexutil.Encode(message))
+	p.logger.Info("Requesting signature from Symbiotic Relay",
+		"payloadHash", hexutil.Encode(packet.PayloadHash[:]),
+		"finalMessageHash", hexutil.Encode(messageHash[:]))
 
 	// 2. Request the signature from the Relay.
 	signResp, err := p.relayClient.SignMessage(ctx, &v1.SignMessageRequest{
 		KeyTag:  15, // Default BLS key tag
-		Message: message,
+		Message: messageHash.Bytes(),
 	})
 	if err != nil {
 		return errors.Errorf("failed to request signature from relay: %w", err)
@@ -309,6 +284,7 @@ func (p *Processor) handlePacket(ctx context.Context, payloadHash common.Hash, d
 
 SUBMIT_PROOF:
 	// 4. Submit the proof to the SymbioticLzDVN contract on the destination chain.
+	dstEid := packet.DstEid
 	dvnContract, ok := p.dvnContracts[dstEid]
 	if !ok {
 		return errors.Errorf("no DVN contract found for destination EID: %d", dstEid)
@@ -331,18 +307,21 @@ SUBMIT_PROOF:
 
 	p.logger.Info("Submitting verification transaction to destination chain", "dstEID", dstEid, "epoch", signResp.Epoch)
 
+	// We now have all the correct components to call the verification function.
+	symbioticProof := abiEncodeSymbioticProof(signResp.Epoch, aggProof.Proof)
+
 	tx, err := dvnContract.VerifyWithSymbiotic(
 		txOpts,
-		[]byte{}, // _packetHeader: placeholder for this simulation
-		payloadHash,
-		uint64(1), // _confirmations: placeholder for this simulation
-		abiEncodeSymbioticProof(signResp.Epoch, aggProof.Proof), // _symbioticProof
+		packet.PacketHeader,
+		packet.PayloadHash,
+		uint64(1), // confirmations - this is not used in our custom logic, but required by the interface
+		symbioticProof,
 	)
 
 	if err != nil {
 		// It's possible another node submitted the transaction first.
 		if strings.Contains(err.Error(), "MessageAlreadyVerified") || strings.Contains(err.Error(), "ValidVerification") {
-			p.logger.Warn("Transaction failed because message was already verified, which is expected in a race.", "payloadHash", hexutil.Encode(payloadHash[:]))
+			p.logger.Warn("Transaction failed because message was already verified, which is expected in a race.", "payloadHash", hexutil.Encode(packet.PayloadHash[:]))
 			return nil
 		}
 		return errors.Errorf("failed to submit verification transaction: %w", err)
@@ -364,8 +343,34 @@ SUBMIT_PROOF:
 	return nil
 }
 
+// parsePacket decodes the raw encoded packet from the PacketSent event.
+func parsePacket(encodedPacket []byte) (*Packet, error) {
+	if len(encodedPacket) < 113 { // 1 (version) + 8 (nonce) + 4 (srcEid) + 32 (sender) + 4 (dstEid) + 32 (receiver) + 32 (guid)
+		return nil, errors.New("encoded packet is too short")
+	}
+
+	p := &Packet{}
+	p.Nonce = new(big.Int).SetBytes(encodedPacket[1:9]).Uint64()
+	p.SrcEid = new(big.Int).SetBytes(encodedPacket[9:13]).Uint32()
+	p.Sender = common.BytesToAddress(encodedPacket[25:45]) // sender is 32 bytes, but address is last 20
+	p.DstEid = new(big.Int).SetBytes(encodedPacket[45:49]).Uint32()
+	p.Receiver = common.BytesToHash(encodedPacket[49:81])
+	p.Guid = common.BytesToHash(encodedPacket[81:113])
+	p.Message = encodedPacket[113:]
+	
+	// The PacketHeader is the portion of the encoded packet that gets hashed for verification.
+	// It's everything up to and including the guid.
+	p.PacketHeader = encodedPacket[0:113]
+
+	// The PayloadHash is the hash of the guid and the message.
+	p.PayloadHash = crypto.Keccak256Hash(p.Guid.Bytes(), p.Message)
+
+	return p, nil
+}
+
+
 func abiEncodeSymbioticProof(epoch uint64, proof []byte) []byte {
-	// This function ABI-encodes the epoch and proof to match the SymbioticProofData struct in the Solidity contract.
+	// This function ABI-encodes the epoch and proof to match what the SymbioticLzDVN.verifyWithSymbiotic expects.
 	uint48T, _ := abi.NewType("uint48", "", nil)
 	bytesT, _ := abi.NewType("bytes", "", nil)
 

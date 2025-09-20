@@ -36,7 +36,9 @@ contract SymbioticLzDVN is DVN {
     ) external {
         // Step 1: Verify the proof against the Symbiotic Settlement contract
         (uint48 epoch, bytes memory proof) = abi.decode(_symbioticProof, (uint48, bytes));
-        bytes32 messageHash = keccak256(abi.encodePacked(keccak256(abi.encodePacked(_packetHeader, _payloadHash))));
+        // This hash must match the one created by the off-chain DVN worker.
+        // It's the keccak256 of the ABI-encoded packetHeader and payloadHash.
+        bytes32 messageHash = keccak256(abi.encode(_packetHeader, _payloadHash));
 
         ISettlement settlement = ISettlement(settlementContract);
         bool success = settlement.verifyQuorumSigAt(

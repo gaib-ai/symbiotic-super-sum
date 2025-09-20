@@ -29,6 +29,15 @@ var (
 	_ = abi.ConvertType
 )
 
+// ExecuteParam is an auto generated low-level Go binding around an user-defined struct.
+type ExecuteParam struct {
+	Vid        uint32
+	Target     common.Address
+	CallData   []byte
+	Expiration *big.Int
+	Signatures []byte
+}
+
 // IDVNDstConfigParam is an auto generated low-level Go binding around an user-defined struct.
 type IDVNDstConfigParam struct {
 	DstEid         uint32
@@ -48,7 +57,7 @@ type ILayerZeroDVNAssignJobParam struct {
 
 // SymbioticLzDVNMetaData contains all meta data concerning the SymbioticLzDVN contract.
 var SymbioticLzDVNMetaData = &bind.MetaData{
-	ABI: "[{\"type\":\"constructor\",\"inputs\":[{\"name\":\"_localEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"_priceFeed\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_settlementContract\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_receiveUlnContract\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"assignJob\",\"inputs\":[{\"name\":\"_param\",\"type\":\"tuple\",\"internalType\":\"structILayerZeroDVN.AssignJobParam\",\"components\":[{\"name\":\"dstEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"packetHeader\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"payloadHash\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"confirmations\",\"type\":\"uint64\",\"internalType\":\"uint64\"},{\"name\":\"sender\",\"type\":\"address\",\"internalType\":\"address\"}]},{\"name\":\"_options\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"outputs\":[{\"name\":\"fee\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"payable\"},{\"type\":\"function\",\"name\":\"assignJob\",\"inputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"outputs\":[{\"name\":\"\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"payable\"},{\"type\":\"function\",\"name\":\"defaultMultiplierBps\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"uint16\",\"internalType\":\"uint16\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"dstConfig\",\"inputs\":[{\"name\":\"_dstEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"}],\"outputs\":[{\"name\":\"gas\",\"type\":\"uint64\",\"internalType\":\"uint64\"},{\"name\":\"multiplierBps\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"floorMarginUSD\",\"type\":\"uint128\",\"internalType\":\"uint128\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"dstConfigLookup\",\"inputs\":[{\"name\":\"\",\"type\":\"uint32\",\"internalType\":\"uint32\"}],\"outputs\":[{\"name\":\"gas\",\"type\":\"uint64\",\"internalType\":\"uint64\"},{\"name\":\"multiplierBps\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"floorMarginUSD\",\"type\":\"uint128\",\"internalType\":\"uint128\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"feeLib\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"getFee\",\"inputs\":[{\"name\":\"_dstEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"_confirmations\",\"type\":\"uint64\",\"internalType\":\"uint64\"},{\"name\":\"_sender\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_options\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"outputs\":[{\"name\":\"nativeFee\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getFee\",\"inputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"outputs\":[{\"name\":\"\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getSupportedOptionTypes\",\"inputs\":[{\"name\":\"\",\"type\":\"uint32\",\"internalType\":\"uint32\"}],\"outputs\":[{\"name\":\"\",\"type\":\"uint8[]\",\"internalType\":\"uint8[]\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"localEid\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"uint32\",\"internalType\":\"uint32\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"owner\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"priceFeed\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"receiveUlnContract\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"setDefaultMultiplierBps\",\"inputs\":[{\"name\":\"\",\"type\":\"uint16\",\"internalType\":\"uint16\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setDstConfig\",\"inputs\":[{\"name\":\"_params\",\"type\":\"tuple[]\",\"internalType\":\"structIDVN.DstConfigParam[]\",\"components\":[{\"name\":\"dstEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"gas\",\"type\":\"uint64\",\"internalType\":\"uint64\"},{\"name\":\"multiplierBps\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"floorMarginUSD\",\"type\":\"uint128\",\"internalType\":\"uint128\"}]}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setPriceFeed\",\"inputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setSupportedOptionTypes\",\"inputs\":[{\"name\":\"\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"\",\"type\":\"uint8[]\",\"internalType\":\"uint8[]\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setWorkerFeeLib\",\"inputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"settlementContract\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"verifyWithSymbiotic\",\"inputs\":[{\"name\":\"_packetHeader\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"_payloadHash\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"_confirmations\",\"type\":\"uint64\",\"internalType\":\"uint64\"},{\"name\":\"_symbioticProof\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"withdrawFee\",\"inputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"worker\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"pure\"},{\"type\":\"event\",\"name\":\"SetDefaultMultiplierBps\",\"inputs\":[{\"name\":\"multiplierBps\",\"type\":\"uint16\",\"indexed\":false,\"internalType\":\"uint16\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"SetDstConfig\",\"inputs\":[{\"name\":\"params\",\"type\":\"tuple[]\",\"indexed\":false,\"internalType\":\"structIDVN.DstConfigParam[]\",\"components\":[{\"name\":\"dstEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"gas\",\"type\":\"uint64\",\"internalType\":\"uint64\"},{\"name\":\"multiplierBps\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"floorMarginUSD\",\"type\":\"uint128\",\"internalType\":\"uint128\"}]}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"SetPriceFeed\",\"inputs\":[{\"name\":\"priceFeed\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"SetSupportedOptionTypes\",\"inputs\":[{\"name\":\"dstEid\",\"type\":\"uint32\",\"indexed\":false,\"internalType\":\"uint32\"},{\"name\":\"optionTypes\",\"type\":\"uint8[]\",\"indexed\":false,\"internalType\":\"uint8[]\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"SetWorkerLib\",\"inputs\":[{\"name\":\"workerLib\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"Withdraw\",\"inputs\":[{\"name\":\"lib\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"},{\"name\":\"to\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"},{\"name\":\"amount\",\"type\":\"uint256\",\"indexed\":false,\"internalType\":\"uint256\"}],\"anonymous\":false},{\"type\":\"error\",\"name\":\"Worker_NotAllowed\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"Worker_OnlyMessageLib\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"Worker_RoleRenouncingDisabled\",\"inputs\":[]}]",
+	ABI: "[{\"type\":\"constructor\",\"inputs\":[{\"name\":\"_localEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"_priceFeed\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_settlementContract\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_receiveUlnContract\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_messageLibs\",\"type\":\"address[]\",\"internalType\":\"address[]\"},{\"name\":\"_signers\",\"type\":\"address[]\",\"internalType\":\"address[]\"},{\"name\":\"_threshold\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"_admins\",\"type\":\"address[]\",\"internalType\":\"address[]\"}],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"DEFAULT_ADMIN_ROLE\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"allowlistSize\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"uint64\",\"internalType\":\"uint64\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"assignJob\",\"inputs\":[{\"name\":\"_param\",\"type\":\"tuple\",\"internalType\":\"structILayerZeroDVN.AssignJobParam\",\"components\":[{\"name\":\"dstEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"packetHeader\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"payloadHash\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"confirmations\",\"type\":\"uint64\",\"internalType\":\"uint64\"},{\"name\":\"sender\",\"type\":\"address\",\"internalType\":\"address\"}]},{\"name\":\"_options\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"outputs\":[{\"name\":\"totalFee\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"payable\"},{\"type\":\"function\",\"name\":\"assignJob\",\"inputs\":[{\"name\":\"_dstEid\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"_confirmations\",\"type\":\"uint64\",\"internalType\":\"uint64\"},{\"name\":\"_sender\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"totalFee\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"assignJob\",\"inputs\":[{\"name\":\"_sender\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"_cmd\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"_options\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"outputs\":[{\"name\":\"fee\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"payable\"},{\"type\":\"function\",\"name\":\"defaultMultiplierBps\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"uint16\",\"internalType\":\"uint16\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"dstConfig\",\"inputs\":[{\"name\":\"dstEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"}],\"outputs\":[{\"name\":\"gas\",\"type\":\"uint64\",\"internalType\":\"uint64\"},{\"name\":\"multiplierBps\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"floorMarginUSD\",\"type\":\"uint128\",\"internalType\":\"uint128\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"execute\",\"inputs\":[{\"name\":\"_params\",\"type\":\"tuple[]\",\"internalType\":\"structExecuteParam[]\",\"components\":[{\"name\":\"vid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"target\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"callData\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"expiration\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"signatures\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"getFee\",\"inputs\":[{\"name\":\"_dstEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"_confirmations\",\"type\":\"uint64\",\"internalType\":\"uint64\"},{\"name\":\"_sender\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_options\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"outputs\":[{\"name\":\"fee\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getFee\",\"inputs\":[{\"name\":\"_dstEid\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"_confirmations\",\"type\":\"uint64\",\"internalType\":\"uint64\"},{\"name\":\"_sender\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"fee\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getFee\",\"inputs\":[{\"name\":\"_sender\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"_cmd\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"_options\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"outputs\":[{\"name\":\"fee\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getRoleAdmin\",\"inputs\":[{\"name\":\"role\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getSigners\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address[]\",\"internalType\":\"address[]\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getSupportedOptionTypes\",\"inputs\":[{\"name\":\"_eid\",\"type\":\"uint32\",\"internalType\":\"uint32\"}],\"outputs\":[{\"name\":\"\",\"type\":\"uint8[]\",\"internalType\":\"uint8[]\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"grantRole\",\"inputs\":[{\"name\":\"_role\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"_account\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"hasAcl\",\"inputs\":[{\"name\":\"_sender\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"hasRole\",\"inputs\":[{\"name\":\"role\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"account\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"hashCallData\",\"inputs\":[{\"name\":\"_vid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"_target\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_callData\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"_expiration\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isSigner\",\"inputs\":[{\"name\":\"_signer\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"localEidV2\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"uint32\",\"internalType\":\"uint32\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"paused\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"priceFeed\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"quorum\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"uint64\",\"internalType\":\"uint64\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"quorumChangeAdmin\",\"inputs\":[{\"name\":\"_param\",\"type\":\"tuple\",\"internalType\":\"structExecuteParam\",\"components\":[{\"name\":\"vid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"target\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"callData\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"expiration\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"signatures\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"receiveUlnContract\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"renounceRole\",\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"revokeRole\",\"inputs\":[{\"name\":\"_role\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"_account\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setDefaultMultiplierBps\",\"inputs\":[{\"name\":\"_multiplierBps\",\"type\":\"uint16\",\"internalType\":\"uint16\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setDstConfig\",\"inputs\":[{\"name\":\"_params\",\"type\":\"tuple[]\",\"internalType\":\"structIDVN.DstConfigParam[]\",\"components\":[{\"name\":\"dstEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"gas\",\"type\":\"uint64\",\"internalType\":\"uint64\"},{\"name\":\"multiplierBps\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"floorMarginUSD\",\"type\":\"uint128\",\"internalType\":\"uint128\"}]}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setPaused\",\"inputs\":[{\"name\":\"_paused\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setPriceFeed\",\"inputs\":[{\"name\":\"_priceFeed\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setQuorum\",\"inputs\":[{\"name\":\"_quorum\",\"type\":\"uint64\",\"internalType\":\"uint64\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setSigner\",\"inputs\":[{\"name\":\"_signer\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_active\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setSupportedOptionTypes\",\"inputs\":[{\"name\":\"_eid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"_optionTypes\",\"type\":\"uint8[]\",\"internalType\":\"uint8[]\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setWorkerFeeLib\",\"inputs\":[{\"name\":\"_workerFeeLib\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"settlementContract\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"signerSize\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"signers\",\"inputs\":[{\"name\":\"_signer\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"supportsInterface\",\"inputs\":[{\"name\":\"interfaceId\",\"type\":\"bytes4\",\"internalType\":\"bytes4\"}],\"outputs\":[{\"name\":\"\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"usedHashes\",\"inputs\":[{\"name\":\"executableHash\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"outputs\":[{\"name\":\"used\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"verifySignatures\",\"inputs\":[{\"name\":\"_hash\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"_signatures\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"outputs\":[{\"name\":\"\",\"type\":\"bool\",\"internalType\":\"bool\"},{\"name\":\"\",\"type\":\"uint8\",\"internalType\":\"enumMultiSig.Errors\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"verifyWithSymbiotic\",\"inputs\":[{\"name\":\"_packetHeader\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"_payloadHash\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"_confirmations\",\"type\":\"uint64\",\"internalType\":\"uint64\"},{\"name\":\"_symbioticProof\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"vid\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"uint32\",\"internalType\":\"uint32\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"withdrawFee\",\"inputs\":[{\"name\":\"_lib\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_amount\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"withdrawFeeFromUlnV2\",\"inputs\":[{\"name\":\"_lib\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_to\",\"type\":\"address\",\"internalType\":\"addresspayable\"},{\"name\":\"_amount\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"withdrawToken\",\"inputs\":[{\"name\":\"_token\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_amount\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"workerFeeLib\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"event\",\"name\":\"ExecuteFailed\",\"inputs\":[{\"name\":\"_index\",\"type\":\"uint256\",\"indexed\":false,\"internalType\":\"uint256\"},{\"name\":\"_data\",\"type\":\"bytes\",\"indexed\":false,\"internalType\":\"bytes\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"HashAlreadyUsed\",\"inputs\":[{\"name\":\"param\",\"type\":\"tuple\",\"indexed\":false,\"internalType\":\"structExecuteParam\",\"components\":[{\"name\":\"vid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"target\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"callData\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"expiration\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"signatures\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]},{\"name\":\"_hash\",\"type\":\"bytes32\",\"indexed\":false,\"internalType\":\"bytes32\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"Paused\",\"inputs\":[{\"name\":\"account\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"RoleAdminChanged\",\"inputs\":[{\"name\":\"role\",\"type\":\"bytes32\",\"indexed\":true,\"internalType\":\"bytes32\"},{\"name\":\"previousAdminRole\",\"type\":\"bytes32\",\"indexed\":true,\"internalType\":\"bytes32\"},{\"name\":\"newAdminRole\",\"type\":\"bytes32\",\"indexed\":true,\"internalType\":\"bytes32\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"RoleGranted\",\"inputs\":[{\"name\":\"role\",\"type\":\"bytes32\",\"indexed\":true,\"internalType\":\"bytes32\"},{\"name\":\"account\",\"type\":\"address\",\"indexed\":true,\"internalType\":\"address\"},{\"name\":\"sender\",\"type\":\"address\",\"indexed\":true,\"internalType\":\"address\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"RoleRevoked\",\"inputs\":[{\"name\":\"role\",\"type\":\"bytes32\",\"indexed\":true,\"internalType\":\"bytes32\"},{\"name\":\"account\",\"type\":\"address\",\"indexed\":true,\"internalType\":\"address\"},{\"name\":\"sender\",\"type\":\"address\",\"indexed\":true,\"internalType\":\"address\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"SetDefaultMultiplierBps\",\"inputs\":[{\"name\":\"multiplierBps\",\"type\":\"uint16\",\"indexed\":false,\"internalType\":\"uint16\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"SetDstConfig\",\"inputs\":[{\"name\":\"params\",\"type\":\"tuple[]\",\"indexed\":false,\"internalType\":\"structIDVN.DstConfigParam[]\",\"components\":[{\"name\":\"dstEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"gas\",\"type\":\"uint64\",\"internalType\":\"uint64\"},{\"name\":\"multiplierBps\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"floorMarginUSD\",\"type\":\"uint128\",\"internalType\":\"uint128\"}]}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"SetPriceFeed\",\"inputs\":[{\"name\":\"priceFeed\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"SetSupportedOptionTypes\",\"inputs\":[{\"name\":\"dstEid\",\"type\":\"uint32\",\"indexed\":false,\"internalType\":\"uint32\"},{\"name\":\"optionTypes\",\"type\":\"uint8[]\",\"indexed\":false,\"internalType\":\"uint8[]\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"SetWorkerLib\",\"inputs\":[{\"name\":\"workerLib\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"Unpaused\",\"inputs\":[{\"name\":\"account\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"UpdateQuorum\",\"inputs\":[{\"name\":\"_quorum\",\"type\":\"uint64\",\"indexed\":false,\"internalType\":\"uint64\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"UpdateSigner\",\"inputs\":[{\"name\":\"_signer\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"},{\"name\":\"_active\",\"type\":\"bool\",\"indexed\":false,\"internalType\":\"bool\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"VerifierFeePaid\",\"inputs\":[{\"name\":\"fee\",\"type\":\"uint256\",\"indexed\":false,\"internalType\":\"uint256\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"VerifySignaturesFailed\",\"inputs\":[{\"name\":\"idx\",\"type\":\"uint256\",\"indexed\":false,\"internalType\":\"uint256\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"Withdraw\",\"inputs\":[{\"name\":\"lib\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"},{\"name\":\"to\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"},{\"name\":\"amount\",\"type\":\"uint256\",\"indexed\":false,\"internalType\":\"uint256\"}],\"anonymous\":false},{\"type\":\"error\",\"name\":\"DVN_DuplicatedHash\",\"inputs\":[{\"name\":\"executableHash\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}]},{\"type\":\"error\",\"name\":\"DVN_InstructionExpired\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"DVN_InvalidRole\",\"inputs\":[{\"name\":\"role\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}]},{\"type\":\"error\",\"name\":\"DVN_InvalidSignatures\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"DVN_InvalidTarget\",\"inputs\":[{\"name\":\"target\",\"type\":\"address\",\"internalType\":\"address\"}]},{\"type\":\"error\",\"name\":\"DVN_InvalidVid\",\"inputs\":[{\"name\":\"vid\",\"type\":\"uint32\",\"internalType\":\"uint32\"}]},{\"type\":\"error\",\"name\":\"DVN_OnlySelf\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"MultiSig_InvalidSigner\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"MultiSig_OnlySigner\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"MultiSig_QuorumIsZero\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"MultiSig_SignersSizeIsLessThanQuorum\",\"inputs\":[{\"name\":\"signersSize\",\"type\":\"uint64\",\"internalType\":\"uint64\"},{\"name\":\"quorum\",\"type\":\"uint64\",\"internalType\":\"uint64\"}]},{\"type\":\"error\",\"name\":\"MultiSig_StateAlreadySet\",\"inputs\":[{\"name\":\"signer\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"active\",\"type\":\"bool\",\"internalType\":\"bool\"}]},{\"type\":\"error\",\"name\":\"MultiSig_StateNotSet\",\"inputs\":[{\"name\":\"signer\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"active\",\"type\":\"bool\",\"internalType\":\"bool\"}]},{\"type\":\"error\",\"name\":\"MultiSig_UnorderedSigners\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"Transfer_NativeFailed\",\"inputs\":[{\"name\":\"_to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_value\",\"type\":\"uint256\",\"internalType\":\"uint256\"}]},{\"type\":\"error\",\"name\":\"Transfer_ToAddressIsZero\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"Worker_NotAllowed\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"Worker_OnlyMessageLib\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"Worker_RoleRenouncingDisabled\",\"inputs\":[]}]",
 }
 
 // SymbioticLzDVNABI is the input ABI used to generate the binding from.
@@ -197,6 +206,68 @@ func (_SymbioticLzDVN *SymbioticLzDVNTransactorRaw) Transact(opts *bind.Transact
 	return _SymbioticLzDVN.Contract.contract.Transact(opts, method, params...)
 }
 
+// DEFAULTADMINROLE is a free data retrieval call binding the contract method 0xa217fddf.
+//
+// Solidity: function DEFAULT_ADMIN_ROLE() view returns(bytes32)
+func (_SymbioticLzDVN *SymbioticLzDVNCaller) DEFAULTADMINROLE(opts *bind.CallOpts) ([32]byte, error) {
+	var out []interface{}
+	err := _SymbioticLzDVN.contract.Call(opts, &out, "DEFAULT_ADMIN_ROLE")
+
+	if err != nil {
+		return *new([32]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
+
+	return out0, err
+
+}
+
+// DEFAULTADMINROLE is a free data retrieval call binding the contract method 0xa217fddf.
+//
+// Solidity: function DEFAULT_ADMIN_ROLE() view returns(bytes32)
+func (_SymbioticLzDVN *SymbioticLzDVNSession) DEFAULTADMINROLE() ([32]byte, error) {
+	return _SymbioticLzDVN.Contract.DEFAULTADMINROLE(&_SymbioticLzDVN.CallOpts)
+}
+
+// DEFAULTADMINROLE is a free data retrieval call binding the contract method 0xa217fddf.
+//
+// Solidity: function DEFAULT_ADMIN_ROLE() view returns(bytes32)
+func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) DEFAULTADMINROLE() ([32]byte, error) {
+	return _SymbioticLzDVN.Contract.DEFAULTADMINROLE(&_SymbioticLzDVN.CallOpts)
+}
+
+// AllowlistSize is a free data retrieval call binding the contract method 0xd2ae2104.
+//
+// Solidity: function allowlistSize() view returns(uint64)
+func (_SymbioticLzDVN *SymbioticLzDVNCaller) AllowlistSize(opts *bind.CallOpts) (uint64, error) {
+	var out []interface{}
+	err := _SymbioticLzDVN.contract.Call(opts, &out, "allowlistSize")
+
+	if err != nil {
+		return *new(uint64), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(uint64)).(*uint64)
+
+	return out0, err
+
+}
+
+// AllowlistSize is a free data retrieval call binding the contract method 0xd2ae2104.
+//
+// Solidity: function allowlistSize() view returns(uint64)
+func (_SymbioticLzDVN *SymbioticLzDVNSession) AllowlistSize() (uint64, error) {
+	return _SymbioticLzDVN.Contract.AllowlistSize(&_SymbioticLzDVN.CallOpts)
+}
+
+// AllowlistSize is a free data retrieval call binding the contract method 0xd2ae2104.
+//
+// Solidity: function allowlistSize() view returns(uint64)
+func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) AllowlistSize() (uint64, error) {
+	return _SymbioticLzDVN.Contract.AllowlistSize(&_SymbioticLzDVN.CallOpts)
+}
+
 // DefaultMultiplierBps is a free data retrieval call binding the contract method 0x00bf2e80.
 //
 // Solidity: function defaultMultiplierBps() view returns(uint16)
@@ -230,14 +301,14 @@ func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) DefaultMultiplierBps() (uint
 
 // DstConfig is a free data retrieval call binding the contract method 0x9e944965.
 //
-// Solidity: function dstConfig(uint32 _dstEid) view returns(uint64 gas, uint16 multiplierBps, uint128 floorMarginUSD)
-func (_SymbioticLzDVN *SymbioticLzDVNCaller) DstConfig(opts *bind.CallOpts, _dstEid uint32) (struct {
+// Solidity: function dstConfig(uint32 dstEid) view returns(uint64 gas, uint16 multiplierBps, uint128 floorMarginUSD)
+func (_SymbioticLzDVN *SymbioticLzDVNCaller) DstConfig(opts *bind.CallOpts, dstEid uint32) (struct {
 	Gas            uint64
 	MultiplierBps  uint16
 	FloorMarginUSD *big.Int
 }, error) {
 	var out []interface{}
-	err := _SymbioticLzDVN.contract.Call(opts, &out, "dstConfig", _dstEid)
+	err := _SymbioticLzDVN.contract.Call(opts, &out, "dstConfig", dstEid)
 
 	outstruct := new(struct {
 		Gas            uint64
@@ -258,110 +329,29 @@ func (_SymbioticLzDVN *SymbioticLzDVNCaller) DstConfig(opts *bind.CallOpts, _dst
 
 // DstConfig is a free data retrieval call binding the contract method 0x9e944965.
 //
-// Solidity: function dstConfig(uint32 _dstEid) view returns(uint64 gas, uint16 multiplierBps, uint128 floorMarginUSD)
-func (_SymbioticLzDVN *SymbioticLzDVNSession) DstConfig(_dstEid uint32) (struct {
+// Solidity: function dstConfig(uint32 dstEid) view returns(uint64 gas, uint16 multiplierBps, uint128 floorMarginUSD)
+func (_SymbioticLzDVN *SymbioticLzDVNSession) DstConfig(dstEid uint32) (struct {
 	Gas            uint64
 	MultiplierBps  uint16
 	FloorMarginUSD *big.Int
 }, error) {
-	return _SymbioticLzDVN.Contract.DstConfig(&_SymbioticLzDVN.CallOpts, _dstEid)
+	return _SymbioticLzDVN.Contract.DstConfig(&_SymbioticLzDVN.CallOpts, dstEid)
 }
 
 // DstConfig is a free data retrieval call binding the contract method 0x9e944965.
 //
-// Solidity: function dstConfig(uint32 _dstEid) view returns(uint64 gas, uint16 multiplierBps, uint128 floorMarginUSD)
-func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) DstConfig(_dstEid uint32) (struct {
+// Solidity: function dstConfig(uint32 dstEid) view returns(uint64 gas, uint16 multiplierBps, uint128 floorMarginUSD)
+func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) DstConfig(dstEid uint32) (struct {
 	Gas            uint64
 	MultiplierBps  uint16
 	FloorMarginUSD *big.Int
 }, error) {
-	return _SymbioticLzDVN.Contract.DstConfig(&_SymbioticLzDVN.CallOpts, _dstEid)
-}
-
-// DstConfigLookup is a free data retrieval call binding the contract method 0x10187719.
-//
-// Solidity: function dstConfigLookup(uint32 ) view returns(uint64 gas, uint16 multiplierBps, uint128 floorMarginUSD)
-func (_SymbioticLzDVN *SymbioticLzDVNCaller) DstConfigLookup(opts *bind.CallOpts, arg0 uint32) (struct {
-	Gas            uint64
-	MultiplierBps  uint16
-	FloorMarginUSD *big.Int
-}, error) {
-	var out []interface{}
-	err := _SymbioticLzDVN.contract.Call(opts, &out, "dstConfigLookup", arg0)
-
-	outstruct := new(struct {
-		Gas            uint64
-		MultiplierBps  uint16
-		FloorMarginUSD *big.Int
-	})
-	if err != nil {
-		return *outstruct, err
-	}
-
-	outstruct.Gas = *abi.ConvertType(out[0], new(uint64)).(*uint64)
-	outstruct.MultiplierBps = *abi.ConvertType(out[1], new(uint16)).(*uint16)
-	outstruct.FloorMarginUSD = *abi.ConvertType(out[2], new(*big.Int)).(**big.Int)
-
-	return *outstruct, err
-
-}
-
-// DstConfigLookup is a free data retrieval call binding the contract method 0x10187719.
-//
-// Solidity: function dstConfigLookup(uint32 ) view returns(uint64 gas, uint16 multiplierBps, uint128 floorMarginUSD)
-func (_SymbioticLzDVN *SymbioticLzDVNSession) DstConfigLookup(arg0 uint32) (struct {
-	Gas            uint64
-	MultiplierBps  uint16
-	FloorMarginUSD *big.Int
-}, error) {
-	return _SymbioticLzDVN.Contract.DstConfigLookup(&_SymbioticLzDVN.CallOpts, arg0)
-}
-
-// DstConfigLookup is a free data retrieval call binding the contract method 0x10187719.
-//
-// Solidity: function dstConfigLookup(uint32 ) view returns(uint64 gas, uint16 multiplierBps, uint128 floorMarginUSD)
-func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) DstConfigLookup(arg0 uint32) (struct {
-	Gas            uint64
-	MultiplierBps  uint16
-	FloorMarginUSD *big.Int
-}, error) {
-	return _SymbioticLzDVN.Contract.DstConfigLookup(&_SymbioticLzDVN.CallOpts, arg0)
-}
-
-// FeeLib is a free data retrieval call binding the contract method 0xbb37d00c.
-//
-// Solidity: function feeLib() pure returns(address)
-func (_SymbioticLzDVN *SymbioticLzDVNCaller) FeeLib(opts *bind.CallOpts) (common.Address, error) {
-	var out []interface{}
-	err := _SymbioticLzDVN.contract.Call(opts, &out, "feeLib")
-
-	if err != nil {
-		return *new(common.Address), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
-
-	return out0, err
-
-}
-
-// FeeLib is a free data retrieval call binding the contract method 0xbb37d00c.
-//
-// Solidity: function feeLib() pure returns(address)
-func (_SymbioticLzDVN *SymbioticLzDVNSession) FeeLib() (common.Address, error) {
-	return _SymbioticLzDVN.Contract.FeeLib(&_SymbioticLzDVN.CallOpts)
-}
-
-// FeeLib is a free data retrieval call binding the contract method 0xbb37d00c.
-//
-// Solidity: function feeLib() pure returns(address)
-func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) FeeLib() (common.Address, error) {
-	return _SymbioticLzDVN.Contract.FeeLib(&_SymbioticLzDVN.CallOpts)
+	return _SymbioticLzDVN.Contract.DstConfig(&_SymbioticLzDVN.CallOpts, dstEid)
 }
 
 // GetFee is a free data retrieval call binding the contract method 0x30bb3aac.
 //
-// Solidity: function getFee(uint32 _dstEid, uint64 _confirmations, address _sender, bytes _options) view returns(uint256 nativeFee)
+// Solidity: function getFee(uint32 _dstEid, uint64 _confirmations, address _sender, bytes _options) view returns(uint256 fee)
 func (_SymbioticLzDVN *SymbioticLzDVNCaller) GetFee(opts *bind.CallOpts, _dstEid uint32, _confirmations uint64, _sender common.Address, _options []byte) (*big.Int, error) {
 	var out []interface{}
 	err := _SymbioticLzDVN.contract.Call(opts, &out, "getFee", _dstEid, _confirmations, _sender, _options)
@@ -378,24 +368,24 @@ func (_SymbioticLzDVN *SymbioticLzDVNCaller) GetFee(opts *bind.CallOpts, _dstEid
 
 // GetFee is a free data retrieval call binding the contract method 0x30bb3aac.
 //
-// Solidity: function getFee(uint32 _dstEid, uint64 _confirmations, address _sender, bytes _options) view returns(uint256 nativeFee)
+// Solidity: function getFee(uint32 _dstEid, uint64 _confirmations, address _sender, bytes _options) view returns(uint256 fee)
 func (_SymbioticLzDVN *SymbioticLzDVNSession) GetFee(_dstEid uint32, _confirmations uint64, _sender common.Address, _options []byte) (*big.Int, error) {
 	return _SymbioticLzDVN.Contract.GetFee(&_SymbioticLzDVN.CallOpts, _dstEid, _confirmations, _sender, _options)
 }
 
 // GetFee is a free data retrieval call binding the contract method 0x30bb3aac.
 //
-// Solidity: function getFee(uint32 _dstEid, uint64 _confirmations, address _sender, bytes _options) view returns(uint256 nativeFee)
+// Solidity: function getFee(uint32 _dstEid, uint64 _confirmations, address _sender, bytes _options) view returns(uint256 fee)
 func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) GetFee(_dstEid uint32, _confirmations uint64, _sender common.Address, _options []byte) (*big.Int, error) {
 	return _SymbioticLzDVN.Contract.GetFee(&_SymbioticLzDVN.CallOpts, _dstEid, _confirmations, _sender, _options)
 }
 
-// GetFee0 is a free data retrieval call binding the contract method 0xfdb9b0f1.
+// GetFee0 is a free data retrieval call binding the contract method 0x5553fb8e.
 //
-// Solidity: function getFee(address , bytes , bytes , bytes ) view returns(uint256)
-func (_SymbioticLzDVN *SymbioticLzDVNCaller) GetFee0(opts *bind.CallOpts, arg0 common.Address, arg1 []byte, arg2 []byte, arg3 []byte) (*big.Int, error) {
+// Solidity: function getFee(uint16 _dstEid, uint16 , uint64 _confirmations, address _sender) view returns(uint256 fee)
+func (_SymbioticLzDVN *SymbioticLzDVNCaller) GetFee0(opts *bind.CallOpts, _dstEid uint16, arg1 uint16, _confirmations uint64, _sender common.Address) (*big.Int, error) {
 	var out []interface{}
-	err := _SymbioticLzDVN.contract.Call(opts, &out, "getFee0", arg0, arg1, arg2, arg3)
+	err := _SymbioticLzDVN.contract.Call(opts, &out, "getFee0", _dstEid, arg1, _confirmations, _sender)
 
 	if err != nil {
 		return *new(*big.Int), err
@@ -407,26 +397,119 @@ func (_SymbioticLzDVN *SymbioticLzDVNCaller) GetFee0(opts *bind.CallOpts, arg0 c
 
 }
 
-// GetFee0 is a free data retrieval call binding the contract method 0xfdb9b0f1.
+// GetFee0 is a free data retrieval call binding the contract method 0x5553fb8e.
 //
-// Solidity: function getFee(address , bytes , bytes , bytes ) view returns(uint256)
-func (_SymbioticLzDVN *SymbioticLzDVNSession) GetFee0(arg0 common.Address, arg1 []byte, arg2 []byte, arg3 []byte) (*big.Int, error) {
-	return _SymbioticLzDVN.Contract.GetFee0(&_SymbioticLzDVN.CallOpts, arg0, arg1, arg2, arg3)
+// Solidity: function getFee(uint16 _dstEid, uint16 , uint64 _confirmations, address _sender) view returns(uint256 fee)
+func (_SymbioticLzDVN *SymbioticLzDVNSession) GetFee0(_dstEid uint16, arg1 uint16, _confirmations uint64, _sender common.Address) (*big.Int, error) {
+	return _SymbioticLzDVN.Contract.GetFee0(&_SymbioticLzDVN.CallOpts, _dstEid, arg1, _confirmations, _sender)
 }
 
-// GetFee0 is a free data retrieval call binding the contract method 0xfdb9b0f1.
+// GetFee0 is a free data retrieval call binding the contract method 0x5553fb8e.
 //
-// Solidity: function getFee(address , bytes , bytes , bytes ) view returns(uint256)
-func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) GetFee0(arg0 common.Address, arg1 []byte, arg2 []byte, arg3 []byte) (*big.Int, error) {
-	return _SymbioticLzDVN.Contract.GetFee0(&_SymbioticLzDVN.CallOpts, arg0, arg1, arg2, arg3)
+// Solidity: function getFee(uint16 _dstEid, uint16 , uint64 _confirmations, address _sender) view returns(uint256 fee)
+func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) GetFee0(_dstEid uint16, arg1 uint16, _confirmations uint64, _sender common.Address) (*big.Int, error) {
+	return _SymbioticLzDVN.Contract.GetFee0(&_SymbioticLzDVN.CallOpts, _dstEid, arg1, _confirmations, _sender)
+}
+
+// GetFee1 is a free data retrieval call binding the contract method 0xfdb9b0f1.
+//
+// Solidity: function getFee(address _sender, bytes , bytes _cmd, bytes _options) view returns(uint256 fee)
+func (_SymbioticLzDVN *SymbioticLzDVNCaller) GetFee1(opts *bind.CallOpts, _sender common.Address, arg1 []byte, _cmd []byte, _options []byte) (*big.Int, error) {
+	var out []interface{}
+	err := _SymbioticLzDVN.contract.Call(opts, &out, "getFee1", _sender, arg1, _cmd, _options)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+// GetFee1 is a free data retrieval call binding the contract method 0xfdb9b0f1.
+//
+// Solidity: function getFee(address _sender, bytes , bytes _cmd, bytes _options) view returns(uint256 fee)
+func (_SymbioticLzDVN *SymbioticLzDVNSession) GetFee1(_sender common.Address, arg1 []byte, _cmd []byte, _options []byte) (*big.Int, error) {
+	return _SymbioticLzDVN.Contract.GetFee1(&_SymbioticLzDVN.CallOpts, _sender, arg1, _cmd, _options)
+}
+
+// GetFee1 is a free data retrieval call binding the contract method 0xfdb9b0f1.
+//
+// Solidity: function getFee(address _sender, bytes , bytes _cmd, bytes _options) view returns(uint256 fee)
+func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) GetFee1(_sender common.Address, arg1 []byte, _cmd []byte, _options []byte) (*big.Int, error) {
+	return _SymbioticLzDVN.Contract.GetFee1(&_SymbioticLzDVN.CallOpts, _sender, arg1, _cmd, _options)
+}
+
+// GetRoleAdmin is a free data retrieval call binding the contract method 0x248a9ca3.
+//
+// Solidity: function getRoleAdmin(bytes32 role) view returns(bytes32)
+func (_SymbioticLzDVN *SymbioticLzDVNCaller) GetRoleAdmin(opts *bind.CallOpts, role [32]byte) ([32]byte, error) {
+	var out []interface{}
+	err := _SymbioticLzDVN.contract.Call(opts, &out, "getRoleAdmin", role)
+
+	if err != nil {
+		return *new([32]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
+
+	return out0, err
+
+}
+
+// GetRoleAdmin is a free data retrieval call binding the contract method 0x248a9ca3.
+//
+// Solidity: function getRoleAdmin(bytes32 role) view returns(bytes32)
+func (_SymbioticLzDVN *SymbioticLzDVNSession) GetRoleAdmin(role [32]byte) ([32]byte, error) {
+	return _SymbioticLzDVN.Contract.GetRoleAdmin(&_SymbioticLzDVN.CallOpts, role)
+}
+
+// GetRoleAdmin is a free data retrieval call binding the contract method 0x248a9ca3.
+//
+// Solidity: function getRoleAdmin(bytes32 role) view returns(bytes32)
+func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) GetRoleAdmin(role [32]byte) ([32]byte, error) {
+	return _SymbioticLzDVN.Contract.GetRoleAdmin(&_SymbioticLzDVN.CallOpts, role)
+}
+
+// GetSigners is a free data retrieval call binding the contract method 0x94cf795e.
+//
+// Solidity: function getSigners() view returns(address[])
+func (_SymbioticLzDVN *SymbioticLzDVNCaller) GetSigners(opts *bind.CallOpts) ([]common.Address, error) {
+	var out []interface{}
+	err := _SymbioticLzDVN.contract.Call(opts, &out, "getSigners")
+
+	if err != nil {
+		return *new([]common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([]common.Address)).(*[]common.Address)
+
+	return out0, err
+
+}
+
+// GetSigners is a free data retrieval call binding the contract method 0x94cf795e.
+//
+// Solidity: function getSigners() view returns(address[])
+func (_SymbioticLzDVN *SymbioticLzDVNSession) GetSigners() ([]common.Address, error) {
+	return _SymbioticLzDVN.Contract.GetSigners(&_SymbioticLzDVN.CallOpts)
+}
+
+// GetSigners is a free data retrieval call binding the contract method 0x94cf795e.
+//
+// Solidity: function getSigners() view returns(address[])
+func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) GetSigners() ([]common.Address, error) {
+	return _SymbioticLzDVN.Contract.GetSigners(&_SymbioticLzDVN.CallOpts)
 }
 
 // GetSupportedOptionTypes is a free data retrieval call binding the contract method 0x26e67a37.
 //
-// Solidity: function getSupportedOptionTypes(uint32 ) view returns(uint8[])
-func (_SymbioticLzDVN *SymbioticLzDVNCaller) GetSupportedOptionTypes(opts *bind.CallOpts, arg0 uint32) ([]uint8, error) {
+// Solidity: function getSupportedOptionTypes(uint32 _eid) view returns(uint8[])
+func (_SymbioticLzDVN *SymbioticLzDVNCaller) GetSupportedOptionTypes(opts *bind.CallOpts, _eid uint32) ([]uint8, error) {
 	var out []interface{}
-	err := _SymbioticLzDVN.contract.Call(opts, &out, "getSupportedOptionTypes", arg0)
+	err := _SymbioticLzDVN.contract.Call(opts, &out, "getSupportedOptionTypes", _eid)
 
 	if err != nil {
 		return *new([]uint8), err
@@ -440,24 +523,148 @@ func (_SymbioticLzDVN *SymbioticLzDVNCaller) GetSupportedOptionTypes(opts *bind.
 
 // GetSupportedOptionTypes is a free data retrieval call binding the contract method 0x26e67a37.
 //
-// Solidity: function getSupportedOptionTypes(uint32 ) view returns(uint8[])
-func (_SymbioticLzDVN *SymbioticLzDVNSession) GetSupportedOptionTypes(arg0 uint32) ([]uint8, error) {
-	return _SymbioticLzDVN.Contract.GetSupportedOptionTypes(&_SymbioticLzDVN.CallOpts, arg0)
+// Solidity: function getSupportedOptionTypes(uint32 _eid) view returns(uint8[])
+func (_SymbioticLzDVN *SymbioticLzDVNSession) GetSupportedOptionTypes(_eid uint32) ([]uint8, error) {
+	return _SymbioticLzDVN.Contract.GetSupportedOptionTypes(&_SymbioticLzDVN.CallOpts, _eid)
 }
 
 // GetSupportedOptionTypes is a free data retrieval call binding the contract method 0x26e67a37.
 //
-// Solidity: function getSupportedOptionTypes(uint32 ) view returns(uint8[])
-func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) GetSupportedOptionTypes(arg0 uint32) ([]uint8, error) {
-	return _SymbioticLzDVN.Contract.GetSupportedOptionTypes(&_SymbioticLzDVN.CallOpts, arg0)
+// Solidity: function getSupportedOptionTypes(uint32 _eid) view returns(uint8[])
+func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) GetSupportedOptionTypes(_eid uint32) ([]uint8, error) {
+	return _SymbioticLzDVN.Contract.GetSupportedOptionTypes(&_SymbioticLzDVN.CallOpts, _eid)
 }
 
-// LocalEid is a free data retrieval call binding the contract method 0x72607537.
+// HasAcl is a free data retrieval call binding the contract method 0x2de11376.
 //
-// Solidity: function localEid() view returns(uint32)
-func (_SymbioticLzDVN *SymbioticLzDVNCaller) LocalEid(opts *bind.CallOpts) (uint32, error) {
+// Solidity: function hasAcl(address _sender) view returns(bool)
+func (_SymbioticLzDVN *SymbioticLzDVNCaller) HasAcl(opts *bind.CallOpts, _sender common.Address) (bool, error) {
 	var out []interface{}
-	err := _SymbioticLzDVN.contract.Call(opts, &out, "localEid")
+	err := _SymbioticLzDVN.contract.Call(opts, &out, "hasAcl", _sender)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
+}
+
+// HasAcl is a free data retrieval call binding the contract method 0x2de11376.
+//
+// Solidity: function hasAcl(address _sender) view returns(bool)
+func (_SymbioticLzDVN *SymbioticLzDVNSession) HasAcl(_sender common.Address) (bool, error) {
+	return _SymbioticLzDVN.Contract.HasAcl(&_SymbioticLzDVN.CallOpts, _sender)
+}
+
+// HasAcl is a free data retrieval call binding the contract method 0x2de11376.
+//
+// Solidity: function hasAcl(address _sender) view returns(bool)
+func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) HasAcl(_sender common.Address) (bool, error) {
+	return _SymbioticLzDVN.Contract.HasAcl(&_SymbioticLzDVN.CallOpts, _sender)
+}
+
+// HasRole is a free data retrieval call binding the contract method 0x91d14854.
+//
+// Solidity: function hasRole(bytes32 role, address account) view returns(bool)
+func (_SymbioticLzDVN *SymbioticLzDVNCaller) HasRole(opts *bind.CallOpts, role [32]byte, account common.Address) (bool, error) {
+	var out []interface{}
+	err := _SymbioticLzDVN.contract.Call(opts, &out, "hasRole", role, account)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
+}
+
+// HasRole is a free data retrieval call binding the contract method 0x91d14854.
+//
+// Solidity: function hasRole(bytes32 role, address account) view returns(bool)
+func (_SymbioticLzDVN *SymbioticLzDVNSession) HasRole(role [32]byte, account common.Address) (bool, error) {
+	return _SymbioticLzDVN.Contract.HasRole(&_SymbioticLzDVN.CallOpts, role, account)
+}
+
+// HasRole is a free data retrieval call binding the contract method 0x91d14854.
+//
+// Solidity: function hasRole(bytes32 role, address account) view returns(bool)
+func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) HasRole(role [32]byte, account common.Address) (bool, error) {
+	return _SymbioticLzDVN.Contract.HasRole(&_SymbioticLzDVN.CallOpts, role, account)
+}
+
+// HashCallData is a free data retrieval call binding the contract method 0xf010cb23.
+//
+// Solidity: function hashCallData(uint32 _vid, address _target, bytes _callData, uint256 _expiration) pure returns(bytes32)
+func (_SymbioticLzDVN *SymbioticLzDVNCaller) HashCallData(opts *bind.CallOpts, _vid uint32, _target common.Address, _callData []byte, _expiration *big.Int) ([32]byte, error) {
+	var out []interface{}
+	err := _SymbioticLzDVN.contract.Call(opts, &out, "hashCallData", _vid, _target, _callData, _expiration)
+
+	if err != nil {
+		return *new([32]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
+
+	return out0, err
+
+}
+
+// HashCallData is a free data retrieval call binding the contract method 0xf010cb23.
+//
+// Solidity: function hashCallData(uint32 _vid, address _target, bytes _callData, uint256 _expiration) pure returns(bytes32)
+func (_SymbioticLzDVN *SymbioticLzDVNSession) HashCallData(_vid uint32, _target common.Address, _callData []byte, _expiration *big.Int) ([32]byte, error) {
+	return _SymbioticLzDVN.Contract.HashCallData(&_SymbioticLzDVN.CallOpts, _vid, _target, _callData, _expiration)
+}
+
+// HashCallData is a free data retrieval call binding the contract method 0xf010cb23.
+//
+// Solidity: function hashCallData(uint32 _vid, address _target, bytes _callData, uint256 _expiration) pure returns(bytes32)
+func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) HashCallData(_vid uint32, _target common.Address, _callData []byte, _expiration *big.Int) ([32]byte, error) {
+	return _SymbioticLzDVN.Contract.HashCallData(&_SymbioticLzDVN.CallOpts, _vid, _target, _callData, _expiration)
+}
+
+// IsSigner is a free data retrieval call binding the contract method 0x7df73e27.
+//
+// Solidity: function isSigner(address _signer) view returns(bool)
+func (_SymbioticLzDVN *SymbioticLzDVNCaller) IsSigner(opts *bind.CallOpts, _signer common.Address) (bool, error) {
+	var out []interface{}
+	err := _SymbioticLzDVN.contract.Call(opts, &out, "isSigner", _signer)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
+}
+
+// IsSigner is a free data retrieval call binding the contract method 0x7df73e27.
+//
+// Solidity: function isSigner(address _signer) view returns(bool)
+func (_SymbioticLzDVN *SymbioticLzDVNSession) IsSigner(_signer common.Address) (bool, error) {
+	return _SymbioticLzDVN.Contract.IsSigner(&_SymbioticLzDVN.CallOpts, _signer)
+}
+
+// IsSigner is a free data retrieval call binding the contract method 0x7df73e27.
+//
+// Solidity: function isSigner(address _signer) view returns(bool)
+func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) IsSigner(_signer common.Address) (bool, error) {
+	return _SymbioticLzDVN.Contract.IsSigner(&_SymbioticLzDVN.CallOpts, _signer)
+}
+
+// LocalEidV2 is a free data retrieval call binding the contract method 0xe395eb5c.
+//
+// Solidity: function localEidV2() view returns(uint32)
+func (_SymbioticLzDVN *SymbioticLzDVNCaller) LocalEidV2(opts *bind.CallOpts) (uint32, error) {
+	var out []interface{}
+	err := _SymbioticLzDVN.contract.Call(opts, &out, "localEidV2")
 
 	if err != nil {
 		return *new(uint32), err
@@ -469,49 +676,49 @@ func (_SymbioticLzDVN *SymbioticLzDVNCaller) LocalEid(opts *bind.CallOpts) (uint
 
 }
 
-// LocalEid is a free data retrieval call binding the contract method 0x72607537.
+// LocalEidV2 is a free data retrieval call binding the contract method 0xe395eb5c.
 //
-// Solidity: function localEid() view returns(uint32)
-func (_SymbioticLzDVN *SymbioticLzDVNSession) LocalEid() (uint32, error) {
-	return _SymbioticLzDVN.Contract.LocalEid(&_SymbioticLzDVN.CallOpts)
+// Solidity: function localEidV2() view returns(uint32)
+func (_SymbioticLzDVN *SymbioticLzDVNSession) LocalEidV2() (uint32, error) {
+	return _SymbioticLzDVN.Contract.LocalEidV2(&_SymbioticLzDVN.CallOpts)
 }
 
-// LocalEid is a free data retrieval call binding the contract method 0x72607537.
+// LocalEidV2 is a free data retrieval call binding the contract method 0xe395eb5c.
 //
-// Solidity: function localEid() view returns(uint32)
-func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) LocalEid() (uint32, error) {
-	return _SymbioticLzDVN.Contract.LocalEid(&_SymbioticLzDVN.CallOpts)
+// Solidity: function localEidV2() view returns(uint32)
+func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) LocalEidV2() (uint32, error) {
+	return _SymbioticLzDVN.Contract.LocalEidV2(&_SymbioticLzDVN.CallOpts)
 }
 
-// Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
+// Paused is a free data retrieval call binding the contract method 0x5c975abb.
 //
-// Solidity: function owner() view returns(address)
-func (_SymbioticLzDVN *SymbioticLzDVNCaller) Owner(opts *bind.CallOpts) (common.Address, error) {
+// Solidity: function paused() view returns(bool)
+func (_SymbioticLzDVN *SymbioticLzDVNCaller) Paused(opts *bind.CallOpts) (bool, error) {
 	var out []interface{}
-	err := _SymbioticLzDVN.contract.Call(opts, &out, "owner")
+	err := _SymbioticLzDVN.contract.Call(opts, &out, "paused")
 
 	if err != nil {
-		return *new(common.Address), err
+		return *new(bool), err
 	}
 
-	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
 
 	return out0, err
 
 }
 
-// Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
+// Paused is a free data retrieval call binding the contract method 0x5c975abb.
 //
-// Solidity: function owner() view returns(address)
-func (_SymbioticLzDVN *SymbioticLzDVNSession) Owner() (common.Address, error) {
-	return _SymbioticLzDVN.Contract.Owner(&_SymbioticLzDVN.CallOpts)
+// Solidity: function paused() view returns(bool)
+func (_SymbioticLzDVN *SymbioticLzDVNSession) Paused() (bool, error) {
+	return _SymbioticLzDVN.Contract.Paused(&_SymbioticLzDVN.CallOpts)
 }
 
-// Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
+// Paused is a free data retrieval call binding the contract method 0x5c975abb.
 //
-// Solidity: function owner() view returns(address)
-func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) Owner() (common.Address, error) {
-	return _SymbioticLzDVN.Contract.Owner(&_SymbioticLzDVN.CallOpts)
+// Solidity: function paused() view returns(bool)
+func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) Paused() (bool, error) {
+	return _SymbioticLzDVN.Contract.Paused(&_SymbioticLzDVN.CallOpts)
 }
 
 // PriceFeed is a free data retrieval call binding the contract method 0x741bef1a.
@@ -545,6 +752,37 @@ func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) PriceFeed() (common.Address,
 	return _SymbioticLzDVN.Contract.PriceFeed(&_SymbioticLzDVN.CallOpts)
 }
 
+// Quorum is a free data retrieval call binding the contract method 0x1703a018.
+//
+// Solidity: function quorum() view returns(uint64)
+func (_SymbioticLzDVN *SymbioticLzDVNCaller) Quorum(opts *bind.CallOpts) (uint64, error) {
+	var out []interface{}
+	err := _SymbioticLzDVN.contract.Call(opts, &out, "quorum")
+
+	if err != nil {
+		return *new(uint64), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(uint64)).(*uint64)
+
+	return out0, err
+
+}
+
+// Quorum is a free data retrieval call binding the contract method 0x1703a018.
+//
+// Solidity: function quorum() view returns(uint64)
+func (_SymbioticLzDVN *SymbioticLzDVNSession) Quorum() (uint64, error) {
+	return _SymbioticLzDVN.Contract.Quorum(&_SymbioticLzDVN.CallOpts)
+}
+
+// Quorum is a free data retrieval call binding the contract method 0x1703a018.
+//
+// Solidity: function quorum() view returns(uint64)
+func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) Quorum() (uint64, error) {
+	return _SymbioticLzDVN.Contract.Quorum(&_SymbioticLzDVN.CallOpts)
+}
+
 // ReceiveUlnContract is a free data retrieval call binding the contract method 0x8aae6379.
 //
 // Solidity: function receiveUlnContract() view returns(address)
@@ -576,12 +814,12 @@ func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) ReceiveUlnContract() (common
 	return _SymbioticLzDVN.Contract.ReceiveUlnContract(&_SymbioticLzDVN.CallOpts)
 }
 
-// SetWorkerFeeLib is a free data retrieval call binding the contract method 0xc7b2370b.
+// RenounceRole is a free data retrieval call binding the contract method 0x36568abe.
 //
-// Solidity: function setWorkerFeeLib(address ) pure returns()
-func (_SymbioticLzDVN *SymbioticLzDVNCaller) SetWorkerFeeLib(opts *bind.CallOpts, arg0 common.Address) error {
+// Solidity: function renounceRole(bytes32 , address ) pure returns()
+func (_SymbioticLzDVN *SymbioticLzDVNCaller) RenounceRole(opts *bind.CallOpts, arg0 [32]byte, arg1 common.Address) error {
 	var out []interface{}
-	err := _SymbioticLzDVN.contract.Call(opts, &out, "setWorkerFeeLib", arg0)
+	err := _SymbioticLzDVN.contract.Call(opts, &out, "renounceRole", arg0, arg1)
 
 	if err != nil {
 		return err
@@ -591,18 +829,18 @@ func (_SymbioticLzDVN *SymbioticLzDVNCaller) SetWorkerFeeLib(opts *bind.CallOpts
 
 }
 
-// SetWorkerFeeLib is a free data retrieval call binding the contract method 0xc7b2370b.
+// RenounceRole is a free data retrieval call binding the contract method 0x36568abe.
 //
-// Solidity: function setWorkerFeeLib(address ) pure returns()
-func (_SymbioticLzDVN *SymbioticLzDVNSession) SetWorkerFeeLib(arg0 common.Address) error {
-	return _SymbioticLzDVN.Contract.SetWorkerFeeLib(&_SymbioticLzDVN.CallOpts, arg0)
+// Solidity: function renounceRole(bytes32 , address ) pure returns()
+func (_SymbioticLzDVN *SymbioticLzDVNSession) RenounceRole(arg0 [32]byte, arg1 common.Address) error {
+	return _SymbioticLzDVN.Contract.RenounceRole(&_SymbioticLzDVN.CallOpts, arg0, arg1)
 }
 
-// SetWorkerFeeLib is a free data retrieval call binding the contract method 0xc7b2370b.
+// RenounceRole is a free data retrieval call binding the contract method 0x36568abe.
 //
-// Solidity: function setWorkerFeeLib(address ) pure returns()
-func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) SetWorkerFeeLib(arg0 common.Address) error {
-	return _SymbioticLzDVN.Contract.SetWorkerFeeLib(&_SymbioticLzDVN.CallOpts, arg0)
+// Solidity: function renounceRole(bytes32 , address ) pure returns()
+func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) RenounceRole(arg0 [32]byte, arg1 common.Address) error {
+	return _SymbioticLzDVN.Contract.RenounceRole(&_SymbioticLzDVN.CallOpts, arg0, arg1)
 }
 
 // SettlementContract is a free data retrieval call binding the contract method 0xea42418b.
@@ -636,12 +874,199 @@ func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) SettlementContract() (common
 	return _SymbioticLzDVN.Contract.SettlementContract(&_SymbioticLzDVN.CallOpts)
 }
 
-// Worker is a free data retrieval call binding the contract method 0x4d547ada.
+// SignerSize is a free data retrieval call binding the contract method 0xfd62e750.
 //
-// Solidity: function worker() pure returns(address)
-func (_SymbioticLzDVN *SymbioticLzDVNCaller) Worker(opts *bind.CallOpts) (common.Address, error) {
+// Solidity: function signerSize() view returns(uint256)
+func (_SymbioticLzDVN *SymbioticLzDVNCaller) SignerSize(opts *bind.CallOpts) (*big.Int, error) {
 	var out []interface{}
-	err := _SymbioticLzDVN.contract.Call(opts, &out, "worker")
+	err := _SymbioticLzDVN.contract.Call(opts, &out, "signerSize")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+// SignerSize is a free data retrieval call binding the contract method 0xfd62e750.
+//
+// Solidity: function signerSize() view returns(uint256)
+func (_SymbioticLzDVN *SymbioticLzDVNSession) SignerSize() (*big.Int, error) {
+	return _SymbioticLzDVN.Contract.SignerSize(&_SymbioticLzDVN.CallOpts)
+}
+
+// SignerSize is a free data retrieval call binding the contract method 0xfd62e750.
+//
+// Solidity: function signerSize() view returns(uint256)
+func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) SignerSize() (*big.Int, error) {
+	return _SymbioticLzDVN.Contract.SignerSize(&_SymbioticLzDVN.CallOpts)
+}
+
+// Signers is a free data retrieval call binding the contract method 0x736c0d5b.
+//
+// Solidity: function signers(address _signer) view returns(bool)
+func (_SymbioticLzDVN *SymbioticLzDVNCaller) Signers(opts *bind.CallOpts, _signer common.Address) (bool, error) {
+	var out []interface{}
+	err := _SymbioticLzDVN.contract.Call(opts, &out, "signers", _signer)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
+}
+
+// Signers is a free data retrieval call binding the contract method 0x736c0d5b.
+//
+// Solidity: function signers(address _signer) view returns(bool)
+func (_SymbioticLzDVN *SymbioticLzDVNSession) Signers(_signer common.Address) (bool, error) {
+	return _SymbioticLzDVN.Contract.Signers(&_SymbioticLzDVN.CallOpts, _signer)
+}
+
+// Signers is a free data retrieval call binding the contract method 0x736c0d5b.
+//
+// Solidity: function signers(address _signer) view returns(bool)
+func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) Signers(_signer common.Address) (bool, error) {
+	return _SymbioticLzDVN.Contract.Signers(&_SymbioticLzDVN.CallOpts, _signer)
+}
+
+// SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
+//
+// Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
+func (_SymbioticLzDVN *SymbioticLzDVNCaller) SupportsInterface(opts *bind.CallOpts, interfaceId [4]byte) (bool, error) {
+	var out []interface{}
+	err := _SymbioticLzDVN.contract.Call(opts, &out, "supportsInterface", interfaceId)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
+}
+
+// SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
+//
+// Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
+func (_SymbioticLzDVN *SymbioticLzDVNSession) SupportsInterface(interfaceId [4]byte) (bool, error) {
+	return _SymbioticLzDVN.Contract.SupportsInterface(&_SymbioticLzDVN.CallOpts, interfaceId)
+}
+
+// SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
+//
+// Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
+func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) SupportsInterface(interfaceId [4]byte) (bool, error) {
+	return _SymbioticLzDVN.Contract.SupportsInterface(&_SymbioticLzDVN.CallOpts, interfaceId)
+}
+
+// UsedHashes is a free data retrieval call binding the contract method 0xaef18bf7.
+//
+// Solidity: function usedHashes(bytes32 executableHash) view returns(bool used)
+func (_SymbioticLzDVN *SymbioticLzDVNCaller) UsedHashes(opts *bind.CallOpts, executableHash [32]byte) (bool, error) {
+	var out []interface{}
+	err := _SymbioticLzDVN.contract.Call(opts, &out, "usedHashes", executableHash)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
+}
+
+// UsedHashes is a free data retrieval call binding the contract method 0xaef18bf7.
+//
+// Solidity: function usedHashes(bytes32 executableHash) view returns(bool used)
+func (_SymbioticLzDVN *SymbioticLzDVNSession) UsedHashes(executableHash [32]byte) (bool, error) {
+	return _SymbioticLzDVN.Contract.UsedHashes(&_SymbioticLzDVN.CallOpts, executableHash)
+}
+
+// UsedHashes is a free data retrieval call binding the contract method 0xaef18bf7.
+//
+// Solidity: function usedHashes(bytes32 executableHash) view returns(bool used)
+func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) UsedHashes(executableHash [32]byte) (bool, error) {
+	return _SymbioticLzDVN.Contract.UsedHashes(&_SymbioticLzDVN.CallOpts, executableHash)
+}
+
+// VerifySignatures is a free data retrieval call binding the contract method 0xc7a823e0.
+//
+// Solidity: function verifySignatures(bytes32 _hash, bytes _signatures) view returns(bool, uint8)
+func (_SymbioticLzDVN *SymbioticLzDVNCaller) VerifySignatures(opts *bind.CallOpts, _hash [32]byte, _signatures []byte) (bool, uint8, error) {
+	var out []interface{}
+	err := _SymbioticLzDVN.contract.Call(opts, &out, "verifySignatures", _hash, _signatures)
+
+	if err != nil {
+		return *new(bool), *new(uint8), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+	out1 := *abi.ConvertType(out[1], new(uint8)).(*uint8)
+
+	return out0, out1, err
+
+}
+
+// VerifySignatures is a free data retrieval call binding the contract method 0xc7a823e0.
+//
+// Solidity: function verifySignatures(bytes32 _hash, bytes _signatures) view returns(bool, uint8)
+func (_SymbioticLzDVN *SymbioticLzDVNSession) VerifySignatures(_hash [32]byte, _signatures []byte) (bool, uint8, error) {
+	return _SymbioticLzDVN.Contract.VerifySignatures(&_SymbioticLzDVN.CallOpts, _hash, _signatures)
+}
+
+// VerifySignatures is a free data retrieval call binding the contract method 0xc7a823e0.
+//
+// Solidity: function verifySignatures(bytes32 _hash, bytes _signatures) view returns(bool, uint8)
+func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) VerifySignatures(_hash [32]byte, _signatures []byte) (bool, uint8, error) {
+	return _SymbioticLzDVN.Contract.VerifySignatures(&_SymbioticLzDVN.CallOpts, _hash, _signatures)
+}
+
+// Vid is a free data retrieval call binding the contract method 0xcf34c768.
+//
+// Solidity: function vid() view returns(uint32)
+func (_SymbioticLzDVN *SymbioticLzDVNCaller) Vid(opts *bind.CallOpts) (uint32, error) {
+	var out []interface{}
+	err := _SymbioticLzDVN.contract.Call(opts, &out, "vid")
+
+	if err != nil {
+		return *new(uint32), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(uint32)).(*uint32)
+
+	return out0, err
+
+}
+
+// Vid is a free data retrieval call binding the contract method 0xcf34c768.
+//
+// Solidity: function vid() view returns(uint32)
+func (_SymbioticLzDVN *SymbioticLzDVNSession) Vid() (uint32, error) {
+	return _SymbioticLzDVN.Contract.Vid(&_SymbioticLzDVN.CallOpts)
+}
+
+// Vid is a free data retrieval call binding the contract method 0xcf34c768.
+//
+// Solidity: function vid() view returns(uint32)
+func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) Vid() (uint32, error) {
+	return _SymbioticLzDVN.Contract.Vid(&_SymbioticLzDVN.CallOpts)
+}
+
+// WorkerFeeLib is a free data retrieval call binding the contract method 0xc416aa51.
+//
+// Solidity: function workerFeeLib() view returns(address)
+func (_SymbioticLzDVN *SymbioticLzDVNCaller) WorkerFeeLib(opts *bind.CallOpts) (common.Address, error) {
+	var out []interface{}
+	err := _SymbioticLzDVN.contract.Call(opts, &out, "workerFeeLib")
 
 	if err != nil {
 		return *new(common.Address), err
@@ -653,81 +1078,186 @@ func (_SymbioticLzDVN *SymbioticLzDVNCaller) Worker(opts *bind.CallOpts) (common
 
 }
 
-// Worker is a free data retrieval call binding the contract method 0x4d547ada.
+// WorkerFeeLib is a free data retrieval call binding the contract method 0xc416aa51.
 //
-// Solidity: function worker() pure returns(address)
-func (_SymbioticLzDVN *SymbioticLzDVNSession) Worker() (common.Address, error) {
-	return _SymbioticLzDVN.Contract.Worker(&_SymbioticLzDVN.CallOpts)
+// Solidity: function workerFeeLib() view returns(address)
+func (_SymbioticLzDVN *SymbioticLzDVNSession) WorkerFeeLib() (common.Address, error) {
+	return _SymbioticLzDVN.Contract.WorkerFeeLib(&_SymbioticLzDVN.CallOpts)
 }
 
-// Worker is a free data retrieval call binding the contract method 0x4d547ada.
+// WorkerFeeLib is a free data retrieval call binding the contract method 0xc416aa51.
 //
-// Solidity: function worker() pure returns(address)
-func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) Worker() (common.Address, error) {
-	return _SymbioticLzDVN.Contract.Worker(&_SymbioticLzDVN.CallOpts)
+// Solidity: function workerFeeLib() view returns(address)
+func (_SymbioticLzDVN *SymbioticLzDVNCallerSession) WorkerFeeLib() (common.Address, error) {
+	return _SymbioticLzDVN.Contract.WorkerFeeLib(&_SymbioticLzDVN.CallOpts)
 }
 
 // AssignJob is a paid mutator transaction binding the contract method 0x95d376d7.
 //
-// Solidity: function assignJob((uint32,bytes,bytes32,uint64,address) _param, bytes _options) payable returns(uint256 fee)
+// Solidity: function assignJob((uint32,bytes,bytes32,uint64,address) _param, bytes _options) payable returns(uint256 totalFee)
 func (_SymbioticLzDVN *SymbioticLzDVNTransactor) AssignJob(opts *bind.TransactOpts, _param ILayerZeroDVNAssignJobParam, _options []byte) (*types.Transaction, error) {
 	return _SymbioticLzDVN.contract.Transact(opts, "assignJob", _param, _options)
 }
 
 // AssignJob is a paid mutator transaction binding the contract method 0x95d376d7.
 //
-// Solidity: function assignJob((uint32,bytes,bytes32,uint64,address) _param, bytes _options) payable returns(uint256 fee)
+// Solidity: function assignJob((uint32,bytes,bytes32,uint64,address) _param, bytes _options) payable returns(uint256 totalFee)
 func (_SymbioticLzDVN *SymbioticLzDVNSession) AssignJob(_param ILayerZeroDVNAssignJobParam, _options []byte) (*types.Transaction, error) {
 	return _SymbioticLzDVN.Contract.AssignJob(&_SymbioticLzDVN.TransactOpts, _param, _options)
 }
 
 // AssignJob is a paid mutator transaction binding the contract method 0x95d376d7.
 //
-// Solidity: function assignJob((uint32,bytes,bytes32,uint64,address) _param, bytes _options) payable returns(uint256 fee)
+// Solidity: function assignJob((uint32,bytes,bytes32,uint64,address) _param, bytes _options) payable returns(uint256 totalFee)
 func (_SymbioticLzDVN *SymbioticLzDVNTransactorSession) AssignJob(_param ILayerZeroDVNAssignJobParam, _options []byte) (*types.Transaction, error) {
 	return _SymbioticLzDVN.Contract.AssignJob(&_SymbioticLzDVN.TransactOpts, _param, _options)
 }
 
-// AssignJob0 is a paid mutator transaction binding the contract method 0xf42ed2ed.
+// AssignJob0 is a paid mutator transaction binding the contract method 0xc5e193cd.
 //
-// Solidity: function assignJob(address , bytes , bytes , bytes ) payable returns(uint256)
-func (_SymbioticLzDVN *SymbioticLzDVNTransactor) AssignJob0(opts *bind.TransactOpts, arg0 common.Address, arg1 []byte, arg2 []byte, arg3 []byte) (*types.Transaction, error) {
-	return _SymbioticLzDVN.contract.Transact(opts, "assignJob0", arg0, arg1, arg2, arg3)
+// Solidity: function assignJob(uint16 _dstEid, uint16 , uint64 _confirmations, address _sender) returns(uint256 totalFee)
+func (_SymbioticLzDVN *SymbioticLzDVNTransactor) AssignJob0(opts *bind.TransactOpts, _dstEid uint16, arg1 uint16, _confirmations uint64, _sender common.Address) (*types.Transaction, error) {
+	return _SymbioticLzDVN.contract.Transact(opts, "assignJob0", _dstEid, arg1, _confirmations, _sender)
 }
 
-// AssignJob0 is a paid mutator transaction binding the contract method 0xf42ed2ed.
+// AssignJob0 is a paid mutator transaction binding the contract method 0xc5e193cd.
 //
-// Solidity: function assignJob(address , bytes , bytes , bytes ) payable returns(uint256)
-func (_SymbioticLzDVN *SymbioticLzDVNSession) AssignJob0(arg0 common.Address, arg1 []byte, arg2 []byte, arg3 []byte) (*types.Transaction, error) {
-	return _SymbioticLzDVN.Contract.AssignJob0(&_SymbioticLzDVN.TransactOpts, arg0, arg1, arg2, arg3)
+// Solidity: function assignJob(uint16 _dstEid, uint16 , uint64 _confirmations, address _sender) returns(uint256 totalFee)
+func (_SymbioticLzDVN *SymbioticLzDVNSession) AssignJob0(_dstEid uint16, arg1 uint16, _confirmations uint64, _sender common.Address) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.AssignJob0(&_SymbioticLzDVN.TransactOpts, _dstEid, arg1, _confirmations, _sender)
 }
 
-// AssignJob0 is a paid mutator transaction binding the contract method 0xf42ed2ed.
+// AssignJob0 is a paid mutator transaction binding the contract method 0xc5e193cd.
 //
-// Solidity: function assignJob(address , bytes , bytes , bytes ) payable returns(uint256)
-func (_SymbioticLzDVN *SymbioticLzDVNTransactorSession) AssignJob0(arg0 common.Address, arg1 []byte, arg2 []byte, arg3 []byte) (*types.Transaction, error) {
-	return _SymbioticLzDVN.Contract.AssignJob0(&_SymbioticLzDVN.TransactOpts, arg0, arg1, arg2, arg3)
+// Solidity: function assignJob(uint16 _dstEid, uint16 , uint64 _confirmations, address _sender) returns(uint256 totalFee)
+func (_SymbioticLzDVN *SymbioticLzDVNTransactorSession) AssignJob0(_dstEid uint16, arg1 uint16, _confirmations uint64, _sender common.Address) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.AssignJob0(&_SymbioticLzDVN.TransactOpts, _dstEid, arg1, _confirmations, _sender)
+}
+
+// AssignJob1 is a paid mutator transaction binding the contract method 0xf42ed2ed.
+//
+// Solidity: function assignJob(address _sender, bytes , bytes _cmd, bytes _options) payable returns(uint256 fee)
+func (_SymbioticLzDVN *SymbioticLzDVNTransactor) AssignJob1(opts *bind.TransactOpts, _sender common.Address, arg1 []byte, _cmd []byte, _options []byte) (*types.Transaction, error) {
+	return _SymbioticLzDVN.contract.Transact(opts, "assignJob1", _sender, arg1, _cmd, _options)
+}
+
+// AssignJob1 is a paid mutator transaction binding the contract method 0xf42ed2ed.
+//
+// Solidity: function assignJob(address _sender, bytes , bytes _cmd, bytes _options) payable returns(uint256 fee)
+func (_SymbioticLzDVN *SymbioticLzDVNSession) AssignJob1(_sender common.Address, arg1 []byte, _cmd []byte, _options []byte) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.AssignJob1(&_SymbioticLzDVN.TransactOpts, _sender, arg1, _cmd, _options)
+}
+
+// AssignJob1 is a paid mutator transaction binding the contract method 0xf42ed2ed.
+//
+// Solidity: function assignJob(address _sender, bytes , bytes _cmd, bytes _options) payable returns(uint256 fee)
+func (_SymbioticLzDVN *SymbioticLzDVNTransactorSession) AssignJob1(_sender common.Address, arg1 []byte, _cmd []byte, _options []byte) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.AssignJob1(&_SymbioticLzDVN.TransactOpts, _sender, arg1, _cmd, _options)
+}
+
+// Execute is a paid mutator transaction binding the contract method 0xb143044b.
+//
+// Solidity: function execute((uint32,address,bytes,uint256,bytes)[] _params) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNTransactor) Execute(opts *bind.TransactOpts, _params []ExecuteParam) (*types.Transaction, error) {
+	return _SymbioticLzDVN.contract.Transact(opts, "execute", _params)
+}
+
+// Execute is a paid mutator transaction binding the contract method 0xb143044b.
+//
+// Solidity: function execute((uint32,address,bytes,uint256,bytes)[] _params) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNSession) Execute(_params []ExecuteParam) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.Execute(&_SymbioticLzDVN.TransactOpts, _params)
+}
+
+// Execute is a paid mutator transaction binding the contract method 0xb143044b.
+//
+// Solidity: function execute((uint32,address,bytes,uint256,bytes)[] _params) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNTransactorSession) Execute(_params []ExecuteParam) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.Execute(&_SymbioticLzDVN.TransactOpts, _params)
+}
+
+// GrantRole is a paid mutator transaction binding the contract method 0x2f2ff15d.
+//
+// Solidity: function grantRole(bytes32 _role, address _account) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNTransactor) GrantRole(opts *bind.TransactOpts, _role [32]byte, _account common.Address) (*types.Transaction, error) {
+	return _SymbioticLzDVN.contract.Transact(opts, "grantRole", _role, _account)
+}
+
+// GrantRole is a paid mutator transaction binding the contract method 0x2f2ff15d.
+//
+// Solidity: function grantRole(bytes32 _role, address _account) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNSession) GrantRole(_role [32]byte, _account common.Address) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.GrantRole(&_SymbioticLzDVN.TransactOpts, _role, _account)
+}
+
+// GrantRole is a paid mutator transaction binding the contract method 0x2f2ff15d.
+//
+// Solidity: function grantRole(bytes32 _role, address _account) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNTransactorSession) GrantRole(_role [32]byte, _account common.Address) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.GrantRole(&_SymbioticLzDVN.TransactOpts, _role, _account)
+}
+
+// QuorumChangeAdmin is a paid mutator transaction binding the contract method 0xf3b4ebd0.
+//
+// Solidity: function quorumChangeAdmin((uint32,address,bytes,uint256,bytes) _param) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNTransactor) QuorumChangeAdmin(opts *bind.TransactOpts, _param ExecuteParam) (*types.Transaction, error) {
+	return _SymbioticLzDVN.contract.Transact(opts, "quorumChangeAdmin", _param)
+}
+
+// QuorumChangeAdmin is a paid mutator transaction binding the contract method 0xf3b4ebd0.
+//
+// Solidity: function quorumChangeAdmin((uint32,address,bytes,uint256,bytes) _param) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNSession) QuorumChangeAdmin(_param ExecuteParam) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.QuorumChangeAdmin(&_SymbioticLzDVN.TransactOpts, _param)
+}
+
+// QuorumChangeAdmin is a paid mutator transaction binding the contract method 0xf3b4ebd0.
+//
+// Solidity: function quorumChangeAdmin((uint32,address,bytes,uint256,bytes) _param) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNTransactorSession) QuorumChangeAdmin(_param ExecuteParam) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.QuorumChangeAdmin(&_SymbioticLzDVN.TransactOpts, _param)
+}
+
+// RevokeRole is a paid mutator transaction binding the contract method 0xd547741f.
+//
+// Solidity: function revokeRole(bytes32 _role, address _account) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNTransactor) RevokeRole(opts *bind.TransactOpts, _role [32]byte, _account common.Address) (*types.Transaction, error) {
+	return _SymbioticLzDVN.contract.Transact(opts, "revokeRole", _role, _account)
+}
+
+// RevokeRole is a paid mutator transaction binding the contract method 0xd547741f.
+//
+// Solidity: function revokeRole(bytes32 _role, address _account) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNSession) RevokeRole(_role [32]byte, _account common.Address) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.RevokeRole(&_SymbioticLzDVN.TransactOpts, _role, _account)
+}
+
+// RevokeRole is a paid mutator transaction binding the contract method 0xd547741f.
+//
+// Solidity: function revokeRole(bytes32 _role, address _account) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNTransactorSession) RevokeRole(_role [32]byte, _account common.Address) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.RevokeRole(&_SymbioticLzDVN.TransactOpts, _role, _account)
 }
 
 // SetDefaultMultiplierBps is a paid mutator transaction binding the contract method 0xc358de0a.
 //
-// Solidity: function setDefaultMultiplierBps(uint16 ) returns()
-func (_SymbioticLzDVN *SymbioticLzDVNTransactor) SetDefaultMultiplierBps(opts *bind.TransactOpts, arg0 uint16) (*types.Transaction, error) {
-	return _SymbioticLzDVN.contract.Transact(opts, "setDefaultMultiplierBps", arg0)
+// Solidity: function setDefaultMultiplierBps(uint16 _multiplierBps) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNTransactor) SetDefaultMultiplierBps(opts *bind.TransactOpts, _multiplierBps uint16) (*types.Transaction, error) {
+	return _SymbioticLzDVN.contract.Transact(opts, "setDefaultMultiplierBps", _multiplierBps)
 }
 
 // SetDefaultMultiplierBps is a paid mutator transaction binding the contract method 0xc358de0a.
 //
-// Solidity: function setDefaultMultiplierBps(uint16 ) returns()
-func (_SymbioticLzDVN *SymbioticLzDVNSession) SetDefaultMultiplierBps(arg0 uint16) (*types.Transaction, error) {
-	return _SymbioticLzDVN.Contract.SetDefaultMultiplierBps(&_SymbioticLzDVN.TransactOpts, arg0)
+// Solidity: function setDefaultMultiplierBps(uint16 _multiplierBps) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNSession) SetDefaultMultiplierBps(_multiplierBps uint16) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.SetDefaultMultiplierBps(&_SymbioticLzDVN.TransactOpts, _multiplierBps)
 }
 
 // SetDefaultMultiplierBps is a paid mutator transaction binding the contract method 0xc358de0a.
 //
-// Solidity: function setDefaultMultiplierBps(uint16 ) returns()
-func (_SymbioticLzDVN *SymbioticLzDVNTransactorSession) SetDefaultMultiplierBps(arg0 uint16) (*types.Transaction, error) {
-	return _SymbioticLzDVN.Contract.SetDefaultMultiplierBps(&_SymbioticLzDVN.TransactOpts, arg0)
+// Solidity: function setDefaultMultiplierBps(uint16 _multiplierBps) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNTransactorSession) SetDefaultMultiplierBps(_multiplierBps uint16) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.SetDefaultMultiplierBps(&_SymbioticLzDVN.TransactOpts, _multiplierBps)
 }
 
 // SetDstConfig is a paid mutator transaction binding the contract method 0x52d3b871.
@@ -751,46 +1281,130 @@ func (_SymbioticLzDVN *SymbioticLzDVNTransactorSession) SetDstConfig(_params []I
 	return _SymbioticLzDVN.Contract.SetDstConfig(&_SymbioticLzDVN.TransactOpts, _params)
 }
 
-// SetPriceFeed is a paid mutator transaction binding the contract method 0x724e78da.
+// SetPaused is a paid mutator transaction binding the contract method 0x16c38b3c.
 //
-// Solidity: function setPriceFeed(address ) returns()
-func (_SymbioticLzDVN *SymbioticLzDVNTransactor) SetPriceFeed(opts *bind.TransactOpts, arg0 common.Address) (*types.Transaction, error) {
-	return _SymbioticLzDVN.contract.Transact(opts, "setPriceFeed", arg0)
+// Solidity: function setPaused(bool _paused) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNTransactor) SetPaused(opts *bind.TransactOpts, _paused bool) (*types.Transaction, error) {
+	return _SymbioticLzDVN.contract.Transact(opts, "setPaused", _paused)
+}
+
+// SetPaused is a paid mutator transaction binding the contract method 0x16c38b3c.
+//
+// Solidity: function setPaused(bool _paused) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNSession) SetPaused(_paused bool) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.SetPaused(&_SymbioticLzDVN.TransactOpts, _paused)
+}
+
+// SetPaused is a paid mutator transaction binding the contract method 0x16c38b3c.
+//
+// Solidity: function setPaused(bool _paused) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNTransactorSession) SetPaused(_paused bool) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.SetPaused(&_SymbioticLzDVN.TransactOpts, _paused)
 }
 
 // SetPriceFeed is a paid mutator transaction binding the contract method 0x724e78da.
 //
-// Solidity: function setPriceFeed(address ) returns()
-func (_SymbioticLzDVN *SymbioticLzDVNSession) SetPriceFeed(arg0 common.Address) (*types.Transaction, error) {
-	return _SymbioticLzDVN.Contract.SetPriceFeed(&_SymbioticLzDVN.TransactOpts, arg0)
+// Solidity: function setPriceFeed(address _priceFeed) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNTransactor) SetPriceFeed(opts *bind.TransactOpts, _priceFeed common.Address) (*types.Transaction, error) {
+	return _SymbioticLzDVN.contract.Transact(opts, "setPriceFeed", _priceFeed)
 }
 
 // SetPriceFeed is a paid mutator transaction binding the contract method 0x724e78da.
 //
-// Solidity: function setPriceFeed(address ) returns()
-func (_SymbioticLzDVN *SymbioticLzDVNTransactorSession) SetPriceFeed(arg0 common.Address) (*types.Transaction, error) {
-	return _SymbioticLzDVN.Contract.SetPriceFeed(&_SymbioticLzDVN.TransactOpts, arg0)
+// Solidity: function setPriceFeed(address _priceFeed) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNSession) SetPriceFeed(_priceFeed common.Address) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.SetPriceFeed(&_SymbioticLzDVN.TransactOpts, _priceFeed)
+}
+
+// SetPriceFeed is a paid mutator transaction binding the contract method 0x724e78da.
+//
+// Solidity: function setPriceFeed(address _priceFeed) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNTransactorSession) SetPriceFeed(_priceFeed common.Address) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.SetPriceFeed(&_SymbioticLzDVN.TransactOpts, _priceFeed)
+}
+
+// SetQuorum is a paid mutator transaction binding the contract method 0x8585c945.
+//
+// Solidity: function setQuorum(uint64 _quorum) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNTransactor) SetQuorum(opts *bind.TransactOpts, _quorum uint64) (*types.Transaction, error) {
+	return _SymbioticLzDVN.contract.Transact(opts, "setQuorum", _quorum)
+}
+
+// SetQuorum is a paid mutator transaction binding the contract method 0x8585c945.
+//
+// Solidity: function setQuorum(uint64 _quorum) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNSession) SetQuorum(_quorum uint64) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.SetQuorum(&_SymbioticLzDVN.TransactOpts, _quorum)
+}
+
+// SetQuorum is a paid mutator transaction binding the contract method 0x8585c945.
+//
+// Solidity: function setQuorum(uint64 _quorum) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNTransactorSession) SetQuorum(_quorum uint64) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.SetQuorum(&_SymbioticLzDVN.TransactOpts, _quorum)
+}
+
+// SetSigner is a paid mutator transaction binding the contract method 0x31cb6105.
+//
+// Solidity: function setSigner(address _signer, bool _active) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNTransactor) SetSigner(opts *bind.TransactOpts, _signer common.Address, _active bool) (*types.Transaction, error) {
+	return _SymbioticLzDVN.contract.Transact(opts, "setSigner", _signer, _active)
+}
+
+// SetSigner is a paid mutator transaction binding the contract method 0x31cb6105.
+//
+// Solidity: function setSigner(address _signer, bool _active) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNSession) SetSigner(_signer common.Address, _active bool) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.SetSigner(&_SymbioticLzDVN.TransactOpts, _signer, _active)
+}
+
+// SetSigner is a paid mutator transaction binding the contract method 0x31cb6105.
+//
+// Solidity: function setSigner(address _signer, bool _active) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNTransactorSession) SetSigner(_signer common.Address, _active bool) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.SetSigner(&_SymbioticLzDVN.TransactOpts, _signer, _active)
 }
 
 // SetSupportedOptionTypes is a paid mutator transaction binding the contract method 0xcd88b903.
 //
-// Solidity: function setSupportedOptionTypes(uint32 , uint8[] ) returns()
-func (_SymbioticLzDVN *SymbioticLzDVNTransactor) SetSupportedOptionTypes(opts *bind.TransactOpts, arg0 uint32, arg1 []uint8) (*types.Transaction, error) {
-	return _SymbioticLzDVN.contract.Transact(opts, "setSupportedOptionTypes", arg0, arg1)
+// Solidity: function setSupportedOptionTypes(uint32 _eid, uint8[] _optionTypes) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNTransactor) SetSupportedOptionTypes(opts *bind.TransactOpts, _eid uint32, _optionTypes []uint8) (*types.Transaction, error) {
+	return _SymbioticLzDVN.contract.Transact(opts, "setSupportedOptionTypes", _eid, _optionTypes)
 }
 
 // SetSupportedOptionTypes is a paid mutator transaction binding the contract method 0xcd88b903.
 //
-// Solidity: function setSupportedOptionTypes(uint32 , uint8[] ) returns()
-func (_SymbioticLzDVN *SymbioticLzDVNSession) SetSupportedOptionTypes(arg0 uint32, arg1 []uint8) (*types.Transaction, error) {
-	return _SymbioticLzDVN.Contract.SetSupportedOptionTypes(&_SymbioticLzDVN.TransactOpts, arg0, arg1)
+// Solidity: function setSupportedOptionTypes(uint32 _eid, uint8[] _optionTypes) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNSession) SetSupportedOptionTypes(_eid uint32, _optionTypes []uint8) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.SetSupportedOptionTypes(&_SymbioticLzDVN.TransactOpts, _eid, _optionTypes)
 }
 
 // SetSupportedOptionTypes is a paid mutator transaction binding the contract method 0xcd88b903.
 //
-// Solidity: function setSupportedOptionTypes(uint32 , uint8[] ) returns()
-func (_SymbioticLzDVN *SymbioticLzDVNTransactorSession) SetSupportedOptionTypes(arg0 uint32, arg1 []uint8) (*types.Transaction, error) {
-	return _SymbioticLzDVN.Contract.SetSupportedOptionTypes(&_SymbioticLzDVN.TransactOpts, arg0, arg1)
+// Solidity: function setSupportedOptionTypes(uint32 _eid, uint8[] _optionTypes) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNTransactorSession) SetSupportedOptionTypes(_eid uint32, _optionTypes []uint8) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.SetSupportedOptionTypes(&_SymbioticLzDVN.TransactOpts, _eid, _optionTypes)
+}
+
+// SetWorkerFeeLib is a paid mutator transaction binding the contract method 0xc7b2370b.
+//
+// Solidity: function setWorkerFeeLib(address _workerFeeLib) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNTransactor) SetWorkerFeeLib(opts *bind.TransactOpts, _workerFeeLib common.Address) (*types.Transaction, error) {
+	return _SymbioticLzDVN.contract.Transact(opts, "setWorkerFeeLib", _workerFeeLib)
+}
+
+// SetWorkerFeeLib is a paid mutator transaction binding the contract method 0xc7b2370b.
+//
+// Solidity: function setWorkerFeeLib(address _workerFeeLib) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNSession) SetWorkerFeeLib(_workerFeeLib common.Address) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.SetWorkerFeeLib(&_SymbioticLzDVN.TransactOpts, _workerFeeLib)
+}
+
+// SetWorkerFeeLib is a paid mutator transaction binding the contract method 0xc7b2370b.
+//
+// Solidity: function setWorkerFeeLib(address _workerFeeLib) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNTransactorSession) SetWorkerFeeLib(_workerFeeLib common.Address) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.SetWorkerFeeLib(&_SymbioticLzDVN.TransactOpts, _workerFeeLib)
 }
 
 // VerifyWithSymbiotic is a paid mutator transaction binding the contract method 0x0b3e7f0c.
@@ -816,23 +1430,955 @@ func (_SymbioticLzDVN *SymbioticLzDVNTransactorSession) VerifyWithSymbiotic(_pac
 
 // WithdrawFee is a paid mutator transaction binding the contract method 0x1095b6d7.
 //
-// Solidity: function withdrawFee(address , address , uint256 ) returns()
-func (_SymbioticLzDVN *SymbioticLzDVNTransactor) WithdrawFee(opts *bind.TransactOpts, arg0 common.Address, arg1 common.Address, arg2 *big.Int) (*types.Transaction, error) {
-	return _SymbioticLzDVN.contract.Transact(opts, "withdrawFee", arg0, arg1, arg2)
+// Solidity: function withdrawFee(address _lib, address _to, uint256 _amount) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNTransactor) WithdrawFee(opts *bind.TransactOpts, _lib common.Address, _to common.Address, _amount *big.Int) (*types.Transaction, error) {
+	return _SymbioticLzDVN.contract.Transact(opts, "withdrawFee", _lib, _to, _amount)
 }
 
 // WithdrawFee is a paid mutator transaction binding the contract method 0x1095b6d7.
 //
-// Solidity: function withdrawFee(address , address , uint256 ) returns()
-func (_SymbioticLzDVN *SymbioticLzDVNSession) WithdrawFee(arg0 common.Address, arg1 common.Address, arg2 *big.Int) (*types.Transaction, error) {
-	return _SymbioticLzDVN.Contract.WithdrawFee(&_SymbioticLzDVN.TransactOpts, arg0, arg1, arg2)
+// Solidity: function withdrawFee(address _lib, address _to, uint256 _amount) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNSession) WithdrawFee(_lib common.Address, _to common.Address, _amount *big.Int) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.WithdrawFee(&_SymbioticLzDVN.TransactOpts, _lib, _to, _amount)
 }
 
 // WithdrawFee is a paid mutator transaction binding the contract method 0x1095b6d7.
 //
-// Solidity: function withdrawFee(address , address , uint256 ) returns()
-func (_SymbioticLzDVN *SymbioticLzDVNTransactorSession) WithdrawFee(arg0 common.Address, arg1 common.Address, arg2 *big.Int) (*types.Transaction, error) {
-	return _SymbioticLzDVN.Contract.WithdrawFee(&_SymbioticLzDVN.TransactOpts, arg0, arg1, arg2)
+// Solidity: function withdrawFee(address _lib, address _to, uint256 _amount) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNTransactorSession) WithdrawFee(_lib common.Address, _to common.Address, _amount *big.Int) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.WithdrawFee(&_SymbioticLzDVN.TransactOpts, _lib, _to, _amount)
+}
+
+// WithdrawFeeFromUlnV2 is a paid mutator transaction binding the contract method 0xdafe0ccc.
+//
+// Solidity: function withdrawFeeFromUlnV2(address _lib, address _to, uint256 _amount) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNTransactor) WithdrawFeeFromUlnV2(opts *bind.TransactOpts, _lib common.Address, _to common.Address, _amount *big.Int) (*types.Transaction, error) {
+	return _SymbioticLzDVN.contract.Transact(opts, "withdrawFeeFromUlnV2", _lib, _to, _amount)
+}
+
+// WithdrawFeeFromUlnV2 is a paid mutator transaction binding the contract method 0xdafe0ccc.
+//
+// Solidity: function withdrawFeeFromUlnV2(address _lib, address _to, uint256 _amount) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNSession) WithdrawFeeFromUlnV2(_lib common.Address, _to common.Address, _amount *big.Int) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.WithdrawFeeFromUlnV2(&_SymbioticLzDVN.TransactOpts, _lib, _to, _amount)
+}
+
+// WithdrawFeeFromUlnV2 is a paid mutator transaction binding the contract method 0xdafe0ccc.
+//
+// Solidity: function withdrawFeeFromUlnV2(address _lib, address _to, uint256 _amount) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNTransactorSession) WithdrawFeeFromUlnV2(_lib common.Address, _to common.Address, _amount *big.Int) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.WithdrawFeeFromUlnV2(&_SymbioticLzDVN.TransactOpts, _lib, _to, _amount)
+}
+
+// WithdrawToken is a paid mutator transaction binding the contract method 0x01e33667.
+//
+// Solidity: function withdrawToken(address _token, address _to, uint256 _amount) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNTransactor) WithdrawToken(opts *bind.TransactOpts, _token common.Address, _to common.Address, _amount *big.Int) (*types.Transaction, error) {
+	return _SymbioticLzDVN.contract.Transact(opts, "withdrawToken", _token, _to, _amount)
+}
+
+// WithdrawToken is a paid mutator transaction binding the contract method 0x01e33667.
+//
+// Solidity: function withdrawToken(address _token, address _to, uint256 _amount) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNSession) WithdrawToken(_token common.Address, _to common.Address, _amount *big.Int) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.WithdrawToken(&_SymbioticLzDVN.TransactOpts, _token, _to, _amount)
+}
+
+// WithdrawToken is a paid mutator transaction binding the contract method 0x01e33667.
+//
+// Solidity: function withdrawToken(address _token, address _to, uint256 _amount) returns()
+func (_SymbioticLzDVN *SymbioticLzDVNTransactorSession) WithdrawToken(_token common.Address, _to common.Address, _amount *big.Int) (*types.Transaction, error) {
+	return _SymbioticLzDVN.Contract.WithdrawToken(&_SymbioticLzDVN.TransactOpts, _token, _to, _amount)
+}
+
+// SymbioticLzDVNExecuteFailedIterator is returned from FilterExecuteFailed and is used to iterate over the raw logs and unpacked data for ExecuteFailed events raised by the SymbioticLzDVN contract.
+type SymbioticLzDVNExecuteFailedIterator struct {
+	Event *SymbioticLzDVNExecuteFailed // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *SymbioticLzDVNExecuteFailedIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(SymbioticLzDVNExecuteFailed)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(SymbioticLzDVNExecuteFailed)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *SymbioticLzDVNExecuteFailedIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *SymbioticLzDVNExecuteFailedIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// SymbioticLzDVNExecuteFailed represents a ExecuteFailed event raised by the SymbioticLzDVN contract.
+type SymbioticLzDVNExecuteFailed struct {
+	Index *big.Int
+	Data  []byte
+	Raw   types.Log // Blockchain specific contextual infos
+}
+
+// FilterExecuteFailed is a free log retrieval operation binding the contract event 0xdc8cdd96296241bbefda4a8e18ad2e0985a8da6495b34d409cfc4c886ee3b0cf.
+//
+// Solidity: event ExecuteFailed(uint256 _index, bytes _data)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) FilterExecuteFailed(opts *bind.FilterOpts) (*SymbioticLzDVNExecuteFailedIterator, error) {
+
+	logs, sub, err := _SymbioticLzDVN.contract.FilterLogs(opts, "ExecuteFailed")
+	if err != nil {
+		return nil, err
+	}
+	return &SymbioticLzDVNExecuteFailedIterator{contract: _SymbioticLzDVN.contract, event: "ExecuteFailed", logs: logs, sub: sub}, nil
+}
+
+// WatchExecuteFailed is a free log subscription operation binding the contract event 0xdc8cdd96296241bbefda4a8e18ad2e0985a8da6495b34d409cfc4c886ee3b0cf.
+//
+// Solidity: event ExecuteFailed(uint256 _index, bytes _data)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) WatchExecuteFailed(opts *bind.WatchOpts, sink chan<- *SymbioticLzDVNExecuteFailed) (event.Subscription, error) {
+
+	logs, sub, err := _SymbioticLzDVN.contract.WatchLogs(opts, "ExecuteFailed")
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(SymbioticLzDVNExecuteFailed)
+				if err := _SymbioticLzDVN.contract.UnpackLog(event, "ExecuteFailed", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseExecuteFailed is a log parse operation binding the contract event 0xdc8cdd96296241bbefda4a8e18ad2e0985a8da6495b34d409cfc4c886ee3b0cf.
+//
+// Solidity: event ExecuteFailed(uint256 _index, bytes _data)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) ParseExecuteFailed(log types.Log) (*SymbioticLzDVNExecuteFailed, error) {
+	event := new(SymbioticLzDVNExecuteFailed)
+	if err := _SymbioticLzDVN.contract.UnpackLog(event, "ExecuteFailed", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
+// SymbioticLzDVNHashAlreadyUsedIterator is returned from FilterHashAlreadyUsed and is used to iterate over the raw logs and unpacked data for HashAlreadyUsed events raised by the SymbioticLzDVN contract.
+type SymbioticLzDVNHashAlreadyUsedIterator struct {
+	Event *SymbioticLzDVNHashAlreadyUsed // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *SymbioticLzDVNHashAlreadyUsedIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(SymbioticLzDVNHashAlreadyUsed)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(SymbioticLzDVNHashAlreadyUsed)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *SymbioticLzDVNHashAlreadyUsedIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *SymbioticLzDVNHashAlreadyUsedIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// SymbioticLzDVNHashAlreadyUsed represents a HashAlreadyUsed event raised by the SymbioticLzDVN contract.
+type SymbioticLzDVNHashAlreadyUsed struct {
+	Param ExecuteParam
+	Hash  [32]byte
+	Raw   types.Log // Blockchain specific contextual infos
+}
+
+// FilterHashAlreadyUsed is a free log retrieval operation binding the contract event 0x9bb9bddbdf537a2104255307230b323d7982f4512ee8e5bd15df62ddca50ab97.
+//
+// Solidity: event HashAlreadyUsed((uint32,address,bytes,uint256,bytes) param, bytes32 _hash)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) FilterHashAlreadyUsed(opts *bind.FilterOpts) (*SymbioticLzDVNHashAlreadyUsedIterator, error) {
+
+	logs, sub, err := _SymbioticLzDVN.contract.FilterLogs(opts, "HashAlreadyUsed")
+	if err != nil {
+		return nil, err
+	}
+	return &SymbioticLzDVNHashAlreadyUsedIterator{contract: _SymbioticLzDVN.contract, event: "HashAlreadyUsed", logs: logs, sub: sub}, nil
+}
+
+// WatchHashAlreadyUsed is a free log subscription operation binding the contract event 0x9bb9bddbdf537a2104255307230b323d7982f4512ee8e5bd15df62ddca50ab97.
+//
+// Solidity: event HashAlreadyUsed((uint32,address,bytes,uint256,bytes) param, bytes32 _hash)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) WatchHashAlreadyUsed(opts *bind.WatchOpts, sink chan<- *SymbioticLzDVNHashAlreadyUsed) (event.Subscription, error) {
+
+	logs, sub, err := _SymbioticLzDVN.contract.WatchLogs(opts, "HashAlreadyUsed")
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(SymbioticLzDVNHashAlreadyUsed)
+				if err := _SymbioticLzDVN.contract.UnpackLog(event, "HashAlreadyUsed", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseHashAlreadyUsed is a log parse operation binding the contract event 0x9bb9bddbdf537a2104255307230b323d7982f4512ee8e5bd15df62ddca50ab97.
+//
+// Solidity: event HashAlreadyUsed((uint32,address,bytes,uint256,bytes) param, bytes32 _hash)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) ParseHashAlreadyUsed(log types.Log) (*SymbioticLzDVNHashAlreadyUsed, error) {
+	event := new(SymbioticLzDVNHashAlreadyUsed)
+	if err := _SymbioticLzDVN.contract.UnpackLog(event, "HashAlreadyUsed", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
+// SymbioticLzDVNPausedIterator is returned from FilterPaused and is used to iterate over the raw logs and unpacked data for Paused events raised by the SymbioticLzDVN contract.
+type SymbioticLzDVNPausedIterator struct {
+	Event *SymbioticLzDVNPaused // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *SymbioticLzDVNPausedIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(SymbioticLzDVNPaused)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(SymbioticLzDVNPaused)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *SymbioticLzDVNPausedIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *SymbioticLzDVNPausedIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// SymbioticLzDVNPaused represents a Paused event raised by the SymbioticLzDVN contract.
+type SymbioticLzDVNPaused struct {
+	Account common.Address
+	Raw     types.Log // Blockchain specific contextual infos
+}
+
+// FilterPaused is a free log retrieval operation binding the contract event 0x62e78cea01bee320cd4e420270b5ea74000d11b0c9f74754ebdbfc544b05a258.
+//
+// Solidity: event Paused(address account)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) FilterPaused(opts *bind.FilterOpts) (*SymbioticLzDVNPausedIterator, error) {
+
+	logs, sub, err := _SymbioticLzDVN.contract.FilterLogs(opts, "Paused")
+	if err != nil {
+		return nil, err
+	}
+	return &SymbioticLzDVNPausedIterator{contract: _SymbioticLzDVN.contract, event: "Paused", logs: logs, sub: sub}, nil
+}
+
+// WatchPaused is a free log subscription operation binding the contract event 0x62e78cea01bee320cd4e420270b5ea74000d11b0c9f74754ebdbfc544b05a258.
+//
+// Solidity: event Paused(address account)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) WatchPaused(opts *bind.WatchOpts, sink chan<- *SymbioticLzDVNPaused) (event.Subscription, error) {
+
+	logs, sub, err := _SymbioticLzDVN.contract.WatchLogs(opts, "Paused")
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(SymbioticLzDVNPaused)
+				if err := _SymbioticLzDVN.contract.UnpackLog(event, "Paused", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParsePaused is a log parse operation binding the contract event 0x62e78cea01bee320cd4e420270b5ea74000d11b0c9f74754ebdbfc544b05a258.
+//
+// Solidity: event Paused(address account)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) ParsePaused(log types.Log) (*SymbioticLzDVNPaused, error) {
+	event := new(SymbioticLzDVNPaused)
+	if err := _SymbioticLzDVN.contract.UnpackLog(event, "Paused", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
+// SymbioticLzDVNRoleAdminChangedIterator is returned from FilterRoleAdminChanged and is used to iterate over the raw logs and unpacked data for RoleAdminChanged events raised by the SymbioticLzDVN contract.
+type SymbioticLzDVNRoleAdminChangedIterator struct {
+	Event *SymbioticLzDVNRoleAdminChanged // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *SymbioticLzDVNRoleAdminChangedIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(SymbioticLzDVNRoleAdminChanged)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(SymbioticLzDVNRoleAdminChanged)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *SymbioticLzDVNRoleAdminChangedIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *SymbioticLzDVNRoleAdminChangedIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// SymbioticLzDVNRoleAdminChanged represents a RoleAdminChanged event raised by the SymbioticLzDVN contract.
+type SymbioticLzDVNRoleAdminChanged struct {
+	Role              [32]byte
+	PreviousAdminRole [32]byte
+	NewAdminRole      [32]byte
+	Raw               types.Log // Blockchain specific contextual infos
+}
+
+// FilterRoleAdminChanged is a free log retrieval operation binding the contract event 0xbd79b86ffe0ab8e8776151514217cd7cacd52c909f66475c3af44e129f0b00ff.
+//
+// Solidity: event RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) FilterRoleAdminChanged(opts *bind.FilterOpts, role [][32]byte, previousAdminRole [][32]byte, newAdminRole [][32]byte) (*SymbioticLzDVNRoleAdminChangedIterator, error) {
+
+	var roleRule []interface{}
+	for _, roleItem := range role {
+		roleRule = append(roleRule, roleItem)
+	}
+	var previousAdminRoleRule []interface{}
+	for _, previousAdminRoleItem := range previousAdminRole {
+		previousAdminRoleRule = append(previousAdminRoleRule, previousAdminRoleItem)
+	}
+	var newAdminRoleRule []interface{}
+	for _, newAdminRoleItem := range newAdminRole {
+		newAdminRoleRule = append(newAdminRoleRule, newAdminRoleItem)
+	}
+
+	logs, sub, err := _SymbioticLzDVN.contract.FilterLogs(opts, "RoleAdminChanged", roleRule, previousAdminRoleRule, newAdminRoleRule)
+	if err != nil {
+		return nil, err
+	}
+	return &SymbioticLzDVNRoleAdminChangedIterator{contract: _SymbioticLzDVN.contract, event: "RoleAdminChanged", logs: logs, sub: sub}, nil
+}
+
+// WatchRoleAdminChanged is a free log subscription operation binding the contract event 0xbd79b86ffe0ab8e8776151514217cd7cacd52c909f66475c3af44e129f0b00ff.
+//
+// Solidity: event RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) WatchRoleAdminChanged(opts *bind.WatchOpts, sink chan<- *SymbioticLzDVNRoleAdminChanged, role [][32]byte, previousAdminRole [][32]byte, newAdminRole [][32]byte) (event.Subscription, error) {
+
+	var roleRule []interface{}
+	for _, roleItem := range role {
+		roleRule = append(roleRule, roleItem)
+	}
+	var previousAdminRoleRule []interface{}
+	for _, previousAdminRoleItem := range previousAdminRole {
+		previousAdminRoleRule = append(previousAdminRoleRule, previousAdminRoleItem)
+	}
+	var newAdminRoleRule []interface{}
+	for _, newAdminRoleItem := range newAdminRole {
+		newAdminRoleRule = append(newAdminRoleRule, newAdminRoleItem)
+	}
+
+	logs, sub, err := _SymbioticLzDVN.contract.WatchLogs(opts, "RoleAdminChanged", roleRule, previousAdminRoleRule, newAdminRoleRule)
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(SymbioticLzDVNRoleAdminChanged)
+				if err := _SymbioticLzDVN.contract.UnpackLog(event, "RoleAdminChanged", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseRoleAdminChanged is a log parse operation binding the contract event 0xbd79b86ffe0ab8e8776151514217cd7cacd52c909f66475c3af44e129f0b00ff.
+//
+// Solidity: event RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) ParseRoleAdminChanged(log types.Log) (*SymbioticLzDVNRoleAdminChanged, error) {
+	event := new(SymbioticLzDVNRoleAdminChanged)
+	if err := _SymbioticLzDVN.contract.UnpackLog(event, "RoleAdminChanged", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
+// SymbioticLzDVNRoleGrantedIterator is returned from FilterRoleGranted and is used to iterate over the raw logs and unpacked data for RoleGranted events raised by the SymbioticLzDVN contract.
+type SymbioticLzDVNRoleGrantedIterator struct {
+	Event *SymbioticLzDVNRoleGranted // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *SymbioticLzDVNRoleGrantedIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(SymbioticLzDVNRoleGranted)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(SymbioticLzDVNRoleGranted)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *SymbioticLzDVNRoleGrantedIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *SymbioticLzDVNRoleGrantedIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// SymbioticLzDVNRoleGranted represents a RoleGranted event raised by the SymbioticLzDVN contract.
+type SymbioticLzDVNRoleGranted struct {
+	Role    [32]byte
+	Account common.Address
+	Sender  common.Address
+	Raw     types.Log // Blockchain specific contextual infos
+}
+
+// FilterRoleGranted is a free log retrieval operation binding the contract event 0x2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d.
+//
+// Solidity: event RoleGranted(bytes32 indexed role, address indexed account, address indexed sender)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) FilterRoleGranted(opts *bind.FilterOpts, role [][32]byte, account []common.Address, sender []common.Address) (*SymbioticLzDVNRoleGrantedIterator, error) {
+
+	var roleRule []interface{}
+	for _, roleItem := range role {
+		roleRule = append(roleRule, roleItem)
+	}
+	var accountRule []interface{}
+	for _, accountItem := range account {
+		accountRule = append(accountRule, accountItem)
+	}
+	var senderRule []interface{}
+	for _, senderItem := range sender {
+		senderRule = append(senderRule, senderItem)
+	}
+
+	logs, sub, err := _SymbioticLzDVN.contract.FilterLogs(opts, "RoleGranted", roleRule, accountRule, senderRule)
+	if err != nil {
+		return nil, err
+	}
+	return &SymbioticLzDVNRoleGrantedIterator{contract: _SymbioticLzDVN.contract, event: "RoleGranted", logs: logs, sub: sub}, nil
+}
+
+// WatchRoleGranted is a free log subscription operation binding the contract event 0x2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d.
+//
+// Solidity: event RoleGranted(bytes32 indexed role, address indexed account, address indexed sender)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) WatchRoleGranted(opts *bind.WatchOpts, sink chan<- *SymbioticLzDVNRoleGranted, role [][32]byte, account []common.Address, sender []common.Address) (event.Subscription, error) {
+
+	var roleRule []interface{}
+	for _, roleItem := range role {
+		roleRule = append(roleRule, roleItem)
+	}
+	var accountRule []interface{}
+	for _, accountItem := range account {
+		accountRule = append(accountRule, accountItem)
+	}
+	var senderRule []interface{}
+	for _, senderItem := range sender {
+		senderRule = append(senderRule, senderItem)
+	}
+
+	logs, sub, err := _SymbioticLzDVN.contract.WatchLogs(opts, "RoleGranted", roleRule, accountRule, senderRule)
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(SymbioticLzDVNRoleGranted)
+				if err := _SymbioticLzDVN.contract.UnpackLog(event, "RoleGranted", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseRoleGranted is a log parse operation binding the contract event 0x2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d.
+//
+// Solidity: event RoleGranted(bytes32 indexed role, address indexed account, address indexed sender)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) ParseRoleGranted(log types.Log) (*SymbioticLzDVNRoleGranted, error) {
+	event := new(SymbioticLzDVNRoleGranted)
+	if err := _SymbioticLzDVN.contract.UnpackLog(event, "RoleGranted", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
+// SymbioticLzDVNRoleRevokedIterator is returned from FilterRoleRevoked and is used to iterate over the raw logs and unpacked data for RoleRevoked events raised by the SymbioticLzDVN contract.
+type SymbioticLzDVNRoleRevokedIterator struct {
+	Event *SymbioticLzDVNRoleRevoked // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *SymbioticLzDVNRoleRevokedIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(SymbioticLzDVNRoleRevoked)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(SymbioticLzDVNRoleRevoked)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *SymbioticLzDVNRoleRevokedIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *SymbioticLzDVNRoleRevokedIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// SymbioticLzDVNRoleRevoked represents a RoleRevoked event raised by the SymbioticLzDVN contract.
+type SymbioticLzDVNRoleRevoked struct {
+	Role    [32]byte
+	Account common.Address
+	Sender  common.Address
+	Raw     types.Log // Blockchain specific contextual infos
+}
+
+// FilterRoleRevoked is a free log retrieval operation binding the contract event 0xf6391f5c32d9c69d2a47ea670b442974b53935d1edc7fd64eb21e047a839171b.
+//
+// Solidity: event RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) FilterRoleRevoked(opts *bind.FilterOpts, role [][32]byte, account []common.Address, sender []common.Address) (*SymbioticLzDVNRoleRevokedIterator, error) {
+
+	var roleRule []interface{}
+	for _, roleItem := range role {
+		roleRule = append(roleRule, roleItem)
+	}
+	var accountRule []interface{}
+	for _, accountItem := range account {
+		accountRule = append(accountRule, accountItem)
+	}
+	var senderRule []interface{}
+	for _, senderItem := range sender {
+		senderRule = append(senderRule, senderItem)
+	}
+
+	logs, sub, err := _SymbioticLzDVN.contract.FilterLogs(opts, "RoleRevoked", roleRule, accountRule, senderRule)
+	if err != nil {
+		return nil, err
+	}
+	return &SymbioticLzDVNRoleRevokedIterator{contract: _SymbioticLzDVN.contract, event: "RoleRevoked", logs: logs, sub: sub}, nil
+}
+
+// WatchRoleRevoked is a free log subscription operation binding the contract event 0xf6391f5c32d9c69d2a47ea670b442974b53935d1edc7fd64eb21e047a839171b.
+//
+// Solidity: event RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) WatchRoleRevoked(opts *bind.WatchOpts, sink chan<- *SymbioticLzDVNRoleRevoked, role [][32]byte, account []common.Address, sender []common.Address) (event.Subscription, error) {
+
+	var roleRule []interface{}
+	for _, roleItem := range role {
+		roleRule = append(roleRule, roleItem)
+	}
+	var accountRule []interface{}
+	for _, accountItem := range account {
+		accountRule = append(accountRule, accountItem)
+	}
+	var senderRule []interface{}
+	for _, senderItem := range sender {
+		senderRule = append(senderRule, senderItem)
+	}
+
+	logs, sub, err := _SymbioticLzDVN.contract.WatchLogs(opts, "RoleRevoked", roleRule, accountRule, senderRule)
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(SymbioticLzDVNRoleRevoked)
+				if err := _SymbioticLzDVN.contract.UnpackLog(event, "RoleRevoked", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseRoleRevoked is a log parse operation binding the contract event 0xf6391f5c32d9c69d2a47ea670b442974b53935d1edc7fd64eb21e047a839171b.
+//
+// Solidity: event RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) ParseRoleRevoked(log types.Log) (*SymbioticLzDVNRoleRevoked, error) {
+	event := new(SymbioticLzDVNRoleRevoked)
+	if err := _SymbioticLzDVN.contract.UnpackLog(event, "RoleRevoked", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
 }
 
 // SymbioticLzDVNSetDefaultMultiplierBpsIterator is returned from FilterSetDefaultMultiplierBps and is used to iterate over the raw logs and unpacked data for SetDefaultMultiplierBps events raised by the SymbioticLzDVN contract.
@@ -1500,6 +3046,677 @@ func (_SymbioticLzDVN *SymbioticLzDVNFilterer) WatchSetWorkerLib(opts *bind.Watc
 func (_SymbioticLzDVN *SymbioticLzDVNFilterer) ParseSetWorkerLib(log types.Log) (*SymbioticLzDVNSetWorkerLib, error) {
 	event := new(SymbioticLzDVNSetWorkerLib)
 	if err := _SymbioticLzDVN.contract.UnpackLog(event, "SetWorkerLib", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
+// SymbioticLzDVNUnpausedIterator is returned from FilterUnpaused and is used to iterate over the raw logs and unpacked data for Unpaused events raised by the SymbioticLzDVN contract.
+type SymbioticLzDVNUnpausedIterator struct {
+	Event *SymbioticLzDVNUnpaused // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *SymbioticLzDVNUnpausedIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(SymbioticLzDVNUnpaused)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(SymbioticLzDVNUnpaused)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *SymbioticLzDVNUnpausedIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *SymbioticLzDVNUnpausedIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// SymbioticLzDVNUnpaused represents a Unpaused event raised by the SymbioticLzDVN contract.
+type SymbioticLzDVNUnpaused struct {
+	Account common.Address
+	Raw     types.Log // Blockchain specific contextual infos
+}
+
+// FilterUnpaused is a free log retrieval operation binding the contract event 0x5db9ee0a495bf2e6ff9c91a7834c1ba4fdd244a5e8aa4e537bd38aeae4b073aa.
+//
+// Solidity: event Unpaused(address account)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) FilterUnpaused(opts *bind.FilterOpts) (*SymbioticLzDVNUnpausedIterator, error) {
+
+	logs, sub, err := _SymbioticLzDVN.contract.FilterLogs(opts, "Unpaused")
+	if err != nil {
+		return nil, err
+	}
+	return &SymbioticLzDVNUnpausedIterator{contract: _SymbioticLzDVN.contract, event: "Unpaused", logs: logs, sub: sub}, nil
+}
+
+// WatchUnpaused is a free log subscription operation binding the contract event 0x5db9ee0a495bf2e6ff9c91a7834c1ba4fdd244a5e8aa4e537bd38aeae4b073aa.
+//
+// Solidity: event Unpaused(address account)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) WatchUnpaused(opts *bind.WatchOpts, sink chan<- *SymbioticLzDVNUnpaused) (event.Subscription, error) {
+
+	logs, sub, err := _SymbioticLzDVN.contract.WatchLogs(opts, "Unpaused")
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(SymbioticLzDVNUnpaused)
+				if err := _SymbioticLzDVN.contract.UnpackLog(event, "Unpaused", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseUnpaused is a log parse operation binding the contract event 0x5db9ee0a495bf2e6ff9c91a7834c1ba4fdd244a5e8aa4e537bd38aeae4b073aa.
+//
+// Solidity: event Unpaused(address account)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) ParseUnpaused(log types.Log) (*SymbioticLzDVNUnpaused, error) {
+	event := new(SymbioticLzDVNUnpaused)
+	if err := _SymbioticLzDVN.contract.UnpackLog(event, "Unpaused", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
+// SymbioticLzDVNUpdateQuorumIterator is returned from FilterUpdateQuorum and is used to iterate over the raw logs and unpacked data for UpdateQuorum events raised by the SymbioticLzDVN contract.
+type SymbioticLzDVNUpdateQuorumIterator struct {
+	Event *SymbioticLzDVNUpdateQuorum // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *SymbioticLzDVNUpdateQuorumIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(SymbioticLzDVNUpdateQuorum)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(SymbioticLzDVNUpdateQuorum)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *SymbioticLzDVNUpdateQuorumIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *SymbioticLzDVNUpdateQuorumIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// SymbioticLzDVNUpdateQuorum represents a UpdateQuorum event raised by the SymbioticLzDVN contract.
+type SymbioticLzDVNUpdateQuorum struct {
+	Quorum uint64
+	Raw    types.Log // Blockchain specific contextual infos
+}
+
+// FilterUpdateQuorum is a free log retrieval operation binding the contract event 0xb600f3cf7f38a4b49bb0c75f722ef69f7e3e39ef3bb4aa8207fd86e724a23249.
+//
+// Solidity: event UpdateQuorum(uint64 _quorum)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) FilterUpdateQuorum(opts *bind.FilterOpts) (*SymbioticLzDVNUpdateQuorumIterator, error) {
+
+	logs, sub, err := _SymbioticLzDVN.contract.FilterLogs(opts, "UpdateQuorum")
+	if err != nil {
+		return nil, err
+	}
+	return &SymbioticLzDVNUpdateQuorumIterator{contract: _SymbioticLzDVN.contract, event: "UpdateQuorum", logs: logs, sub: sub}, nil
+}
+
+// WatchUpdateQuorum is a free log subscription operation binding the contract event 0xb600f3cf7f38a4b49bb0c75f722ef69f7e3e39ef3bb4aa8207fd86e724a23249.
+//
+// Solidity: event UpdateQuorum(uint64 _quorum)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) WatchUpdateQuorum(opts *bind.WatchOpts, sink chan<- *SymbioticLzDVNUpdateQuorum) (event.Subscription, error) {
+
+	logs, sub, err := _SymbioticLzDVN.contract.WatchLogs(opts, "UpdateQuorum")
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(SymbioticLzDVNUpdateQuorum)
+				if err := _SymbioticLzDVN.contract.UnpackLog(event, "UpdateQuorum", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseUpdateQuorum is a log parse operation binding the contract event 0xb600f3cf7f38a4b49bb0c75f722ef69f7e3e39ef3bb4aa8207fd86e724a23249.
+//
+// Solidity: event UpdateQuorum(uint64 _quorum)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) ParseUpdateQuorum(log types.Log) (*SymbioticLzDVNUpdateQuorum, error) {
+	event := new(SymbioticLzDVNUpdateQuorum)
+	if err := _SymbioticLzDVN.contract.UnpackLog(event, "UpdateQuorum", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
+// SymbioticLzDVNUpdateSignerIterator is returned from FilterUpdateSigner and is used to iterate over the raw logs and unpacked data for UpdateSigner events raised by the SymbioticLzDVN contract.
+type SymbioticLzDVNUpdateSignerIterator struct {
+	Event *SymbioticLzDVNUpdateSigner // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *SymbioticLzDVNUpdateSignerIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(SymbioticLzDVNUpdateSigner)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(SymbioticLzDVNUpdateSigner)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *SymbioticLzDVNUpdateSignerIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *SymbioticLzDVNUpdateSignerIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// SymbioticLzDVNUpdateSigner represents a UpdateSigner event raised by the SymbioticLzDVN contract.
+type SymbioticLzDVNUpdateSigner struct {
+	Signer common.Address
+	Active bool
+	Raw    types.Log // Blockchain specific contextual infos
+}
+
+// FilterUpdateSigner is a free log retrieval operation binding the contract event 0x863d338cad74814b108a06288ad5e0e80d56495e0332238b1d2cdcfa0ca8e5ce.
+//
+// Solidity: event UpdateSigner(address _signer, bool _active)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) FilterUpdateSigner(opts *bind.FilterOpts) (*SymbioticLzDVNUpdateSignerIterator, error) {
+
+	logs, sub, err := _SymbioticLzDVN.contract.FilterLogs(opts, "UpdateSigner")
+	if err != nil {
+		return nil, err
+	}
+	return &SymbioticLzDVNUpdateSignerIterator{contract: _SymbioticLzDVN.contract, event: "UpdateSigner", logs: logs, sub: sub}, nil
+}
+
+// WatchUpdateSigner is a free log subscription operation binding the contract event 0x863d338cad74814b108a06288ad5e0e80d56495e0332238b1d2cdcfa0ca8e5ce.
+//
+// Solidity: event UpdateSigner(address _signer, bool _active)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) WatchUpdateSigner(opts *bind.WatchOpts, sink chan<- *SymbioticLzDVNUpdateSigner) (event.Subscription, error) {
+
+	logs, sub, err := _SymbioticLzDVN.contract.WatchLogs(opts, "UpdateSigner")
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(SymbioticLzDVNUpdateSigner)
+				if err := _SymbioticLzDVN.contract.UnpackLog(event, "UpdateSigner", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseUpdateSigner is a log parse operation binding the contract event 0x863d338cad74814b108a06288ad5e0e80d56495e0332238b1d2cdcfa0ca8e5ce.
+//
+// Solidity: event UpdateSigner(address _signer, bool _active)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) ParseUpdateSigner(log types.Log) (*SymbioticLzDVNUpdateSigner, error) {
+	event := new(SymbioticLzDVNUpdateSigner)
+	if err := _SymbioticLzDVN.contract.UnpackLog(event, "UpdateSigner", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
+// SymbioticLzDVNVerifierFeePaidIterator is returned from FilterVerifierFeePaid and is used to iterate over the raw logs and unpacked data for VerifierFeePaid events raised by the SymbioticLzDVN contract.
+type SymbioticLzDVNVerifierFeePaidIterator struct {
+	Event *SymbioticLzDVNVerifierFeePaid // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *SymbioticLzDVNVerifierFeePaidIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(SymbioticLzDVNVerifierFeePaid)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(SymbioticLzDVNVerifierFeePaid)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *SymbioticLzDVNVerifierFeePaidIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *SymbioticLzDVNVerifierFeePaidIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// SymbioticLzDVNVerifierFeePaid represents a VerifierFeePaid event raised by the SymbioticLzDVN contract.
+type SymbioticLzDVNVerifierFeePaid struct {
+	Fee *big.Int
+	Raw types.Log // Blockchain specific contextual infos
+}
+
+// FilterVerifierFeePaid is a free log retrieval operation binding the contract event 0x87e46b0a6199bc734632187269a103c05714ee0adae5b28f30723955724f37ef.
+//
+// Solidity: event VerifierFeePaid(uint256 fee)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) FilterVerifierFeePaid(opts *bind.FilterOpts) (*SymbioticLzDVNVerifierFeePaidIterator, error) {
+
+	logs, sub, err := _SymbioticLzDVN.contract.FilterLogs(opts, "VerifierFeePaid")
+	if err != nil {
+		return nil, err
+	}
+	return &SymbioticLzDVNVerifierFeePaidIterator{contract: _SymbioticLzDVN.contract, event: "VerifierFeePaid", logs: logs, sub: sub}, nil
+}
+
+// WatchVerifierFeePaid is a free log subscription operation binding the contract event 0x87e46b0a6199bc734632187269a103c05714ee0adae5b28f30723955724f37ef.
+//
+// Solidity: event VerifierFeePaid(uint256 fee)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) WatchVerifierFeePaid(opts *bind.WatchOpts, sink chan<- *SymbioticLzDVNVerifierFeePaid) (event.Subscription, error) {
+
+	logs, sub, err := _SymbioticLzDVN.contract.WatchLogs(opts, "VerifierFeePaid")
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(SymbioticLzDVNVerifierFeePaid)
+				if err := _SymbioticLzDVN.contract.UnpackLog(event, "VerifierFeePaid", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseVerifierFeePaid is a log parse operation binding the contract event 0x87e46b0a6199bc734632187269a103c05714ee0adae5b28f30723955724f37ef.
+//
+// Solidity: event VerifierFeePaid(uint256 fee)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) ParseVerifierFeePaid(log types.Log) (*SymbioticLzDVNVerifierFeePaid, error) {
+	event := new(SymbioticLzDVNVerifierFeePaid)
+	if err := _SymbioticLzDVN.contract.UnpackLog(event, "VerifierFeePaid", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
+// SymbioticLzDVNVerifySignaturesFailedIterator is returned from FilterVerifySignaturesFailed and is used to iterate over the raw logs and unpacked data for VerifySignaturesFailed events raised by the SymbioticLzDVN contract.
+type SymbioticLzDVNVerifySignaturesFailedIterator struct {
+	Event *SymbioticLzDVNVerifySignaturesFailed // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *SymbioticLzDVNVerifySignaturesFailedIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(SymbioticLzDVNVerifySignaturesFailed)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(SymbioticLzDVNVerifySignaturesFailed)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *SymbioticLzDVNVerifySignaturesFailedIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *SymbioticLzDVNVerifySignaturesFailedIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// SymbioticLzDVNVerifySignaturesFailed represents a VerifySignaturesFailed event raised by the SymbioticLzDVN contract.
+type SymbioticLzDVNVerifySignaturesFailed struct {
+	Idx *big.Int
+	Raw types.Log // Blockchain specific contextual infos
+}
+
+// FilterVerifySignaturesFailed is a free log retrieval operation binding the contract event 0xd6d90193101048cc1b6edcdc2348f5acf7a4a4a97d3e7b668b74cb7602ab3ebc.
+//
+// Solidity: event VerifySignaturesFailed(uint256 idx)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) FilterVerifySignaturesFailed(opts *bind.FilterOpts) (*SymbioticLzDVNVerifySignaturesFailedIterator, error) {
+
+	logs, sub, err := _SymbioticLzDVN.contract.FilterLogs(opts, "VerifySignaturesFailed")
+	if err != nil {
+		return nil, err
+	}
+	return &SymbioticLzDVNVerifySignaturesFailedIterator{contract: _SymbioticLzDVN.contract, event: "VerifySignaturesFailed", logs: logs, sub: sub}, nil
+}
+
+// WatchVerifySignaturesFailed is a free log subscription operation binding the contract event 0xd6d90193101048cc1b6edcdc2348f5acf7a4a4a97d3e7b668b74cb7602ab3ebc.
+//
+// Solidity: event VerifySignaturesFailed(uint256 idx)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) WatchVerifySignaturesFailed(opts *bind.WatchOpts, sink chan<- *SymbioticLzDVNVerifySignaturesFailed) (event.Subscription, error) {
+
+	logs, sub, err := _SymbioticLzDVN.contract.WatchLogs(opts, "VerifySignaturesFailed")
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(SymbioticLzDVNVerifySignaturesFailed)
+				if err := _SymbioticLzDVN.contract.UnpackLog(event, "VerifySignaturesFailed", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseVerifySignaturesFailed is a log parse operation binding the contract event 0xd6d90193101048cc1b6edcdc2348f5acf7a4a4a97d3e7b668b74cb7602ab3ebc.
+//
+// Solidity: event VerifySignaturesFailed(uint256 idx)
+func (_SymbioticLzDVN *SymbioticLzDVNFilterer) ParseVerifySignaturesFailed(log types.Log) (*SymbioticLzDVNVerifySignaturesFailed, error) {
+	event := new(SymbioticLzDVNVerifySignaturesFailed)
+	if err := _SymbioticLzDVN.contract.UnpackLog(event, "VerifySignaturesFailed", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log
