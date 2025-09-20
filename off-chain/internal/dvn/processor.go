@@ -198,15 +198,33 @@ func (p *Processor) pollForPackets(ctx context.Context, eid uint32, client *ethc
 	}
 	defer iterator.Close()
 
+	endpointABI, err := abi.JSON(strings.NewReader(contracts.EndpointV2ABI))
+	if err != nil {
+		return errors.Errorf("failed to parse endpoint ABI: %w", err)
+	}
+
 	for iterator.Next() {
 		event := iterator.Event
 		// Process each event in a separate goroutine to avoid blocking the polling loop.
 		go func(e *contracts.EndpointV2PacketSent) {
 			p.logger.Info("-> Detected PacketSent event", "srcEID", eid, "txHash", e.Raw.TxHash.Hex())
+
+			// The PacketSent event in LZv2 doesn't have a named `payload` field.
+			// The encoded packet is in the `Raw.Data` field. We need to unpack it.
+			var decoded struct {
+				EncodedPacket []byte
+				Options       []byte
+				SendLibrary   common.Address
+			}
+			err := endpointABI.UnpackIntoInterface(&decoded, "PacketSent", e.Raw.Data)
+			if err != nil {
+				p.logger.Error("Error unpacking PacketSent event data", "txHash", e.Raw.TxHash.Hex(), "error", err)
+				return
+			}
 			
 			// The PacketSent event contains the full encoded packet (header + message).
 			// We need to parse it to extract the components for verification.
-			packet, err := parsePacket(e.Payload)
+			packet, err := parsePacket(decoded.EncodedPacket)
 			if err != nil {
 				p.logger.Error("Error parsing packet", "txHash", e.Raw.TxHash.Hex(), "error", err)
 				return
@@ -351,9 +369,9 @@ func parsePacket(encodedPacket []byte) (*Packet, error) {
 
 	p := &Packet{}
 	p.Nonce = new(big.Int).SetBytes(encodedPacket[1:9]).Uint64()
-	p.SrcEid = new(big.Int).SetBytes(encodedPacket[9:13]).Uint32()
+	p.SrcEid = uint32(new(big.Int).SetBytes(encodedPacket[9:13]).Uint64())
 	p.Sender = common.BytesToAddress(encodedPacket[25:45]) // sender is 32 bytes, but address is last 20
-	p.DstEid = new(big.Int).SetBytes(encodedPacket[45:49]).Uint32()
+	p.DstEid = uint32(new(big.Int).SetBytes(encodedPacket[45:49]).Uint64())
 	p.Receiver = common.BytesToHash(encodedPacket[49:81])
 	p.Guid = common.BytesToHash(encodedPacket[81:113])
 	p.Message = encodedPacket[113:]
