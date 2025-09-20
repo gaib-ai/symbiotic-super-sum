@@ -146,7 +146,8 @@ contract SymbioticLzDvnDeploy is Script {
         root = string.concat(root, '"receiveUln":"', vm.toString(address(receiveLibA)), '",');
         root = string.concat(root, '"dvn":"', vm.toString(address(dvnA)), '",');
         root = string.concat(root, '"adapter":"', vm.toString(address(adapterA)), '",');
-        root = string.concat(root, '"aid":"', vm.toString(address(aidA)), '"');
+        root = string.concat(root, '"aid":"', vm.toString(address(aidA)), '",');
+        root = string.concat(root, '"eid":', vm.toString(localChainA_Eid));
         root = string.concat(root, '},"chainB":{');
 
         // Serialize for chain B
@@ -154,8 +155,8 @@ contract SymbioticLzDvnDeploy is Script {
         root = string.concat(root, '"receiveUln":"', vm.toString(address(receiveLibB)), '",');
         root = string.concat(root, '"dvn":"', vm.toString(address(dvnB)), '",');
         root = string.concat(root, '"adapter":"', vm.toString(address(adapterB)), '",');
-        root = string.concat(root, '"aid":"', vm.toString(address(aidB)), '"');
-
+        root = string.concat(root, '"aid":"', vm.toString(address(aidB)), '",');
+        root = string.concat(root, '"eid":', vm.toString(localChainB_Eid));
         root = string.concat(root, "}}");
 
         vm.writeFile(DEPLOYMENT_INFO_FILE, root);
