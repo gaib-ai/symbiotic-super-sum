@@ -22,9 +22,10 @@ import {Executor, IExecutor} from "@layerzerolabs/lz-evm-messagelib-v2/contracts
 import {ExecutorFeeLib} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/ExecutorFeeLib.sol";
 import {DVNFeeLib} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/dvn/DVNFeeLib.sol";
 import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import {IDVN} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/interfaces/IDVN.sol";
 
 // Custom Integrated Contracts
-import {SymbioticLzDVN, IDVN} from "../src/SymbioticLzDVN.sol";
+import {SymbioticLzDVN} from "../src/SymbioticLzDVN.sol";
 import {ReceiveUlnSymbiotic} from "../src/uln/ReceiveUlnSymbiotic.sol";
 
 // Application Contracts
@@ -233,17 +234,31 @@ contract SymbioticLzDvnDeploy is Script {
         priceFeed.initialize(_deployer);
 
         address settlementContract = settlements.get(block.chainid);
-        SymbioticLzDVN dvn = new SymbioticLzDVN(eid, address(priceFeed), settlementContract, address(receiveLib));
+        // For the base DVN constructor, we provide minimal viable parameters,
+        // as the core multi-sig functionality is being replaced by Symbiotic verification.
+        address[] memory messageLibs = new address[](1);
+        messageLibs[0] = address(sendLib);
+        address[] memory signers = new address[](1);
+        signers[0] = _deployer; // Placeholder signer
+        address[] memory admins = new address[](1);
+        admins[0] = _deployer;
+        
+        SymbioticLzDVN dvn = new SymbioticLzDVN(
+            eid,
+            address(priceFeed),
+            settlementContract,
+            address(receiveLib),
+            messageLibs,
+            signers,
+            1, // threshold
+            admins
+        );
         DVNFeeLib dvnFeeLib = new DVNFeeLib(eid, 10 ** 18);
         dvn.setWorkerFeeLib(address(dvnFeeLib));
 
         // Deploy Executor
         ExecutorFeeLib executorFeeLib = new ExecutorFeeLib(eid, 10 ** 18);
         Executor executorImpl = new Executor();
-        address[] memory messageLibs = new address[](1);
-        messageLibs[0] = address(sendLib);
-        address[] memory admins = new address[](1);
-        admins[0] = _deployer;
         bytes memory executorInitData = abi.encodeWithSelector(
             Executor.initialize.selector, address(endpoint), address(0x0), messageLibs, address(priceFeed), address(0x0), admins
         );
