@@ -96,7 +96,7 @@ generate_docker_compose() {
     network_dir="temp-network"
     rm -rf "$network_dir"
     mkdir -p "$network_dir"
-    mkdir -p "$network_dir/deploy-data/keys"
+    mkdir -p "$network_dir/deploy-data"
 
     # Copy the common sidecar config
     cp sidecar.common.yaml "$network_dir/sidecar.common.yaml"
