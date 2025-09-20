@@ -399,7 +399,10 @@ func abiEncodeSymbioticProof(epoch uint64, proof []byte) []byte {
 		{Type: bytesT},  // proof
 	}
 
-	encoded, err := args.Pack(uint64(epoch), proof)
+	// Use big.Int for the epoch to ensure correct ABI encoding.
+	epochBigInt := new(big.Int).SetUint64(epoch)
+
+	encoded, err := args.Pack(epochBigInt, proof)
 	if err != nil {
 		// This should not happen with correct types
 		panic(err)
