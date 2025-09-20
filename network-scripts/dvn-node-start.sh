@@ -3,6 +3,15 @@ set -e
 
 echo "Starting DVN Node..."
 
+# Wait for the deployment configuration file to be available.
+# This file is created by the 'deployer' service and is essential for the node to know contract addresses.
+echo "Waiting for dvn_deployment.json file..."
+until [ -f /app/temp-network/deploy-data/dvn_deployment.json ]; do
+    echo "Config file not found, sleeping..."
+    sleep 2
+done
+echo "Found dvn_deployment.json file. Starting node."
+
 # Arguments from docker-compose command
 RELAY_ADDR=${1:-"relay-sidecar-1:8080"}
 PRIVATE_KEY=${2:-"ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"} # Default Anvil key
