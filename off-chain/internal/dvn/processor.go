@@ -243,17 +243,18 @@ func (p *Processor) pollForPackets(ctx context.Context, eid uint32, client *ethc
 }
 
 func (p *Processor) handlePacket(ctx context.Context, packet *Packet) error {
+	// The message sent to the relay for signing must match what the SymbioticLzDVN contract
+	// constructs for verification. Based on the LayerZero DVN standard, this should be
+	// the ABI encoding of the 81-byte packet header and the 32-byte payload hash.
 	bytesT, _ := abi.NewType("bytes", "", nil)
 	bytes32T, _ := abi.NewType("bytes32", "", nil)
 	args := abi.Arguments{
 		{Type: bytesT},
 		{Type: bytes32T},
 	}
-	// 1. Pack the header and payload hash. This variable-length data is the message that will be sent to the relay.
-	// The relay network will hash this message internally before signing.
 	messageForRelay, err := args.Pack(packet.PacketHeader, packet.PayloadHash)
 	if err != nil {
-		return errors.Errorf("failed to pack header and payload hash: %w", err)
+		return errors.Errorf("failed to pack header and payload hash for relay: %w", err)
 	}
 
 	p.logger.Info("Requesting signature from Symbiotic Relay",
@@ -362,25 +363,31 @@ SUBMIT_PROOF:
 
 // parsePacket decodes the raw encoded packet from the PacketSent event.
 func parsePacket(encodedPacket []byte) (*Packet, error) {
-	if len(encodedPacket) < 113 { // 1 (version) + 8 (nonce) + 4 (srcEid) + 32 (sender) + 4 (dstEid) + 32 (receiver) + 32 (guid)
+	if len(encodedPacket) < 113 { // Minimum length: 81 (header) + 32 (guid)
 		return nil, errors.New("encoded packet is too short")
 	}
 
 	p := &Packet{}
+	// Nonce starts at offset 1 (after version byte)
 	p.Nonce = new(big.Int).SetBytes(encodedPacket[1:9]).Uint64()
 	p.SrcEid = uint32(new(big.Int).SetBytes(encodedPacket[9:13]).Uint64())
-	p.Sender = common.BytesToAddress(encodedPacket[25:45]) // sender is 32 bytes, but address is last 20
+	// Sender is a 32-byte field in the packet, but the address is the last 20 bytes.
+	p.Sender = common.BytesToAddress(encodedPacket[13:45])
 	p.DstEid = uint32(new(big.Int).SetBytes(encodedPacket[45:49]).Uint64())
+	// Receiver is a full 32-byte hash.
 	p.Receiver = common.BytesToHash(encodedPacket[49:81])
+	// GUID is the next 32 bytes after the 81-byte header.
 	p.Guid = common.BytesToHash(encodedPacket[81:113])
 	p.Message = encodedPacket[113:]
-	
-	// The PacketHeader is the portion of the encoded packet that gets hashed for verification.
-	// It's everything up to and including the guid.
-	p.PacketHeader = encodedPacket[0:113]
 
-	// The PayloadHash is the hash of the guid and the message.
-	p.PayloadHash = crypto.Keccak256Hash(p.Guid.Bytes(), p.Message)
+	// The PacketHeader must match the logic in LayerZero's reference DVN scripts.
+	// It is a fixed-size 81-byte slice of the encoded packet, from version to receiver.
+	p.PacketHeader = encodedPacket[0:81]
+
+	// The PayloadHash must also match the reference scripts: keccak256(abi.encodePacked(guid, message))
+	// In Go, this is equivalent to concatenating the byte slices and then hashing.
+	packedPayload := append(p.Guid.Bytes(), p.Message...)
+	p.PayloadHash = crypto.Keccak256Hash(packedPayload)
 
 	return p, nil
 }
