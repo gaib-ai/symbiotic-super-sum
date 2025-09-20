@@ -161,8 +161,10 @@ contract SymbioticLzDvnDeploy is Script {
         string memory root = '{"chainA":{';
         // Serialize for chain A
         root = string.concat(root, '"endpoint":"', vm.toString(address(endpointA)), '",');
+        root = string.concat(root, '"sendLib":"', vm.toString(address(sendLibA)), '",');
         root = string.concat(root, '"receiveUln":"', vm.toString(address(receiveLibA)), '",');
         root = string.concat(root, '"dvn":"', vm.toString(address(dvnA)), '",');
+        root = string.concat(root, '"executor":"', vm.toString(address(executorA)), '",');
         root = string.concat(root, '"adapter":"', vm.toString(address(adapterA)), '",');
         root = string.concat(root, '"aid":"', vm.toString(address(aidA)), '",');
         root = string.concat(root, '"minter":"', vm.toString(address(minterA)), '",');
@@ -172,8 +174,10 @@ contract SymbioticLzDvnDeploy is Script {
 
         // Serialize for chain B
         root = string.concat(root, '"endpoint":"', vm.toString(address(endpointB)), '",');
+        root = string.concat(root, '"sendLib":"', vm.toString(address(sendLibB)), '",');
         root = string.concat(root, '"receiveUln":"', vm.toString(address(receiveLibB)), '",');
         root = string.concat(root, '"dvn":"', vm.toString(address(dvnB)), '",');
+        root = string.concat(root, '"executor":"', vm.toString(address(executorB)), '",');
         root = string.concat(root, '"adapter":"', vm.toString(address(adapterB)), '",');
         root = string.concat(root, '"aid":"', vm.toString(address(aidB)), '",');
         root = string.concat(root, '"minter":"', vm.toString(address(minterB)), '",');

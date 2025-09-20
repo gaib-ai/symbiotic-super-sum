@@ -49,12 +49,14 @@ type DvnConfig struct {
 		ReceiveUln string `json:"receiveUln"`
 		Dvn        string `json:"dvn"`
 		SendLib    string `json:"sendLib"`
+		Executor   string `json:"executor"`
 	} `json:"chainA"`
 	ChainB struct {
 		Endpoint   string `json:"endpoint"`
 		ReceiveUln string `json:"receiveUln"`
 		Dvn        string `json:"dvn"`
 		SendLib    string `json:"sendLib"`
+		Executor   string `json:"executor"`
 	} `json:"chainB"`
 }
 
