@@ -243,54 +243,42 @@ func (p *Processor) pollForPackets(ctx context.Context, eid uint32, client *ethc
 }
 
 func (p *Processor) handlePacket(ctx context.Context, packet *Packet) error {
-	// This must match *exactly* the hashing logic inside SymbioticLzDVN.sol:
-	// abi.encode(keccak256(abi.encode(_packetHeader, _payloadHash)))
 	bytesT, _ := abi.NewType("bytes", "", nil)
 	bytes32T, _ := abi.NewType("bytes32", "", nil)
 	args := abi.Arguments{
 		{Type: bytesT},
 		{Type: bytes32T},
 	}
-	// 1. First, pack the header and payload hash, same as on-chain.
-	packedData, err := args.Pack(packet.PacketHeader, packet.PayloadHash)
+	// 1. Pack the header and payload hash to match the on-chain abi.encode.
+	packedForHash, err := args.Pack(packet.PacketHeader, packet.PayloadHash)
 	if err != nil {
 		return errors.Errorf("failed to pack header and payload hash: %w", err)
 	}
 
-	// 2. Then, compute the keccak256 hash of the packed data.
-	messageToSign := crypto.Keccak256Hash(packedData)
+	// 2. Compute the keccak256 hash. This fixed-size hash will be the message for the relay.
+	messageForRelay := crypto.Keccak256Hash(packedForHash)
 
-	// 3. The final message sent to the settlement contract is the abi.encode of the hash.
-	// However, the message signed by the relay is the hash itself (messageToSign).
-	finalMessageForContract := abi.Arguments{{Type: bytes32T}}
-	message, err := finalMessageForContract.Pack(messageToSign)
-	if err != nil {
-		return errors.Errorf("failed to pack final message for signing: %w", err)
-	}
-	messageHash := crypto.Keccak256Hash(message)
 
 	p.logger.Info("Requesting signature from Symbiotic Relay",
 		"payloadHash", hexutil.Encode(packet.PayloadHash[:]),
-		"messageToSign", messageToSign.Hex(),
-		"finalMessageHash", hexutil.Encode(messageHash[:]))
+		"messageForRelay", messageForRelay.Hex())
 
-	// 2. Request the signature from the Relay.
-	// CRITICAL: We send the hash of the packet data to be signed, not the packed data itself.
+	// 3. Request the signature from the Relay using the fixed-size hash.
 	suggestedEpoch, err := p.relayClient.GetSuggestedEpoch(ctx, &v1.GetSuggestedEpochRequest{})
 	if err != nil {
 		return errors.Errorf("failed to get suggested epoch from relay: %w", err)
 	}
 	signResp, err := p.relayClient.SignMessage(ctx, &v1.SignMessageRequest{
 		KeyTag:        15, // Default BLS key tag
-		Message:       messageToSign.Bytes(),
+		Message:       messageForRelay.Bytes(),
 		RequiredEpoch: &suggestedEpoch.Epoch,
 	})
 	if err != nil {
 		return errors.Errorf("failed to request signature from relay: %w", err)
 	}
-	p.logger.Info("Signature request submitted", "requestHash_from_relay", signResp.RequestHash, "our_calculated_hash", hexutil.Encode(messageHash[:]), "epoch", signResp.Epoch)
+	p.logger.Info("Signature request submitted", "requestHash_from_relay", signResp.RequestHash, "epoch", signResp.Epoch)
 
-	// 3. Poll the relay for the aggregated proof.
+	// 4. Poll the relay for the aggregated proof.
 	var aggProof *v1.AggregationProof
 	for {
 		select {
@@ -411,7 +399,10 @@ func abiEncodeSymbioticProof(epoch uint64, proof []byte) []byte {
 		{Type: bytesT},  // proof
 	}
 
-	encoded, err := args.Pack(uint64(epoch), proof)
+	// Use big.Int for the epoch to ensure correct ABI encoding.
+	epochBigInt := new(big.Int).SetUint64(epoch)
+
+	encoded, err := args.Pack(epochBigInt, proof)
 	if err != nil {
 		// This should not happen with correct types
 		panic(err)
