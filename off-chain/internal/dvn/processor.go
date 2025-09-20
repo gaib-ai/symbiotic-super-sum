@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"log/slog"
+	"math/big"
 	"os"
 	"strings"
 	"time"
@@ -21,22 +22,39 @@ import (
 	v1 "github.com/symbioticfi/relay/api/client/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"math/big"
 )
 
 // Use a fixed, absolute path inside the container
 const deploymentConfigPath = "/app/temp-network/deploy-data/dvn_deployment.json"
+
+var (
+	dvnFeePaidTopic = crypto.Keccak256Hash([]byte("DVNFeePaid(address[],address[],uint256[])"))
+	sendLibABI      abi.ABI
+)
+
+func init() {
+	// A simplified ABI for just the DVNFeePaid event we need to check.
+	const abiJSON = `[{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address[]","name":"requiredDVNs","type":"address[]"},{"indexed":false,"internalType":"address[]","name":"optionalDVNs","type":"address[]"},{"indexed":false,"internalType":"uint256[]","name":"fees","type":"uint256[]"}],"name":"DVNFeePaid","type":"event"}]`
+	var err error
+	sendLibABI, err = abi.JSON(strings.NewReader(abiJSON))
+	if err != nil {
+		// This should not happen with a static correct ABI
+		panic("failed to parse SendLib ABI: " + err.Error())
+	}
+}
 
 type DvnConfig struct {
 	ChainA struct {
 		Endpoint   string `json:"endpoint"`
 		ReceiveUln string `json:"receiveUln"`
 		Dvn        string `json:"dvn"`
+		SendLib    string `json:"sendLib"`
 	} `json:"chainA"`
 	ChainB struct {
 		Endpoint   string `json:"endpoint"`
 		ReceiveUln string `json:"receiveUln"`
 		Dvn        string `json:"dvn"`
+		SendLib    string `json:"sendLib"`
 	} `json:"chainB"`
 }
 
@@ -50,17 +68,27 @@ func (c *DvnConfig) GetReceiveUln(eid uint32) (string, error) {
 	return "", errors.Errorf("unknown eid for receive uln: %d", eid)
 }
 
+func (c *DvnConfig) GetSendLib(eid uint32) (string, error) {
+	if eid == 31337 {
+		return c.ChainA.SendLib, nil
+	}
+	if eid == 31338 {
+		return c.ChainB.SendLib, nil
+	}
+	return "", errors.Errorf("unknown eid for send lib: %d", eid)
+}
+
 // Packet struct mirrors the structure in LayerZero's ISendLib.sol
 type Packet struct {
-	Nonce       uint64
-	SrcEid      uint32
-	Sender      common.Address
-	DstEid      uint32
-	Receiver    common.Hash
-	Guid        common.Hash
-	Message     []byte
+	Nonce        uint64
+	SrcEid       uint32
+	Sender       common.Address
+	DstEid       uint32
+	Receiver     common.Hash
+	Guid         common.Hash
+	Message      []byte
 	PacketHeader []byte
-	PayloadHash common.Hash
+	PayloadHash  common.Hash
 }
 
 type Processor struct {
@@ -68,6 +96,8 @@ type Processor struct {
 	ethClients        map[uint32]*ethclient.Client
 	endpointContracts map[uint32]*contracts.EndpointV2
 	dvnContracts      map[uint32]*contracts.SymbioticLzDVN
+	dvnAddrs          map[uint32]common.Address
+	sendLibAddrs      map[uint32]common.Address
 	privateKey        string
 	logger            *slog.Logger
 	config            *DvnConfig
@@ -102,6 +132,8 @@ func NewProcessor(
 	ethClients := make(map[uint32]*ethclient.Client)
 	endpointContracts := make(map[uint32]*contracts.EndpointV2)
 	dvnContracts := make(map[uint32]*contracts.SymbioticLzDVN)
+	dvnAddrs := make(map[uint32]common.Address)
+	sendLibAddrs := make(map[uint32]common.Address)
 	lastBlocks := make(map[uint32]uint64)
 
 	for eid, rpcURL := range evmRpcURLs {
@@ -111,13 +143,15 @@ func NewProcessor(
 		}
 		ethClients[eid] = client
 
-		var endpointAddr, dvnAddr common.Address
+		var endpointAddr, dvnAddr, sendLibAddr common.Address
 		if eid == 31337 { // Chain A
 			endpointAddr = common.HexToAddress(config.ChainA.Endpoint)
 			dvnAddr = common.HexToAddress(config.ChainA.Dvn)
+			sendLibAddr = common.HexToAddress(config.ChainA.SendLib)
 		} else if eid == 31338 { // Chain B
 			endpointAddr = common.HexToAddress(config.ChainB.Endpoint)
 			dvnAddr = common.HexToAddress(config.ChainB.Dvn)
+			sendLibAddr = common.HexToAddress(config.ChainB.SendLib)
 		} else {
 			return nil, errors.Errorf("unsupported EID: %d", eid)
 		}
@@ -133,6 +167,8 @@ func NewProcessor(
 			return nil, errors.Errorf("failed to instantiate SymbioticLzDVN contract for EID %d: %w", eid, err)
 		}
 		dvnContracts[eid] = dvn
+		dvnAddrs[eid] = dvnAddr
+		sendLibAddrs[eid] = sendLibAddr
 		lastBlocks[eid] = 0 // Initialize last block tracker
 	}
 
@@ -141,6 +177,8 @@ func NewProcessor(
 		ethClients:        ethClients,
 		endpointContracts: endpointContracts,
 		dvnContracts:      dvnContracts,
+		dvnAddrs:          dvnAddrs,
+		sendLibAddrs:      sendLibAddrs,
 		privateKey:        privateKey,
 		logger:            logger,
 		config:            &config,
@@ -217,6 +255,49 @@ func (p *Processor) pollForPackets(ctx context.Context, eid uint32, client *ethc
 
 	for iterator.Next() {
 		event := iterator.Event
+		p.logger.Debug("Found PacketSent event, checking if assigned", "txHash", event.Raw.TxHash.Hex())
+
+		// Check if this DVN was assigned and paid in the same transaction.
+		receipt, err := client.TransactionReceipt(ctx, event.Raw.TxHash)
+		if err != nil {
+			p.logger.Error("Failed to get receipt for PacketSent tx", "txHash", event.Raw.TxHash.Hex(), "error", err)
+			continue
+		}
+
+		myDvnAddress := p.dvnAddrs[eid]
+		sendLibAddress := p.sendLibAddrs[eid]
+		assigned := false
+		for _, log := range receipt.Logs {
+			if log.Address == sendLibAddress && len(log.Topics) > 0 && log.Topics[0] == dvnFeePaidTopic {
+				var feePaidEvent struct {
+					RequiredDVNs []common.Address
+					OptionalDVNs []common.Address
+					Fees         []*big.Int
+				}
+				// The actual event data is in log.Data, and topics are for indexed fields (none here)
+				if err := sendLibABI.UnpackIntoInterface(&feePaidEvent, "DVNFeePaid", log.Data); err != nil {
+					p.logger.Error("Failed to unpack DVNFeePaid event", "txHash", event.Raw.TxHash.Hex(), "error", err)
+					continue // continue to next log
+				}
+				for _, dvn := range feePaidEvent.RequiredDVNs {
+					if dvn == myDvnAddress {
+						assigned = true
+						break
+					}
+				}
+				if assigned {
+					break
+				}
+			}
+		}
+
+		if !assigned {
+			p.logger.Debug("DVN not assigned for this packet, skipping", "txHash", event.Raw.TxHash.Hex(), "dvn_address", myDvnAddress.Hex())
+			continue
+		}
+
+		p.logger.Info("DVN is assigned to packet, processing...", "txHash", event.Raw.TxHash.Hex())
+
 		// Process each event in a separate goroutine to avoid blocking the polling loop.
 		go func(e *contracts.EndpointV2PacketSent) {
 			p.logger.Info("-> Detected PacketSent event", "srcEID", eid, "txHash", e.Raw.TxHash.Hex())
@@ -229,7 +310,7 @@ func (p *Processor) pollForPackets(ctx context.Context, eid uint32, client *ethc
 				return
 			}
 			encodedPacket := results[0].([]byte)
-			
+
 			// The PacketSent event contains the full encoded packet (header + message).
 			// We need to parse it to extract the components for verification.
 			packet, err := parsePacket(encodedPacket)
@@ -255,6 +336,41 @@ func (p *Processor) pollForPackets(ctx context.Context, eid uint32, client *ethc
 }
 
 func (p *Processor) handlePacket(ctx context.Context, packet *Packet) error {
+	// --- 1. Destination chain setup and pre-flight checks ---
+	dstEid := packet.DstEid
+	dvnContract, ok := p.dvnContracts[dstEid]
+	if !ok {
+		return errors.Errorf("no DVN contract found for destination EID: %d", dstEid)
+	}
+	client := p.ethClients[dstEid]
+
+	receiveUlnAddrString, err := p.config.GetReceiveUln(dstEid)
+	if err != nil {
+		return err
+	}
+	receiveUlnAddr := common.HexToAddress(receiveUlnAddrString)
+	receiveUlnContract, err := contracts.NewReceiveUln302(receiveUlnAddr, client)
+	if err != nil {
+		return errors.Errorf("failed to instantiate ReceiveUln302 contract: %w", err)
+	}
+
+	// --- 2. Check if this DVN has already verified this packet (hashLookup) ---
+	packetHash := crypto.Keccak256Hash(packet.PacketHeader)
+	dvnAddrOnDest := p.dvnAddrs[dstEid] // The address of our SymbioticLzDVN contract on the destination chain.
+
+	// The hashLookup function is part of the ReceiveUln302 standard. We expect our binding to have it.
+	lookupResult, err := receiveUlnContract.HashLookup(&bind.CallOpts{Context: ctx}, packetHash, packet.PayloadHash, dvnAddrOnDest)
+	if err != nil {
+		// We log the error but proceed. A failure to lookup shouldn't block verification,
+		// as the on-chain submission will correctly revert if already verified.
+		p.logger.Warn("Failed to lookup packet hash, proceeding with verification attempt anyway", "payloadHash", hexutil.Encode(packet.PayloadHash[:]), "error", err)
+	} else if lookupResult.Submitted {
+		p.logger.Info("Packet already verified by this DVN, skipping", "payloadHash", hexutil.Encode(packet.PayloadHash[:]))
+		return nil // Success, nothing more to do.
+	}
+	p.logger.Info("Packet not yet verified by this DVN, proceeding...", "payloadHash", hexutil.Encode(packet.PayloadHash[:]))
+
+	// --- 3. Request signature from Symbiotic Relay ---
 	// The message sent to the relay for signing must match what the SymbioticLzDVN contract
 	// constructs for verification. Based on the LayerZero DVN standard, this should be
 	// the ABI encoding of the 81-byte packet header and the 32-byte payload hash.
@@ -273,7 +389,7 @@ func (p *Processor) handlePacket(ctx context.Context, packet *Packet) error {
 		"payloadHash", hexutil.Encode(packet.PayloadHash[:]),
 		"messageForRelay", hexutil.Encode(messageForRelay))
 
-	// 2. Request the signature from the Relay using the raw packed data.
+	// Request the signature from the Relay using the raw packed data.
 	suggestedEpoch, err := p.relayClient.GetSuggestedEpoch(ctx, &v1.GetSuggestedEpochRequest{})
 	if err != nil {
 		return errors.Errorf("failed to get suggested epoch from relay: %w", err)
@@ -288,7 +404,7 @@ func (p *Processor) handlePacket(ctx context.Context, packet *Packet) error {
 	}
 	p.logger.Info("Signature request submitted", "requestHash_from_relay", signResp.RequestHash, "epoch", signResp.Epoch)
 
-	// 3. Poll the relay for the aggregated proof.
+	// --- 4. Poll the relay for the aggregated proof ---
 	var aggProof *v1.AggregationProof
 	for {
 		select {
@@ -313,26 +429,7 @@ func (p *Processor) handlePacket(ctx context.Context, packet *Packet) error {
 	}
 
 SUBMIT_PROOF:
-	// 4. Submit the proof to the SymbioticLzDVN contract on the destination chain.
-	dstEid := packet.DstEid
-	dvnContract, ok := p.dvnContracts[dstEid]
-	if !ok {
-		return errors.Errorf("no DVN contract found for destination EID: %d", dstEid)
-	}
-	client := p.ethClients[dstEid]
-
-	// Get the required confirmations from the on-chain ULN config
-	receiveUlnAddrString, err := p.config.GetReceiveUln(dstEid)
-	if err != nil {
-		return err
-	}
-	receiveUlnAddr := common.HexToAddress(receiveUlnAddrString)
-	receiveUlnContract, err := contracts.NewReceiveUlnSymbiotic(receiveUlnAddr, client)
-
-	if err != nil {
-		return errors.Errorf("failed to instantiate ReceiveUlnSymbiotic contract: %w", err)
-	}
-
+	// --- 5. Submit the proof to the SymbioticLzDVN contract on the destination chain ---
 	// The config is keyed by the receiver OApp address on the destination chain and the source EID.
 	receiverAddress := common.BytesToAddress(packet.Receiver.Bytes())
 	ulnConfig, err := receiveUlnContract.GetUlnConfig(&bind.CallOpts{Context: ctx}, receiverAddress, packet.SrcEid)
@@ -341,7 +438,6 @@ SUBMIT_PROOF:
 	}
 	requiredConfirmations := ulnConfig.Confirmations
 	p.logger.Info("Got required confirmations from on-chain config", "confirmations", requiredConfirmations)
-
 
 	pk, err := crypto.HexToECDSA(p.privateKey)
 	if err != nil {
@@ -407,7 +503,7 @@ func parsePacket(encodedPacket []byte) (*Packet, error) {
 	p.Nonce = new(big.Int).SetBytes(encodedPacket[1:9]).Uint64()
 	p.SrcEid = uint32(new(big.Int).SetBytes(encodedPacket[9:13]).Uint64())
 	// Sender is a 32-byte field in the packet, but the address is the last 20 bytes.
-	p.Sender = common.BytesToAddress(encodedPacket[13:45])
+	p.Sender = common.BytesToAddress(encodedPacket[25:45]) // Corrected offset from 13 to 25
 	p.DstEid = uint32(new(big.Int).SetBytes(encodedPacket[45:49]).Uint64())
 	// Receiver is a full 32-byte hash.
 	p.Receiver = common.BytesToHash(encodedPacket[49:81])
@@ -426,7 +522,6 @@ func parsePacket(encodedPacket []byte) (*Packet, error) {
 
 	return p, nil
 }
-
 
 func abiEncodeSymbioticProof(epoch uint64, proof []byte) []byte {
 	// This function ABI-encodes the epoch and proof to match what the SymbioticLzDVN.verifyWithSymbiotic expects.
