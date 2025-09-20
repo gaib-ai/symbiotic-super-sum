@@ -29,11 +29,26 @@ var (
 	_ = abi.ConvertType
 )
 
+// MessagingFee is an auto generated low-level Go binding around an user-defined struct.
+type MessagingFee struct {
+	NativeFee  *big.Int
+	LzTokenFee *big.Int
+}
+
+// MessagingParams is an auto generated low-level Go binding around an user-defined struct.
+type MessagingParams struct {
+	DstEid       uint32
+	Receiver     [32]byte
+	Message      []byte
+	Options      []byte
+	PayInLzToken bool
+}
+
 // MessagingReceipt is an auto generated low-level Go binding around an user-defined struct.
 type MessagingReceipt struct {
 	Guid  [32]byte
 	Nonce uint64
-	Fee   *big.Int
+	Fee   MessagingFee
 }
 
 // Origin is an auto generated low-level Go binding around an user-defined struct.
@@ -43,9 +58,16 @@ type Origin struct {
 	Nonce  uint64
 }
 
+// SetConfigParam is an auto generated low-level Go binding around an user-defined struct.
+type SetConfigParam struct {
+	Eid        uint32
+	ConfigType uint32
+	Config     []byte
+}
+
 // EndpointV2MetaData contains all meta data concerning the EndpointV2 contract.
 var EndpointV2MetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[{\"internalType\":\"uint32\",\"name\":\"_eid\",\"type\":\"uint32\"},{\"internalType\":\"address\",\"name\":\"_lzToken\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"Endpoint_AlreadySet\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"oapp\",\"type\":\"address\"}],\"name\":\"Endpoint_DefaultLibraryAlreadySet\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"Endpoint_InvalidAccounting\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"Endpoint_InvalidBlockReason\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"uint32\",\"name\":\"eid\",\"type\":\"uint32\"}],\"name\":\"Endpoint_InvalidEndpointId\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"Endpoint_InvalidNativePayload\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"receiver\",\"type\":\"address\"}],\"name\":\"Endpoint_InvalidReceiver\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"Endpoint_InvalidRelayer\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"Endpoint_InvalidSendLib\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"Endpoint_InvalidTimestamp\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"Endpoint_InvalidUln\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"msgValue\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"nativeFee\",\"type\":\"uint256\"}],\"name\":\"Endpoint_MsgValueNotMatchFee\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"oapp\",\"type\":\"address\"}],\"name\":\"Endpoint_NoDefaultSendLibrary\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"guid\",\"type\":\"bytes32\"}],\"name\":\"Endpoint_PacketAlreadyDelivered\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"guid\",\"type\":\"bytes32\"}],\"name\":\"Endpoint_PacketNotVerified\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"guid\",\"type\":\"bytes32\"}],\"name\":\"Endpoint_PacketNotVerifiedOrSent\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"Endpoint_PathAlreadySet\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"Endpoint_PathNotSet\",\"type\":\"error\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint32\",\"name\":\"srcEid\",\"type\":\"uint32\"},{\"internalType\":\"bytes32\",\"name\":\"sender\",\"type\":\"bytes32\"},{\"internalType\":\"uint64\",\"name\":\"nonce\",\"type\":\"uint64\"}],\"internalType\":\"structOrigin\",\"name\":\"origin\",\"type\":\"tuple\"}],\"name\":\"Endpoint_SameNonce\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"Endpoint_Unauthorized\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"oapp\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"uln\",\"type\":\"address\"}],\"name\":\"DefaultReceiveLibrarySet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"oapp\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"sendLib\",\"type\":\"address\"}],\"name\":\"DefaultSendLibrarySet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint16\",\"name\":\"version\",\"type\":\"uint16\"}],\"name\":\"Initialized\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newFeeCollector\",\"type\":\"address\"}],\"name\":\"LzTokenFeeCollectorUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newCompositionFee\",\"type\":\"address\"}],\"name\":\"LzTokenUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"uln\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"NativeFeePaid\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"newRelayer\",\"type\":\"address\"}],\"name\":\"NewRelayer\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"guid\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"success\",\"type\":\"bool\"}],\"name\":\"PacketBurnt\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"guid\",\"type\":\"bytes32\"}],\"name\":\"PacketDelivered\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sendLib\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"guid\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"nativeFee\",\"type\":\"uint256\"}],\"name\":\"PacketFeeTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes\",\"name\":\"packetHeader\",\"type\":\"bytes\"},{\"indexed\":false,\"internalType\":\"bytes\",\"name\":\"payload\",\"type\":\"bytes\"},{\"indexed\":false,\"internalType\":\"bytes\",\"name\":\"options\",\"type\":\"bytes\"}],\"name\":\"PacketSent\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"internalType\":\"uint32\",\"name\":\"srcEid\",\"type\":\"uint32\"},{\"internalType\":\"bytes32\",\"name\":\"sender\",\"type\":\"bytes32\"},{\"internalType\":\"uint64\",\"name\":\"nonce\",\"type\":\"uint64\"}],\"indexed\":false,\"internalType\":\"structOrigin\",\"name\":\"origin\",\"type\":\"tuple\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"receiver\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"payloadHash\",\"type\":\"bytes32\"}],\"name\":\"PacketVerified\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"oapp\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint32\",\"name\":\"remoteEid\",\"type\":\"uint32\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"oldReceiveLib\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"newReceiveLib\",\"type\":\"address\"}],\"name\":\"ReceiveLibrarySet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"oapp\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint32\",\"name\":\"remoteEid\",\"type\":\"uint32\"},{\"indexed\":false,\"internalType\":\"uint64\",\"name\":\"timeout\",\"type\":\"uint64\"}],\"name\":\"ReceiveLibraryTimeoutSet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"oapp\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint32\",\"name\":\"remoteEid\",\"type\":\"uint32\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"oldSendLib\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"newSendLib\",\"type\":\"address\"}],\"name\":\"SendLibrarySet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"guid\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"refundAddress\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"nativeAmount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"tokenAmount\",\"type\":\"uint256\"}],\"name\":\"TokenFeeRefunded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"uln\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"TokenFeeWithdrawn\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"newTreasury\",\"type\":\"address\"}],\"name\":\"TreasuryUpdated\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"BLOCK_REASON_BOUNCED\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"BLOCK_REASON_DUPLICATE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"DEFAULT_VERSION\",\"outputs\":[{\"internalType\":\"uint16\",\"name\":\"\",\"type\":\"uint16\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"eid\",\"outputs\":[{\"internalType\":\"uint32\",\"name\":\"\",\"type\":\"uint32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"_packet\",\"type\":\"bytes\"}],\"name\":\"getNativeFee\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_oapp\",\"type\":\"address\"},{\"internalType\":\"uint32\",\"name\":\"_remoteEid\",\"type\":\"uint32\"}],\"name\":\"getReceiveLibrary\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"receiveLib\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"isDefault\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_oapp\",\"type\":\"address\"},{\"internalType\":\"uint32\",\"name\":\"_remoteEid\",\"type\":\"uint32\"}],\"name\":\"getSendLibrary\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"sendLib\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"isDefault\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint32\",\"name\":\"srcEid\",\"type\":\"uint32\"},{\"internalType\":\"bytes32\",\"name\":\"sender\",\"type\":\"bytes32\"},{\"internalType\":\"uint64\",\"name\":\"nonce\",\"type\":\"uint64\"}],\"internalType\":\"structOrigin\",\"name\":\"_origin\",\"type\":\"tuple\"}],\"name\":\"inboundNonce\",\"outputs\":[{\"internalType\":\"uint64\",\"name\":\"\",\"type\":\"uint64\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_oapp\",\"type\":\"address\"}],\"name\":\"isDefaultReceiveLibrary\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_oapp\",\"type\":\"address\"}],\"name\":\"isDefaultSendLibrary\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_addr\",\"type\":\"address\"}],\"name\":\"isRegisteredLibrary\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint32\",\"name\":\"srcEid\",\"type\":\"uint32\"},{\"internalType\":\"bytes32\",\"name\":\"sender\",\"type\":\"bytes32\"},{\"internalType\":\"uint64\",\"name\":\"nonce\",\"type\":\"uint64\"}],\"internalType\":\"structOrigin\",\"name\":\"_origin\",\"type\":\"tuple\"}],\"name\":\"lazyInboundNonce\",\"outputs\":[{\"internalType\":\"uint64\",\"name\":\"\",\"type\":\"uint64\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"lzToken\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"lzTokenFeeCollector\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"messageComposed\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"receiver\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"guid\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"composer\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"nativePayload\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint64\",\"name\":\"\",\"type\":\"uint64\"}],\"name\":\"outboundNonce\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint32\",\"name\":\"srcEid\",\"type\":\"uint32\"},{\"internalType\":\"bytes32\",\"name\":\"sender\",\"type\":\"bytes32\"},{\"internalType\":\"uint64\",\"name\":\"nonce\",\"type\":\"uint64\"}],\"internalType\":\"structOrigin\",\"name\":\"_origin\",\"type\":\"tuple\"},{\"internalType\":\"address\",\"name\":\"_receiver\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"_payloadHash\",\"type\":\"bytes32\"}],\"name\":\"packetDelivered\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint32\",\"name\":\"srcEid\",\"type\":\"uint32\"},{\"internalType\":\"bytes32\",\"name\":\"sender\",\"type\":\"bytes32\"},{\"internalType\":\"uint64\",\"name\":\"nonce\",\"type\":\"uint64\"}],\"internalType\":\"structOrigin\",\"name\":\"_origin\",\"type\":\"tuple\"},{\"internalType\":\"address\",\"name\":\"_receiver\",\"type\":\"address\"}],\"name\":\"packetSent\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint32\",\"name\":\"srcEid\",\"type\":\"uint32\"},{\"internalType\":\"bytes32\",\"name\":\"sender\",\"type\":\"bytes32\"},{\"internalType\":\"uint64\",\"name\":\"nonce\",\"type\":\"uint64\"}],\"internalType\":\"structOrigin\",\"name\":\"_origin\",\"type\":\"tuple\"},{\"internalType\":\"address\",\"name\":\"_receiver\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"_payloadHash\",\"type\":\"bytes32\"}],\"name\":\"packetVerified\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_oapp\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_uln\",\"type\":\"address\"}],\"name\":\"removeDefaultReceiveLibrary\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_oapp\",\"type\":\"address\"}],\"name\":\"removeDefaultSendLibrary\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"_message\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"_options\",\"type\":\"bytes\"}],\"name\":\"send\",\"outputs\":[{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"guid\",\"type\":\"bytes32\"},{\"internalType\":\"uint64\",\"name\":\"nonce\",\"type\":\"uint64\"},{\"internalType\":\"uint256\",\"name\":\"fee\",\"type\":\"uint256\"}],\"internalType\":\"structMessagingReceipt\",\"name\":\"receipt\",\"type\":\"tuple\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_oapp\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_uln\",\"type\":\"address\"}],\"name\":\"setDefaultReceiveLibrary\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_oapp\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_sendLib\",\"type\":\"address\"}],\"name\":\"setDefaultSendLibrary\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_newCollector\",\"type\":\"address\"}],\"name\":\"setLzTokenFeeCollector\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_oapp\",\"type\":\"address\"},{\"internalType\":\"uint32\",\"name\":\"_remoteEid\",\"type\":\"uint32\"},{\"internalType\":\"address\",\"name\":\"_newReceiveLib\",\"type\":\"address\"},{\"internalType\":\"uint64\",\"name\":\"_gracePeriod\",\"type\":\"uint64\"}],\"name\":\"setReceiveLibrary\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_oapp\",\"type\":\"address\"},{\"internalType\":\"uint32\",\"name\":\"_remoteEid\",\"type\":\"uint32\"},{\"internalType\":\"address\",\"name\":\"_newSendLib\",\"type\":\"address\"}],\"name\":\"setSendLibrary\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_newTreasury\",\"type\":\"address\"}],\"name\":\"setTreasury\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint32\",\"name\":\"srcEid\",\"type\":\"uint32\"},{\"internalType\":\"bytes32\",\"name\":\"sender\",\"type\":\"bytes32\"},{\"internalType\":\"uint64\",\"name\":\"nonce\",\"type\":\"uint64\"}],\"internalType\":\"structOrigin\",\"name\":\"_origin\",\"type\":\"tuple\"},{\"internalType\":\"address\",\"name\":\"_receiver\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"_message\",\"type\":\"bytes\"},{\"internalType\":\"address\",\"name\":\"_composer\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"_guid\",\"type\":\"bytes32\"}],\"name\":\"skip\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"treasury\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint32\",\"name\":\"srcEid\",\"type\":\"uint32\"},{\"internalType\":\"bytes32\",\"name\":\"sender\",\"type\":\"bytes32\"},{\"internalType\":\"uint64\",\"name\":\"nonce\",\"type\":\"uint64\"}],\"internalType\":\"structOrigin\",\"name\":\"_origin\",\"type\":\"tuple\"},{\"internalType\":\"address\",\"name\":\"_receiver\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"_payloadHash\",\"type\":\"bytes32\"}],\"name\":\"verify\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
+	ABI: "[{\"type\":\"constructor\",\"inputs\":[{\"name\":\"_eid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"_owner\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"EMPTY_PAYLOAD_HASH\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"NIL_PAYLOAD_HASH\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"blockedLibrary\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"burn\",\"inputs\":[{\"name\":\"_oapp\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_srcEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"_sender\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"_nonce\",\"type\":\"uint64\",\"internalType\":\"uint64\"},{\"name\":\"_payloadHash\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"clear\",\"inputs\":[{\"name\":\"_oapp\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_origin\",\"type\":\"tuple\",\"internalType\":\"structOrigin\",\"components\":[{\"name\":\"srcEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"sender\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"nonce\",\"type\":\"uint64\",\"internalType\":\"uint64\"}]},{\"name\":\"_guid\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"_message\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"composeQueue\",\"inputs\":[{\"name\":\"from\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"guid\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"index\",\"type\":\"uint16\",\"internalType\":\"uint16\"}],\"outputs\":[{\"name\":\"messageHash\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"defaultReceiveLibrary\",\"inputs\":[{\"name\":\"srcEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"}],\"outputs\":[{\"name\":\"lib\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"defaultReceiveLibraryTimeout\",\"inputs\":[{\"name\":\"srcEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"}],\"outputs\":[{\"name\":\"lib\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"expiry\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"defaultSendLibrary\",\"inputs\":[{\"name\":\"dstEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"}],\"outputs\":[{\"name\":\"lib\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"delegates\",\"inputs\":[{\"name\":\"oapp\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"delegate\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"eid\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"uint32\",\"internalType\":\"uint32\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getConfig\",\"inputs\":[{\"name\":\"_oapp\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_lib\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_eid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"_configType\",\"type\":\"uint32\",\"internalType\":\"uint32\"}],\"outputs\":[{\"name\":\"config\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getReceiveLibrary\",\"inputs\":[{\"name\":\"_receiver\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_srcEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"}],\"outputs\":[{\"name\":\"lib\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"isDefault\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getRegisteredLibraries\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address[]\",\"internalType\":\"address[]\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getSendContext\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getSendLibrary\",\"inputs\":[{\"name\":\"_sender\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_dstEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"}],\"outputs\":[{\"name\":\"lib\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"inboundNonce\",\"inputs\":[{\"name\":\"_receiver\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_srcEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"_sender\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"outputs\":[{\"name\":\"\",\"type\":\"uint64\",\"internalType\":\"uint64\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"inboundPayloadHash\",\"inputs\":[{\"name\":\"receiver\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"srcEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"sender\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"inboundNonce\",\"type\":\"uint64\",\"internalType\":\"uint64\"}],\"outputs\":[{\"name\":\"payloadHash\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"initializable\",\"inputs\":[{\"name\":\"_origin\",\"type\":\"tuple\",\"internalType\":\"structOrigin\",\"components\":[{\"name\":\"srcEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"sender\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"nonce\",\"type\":\"uint64\",\"internalType\":\"uint64\"}]},{\"name\":\"_receiver\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"isDefaultSendLibrary\",\"inputs\":[{\"name\":\"_sender\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_dstEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"}],\"outputs\":[{\"name\":\"\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"isRegisteredLibrary\",\"inputs\":[{\"name\":\"lib\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"isSendingMessage\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"isSupportedEid\",\"inputs\":[{\"name\":\"_eid\",\"type\":\"uint32\",\"internalType\":\"uint32\"}],\"outputs\":[{\"name\":\"\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"isValidReceiveLibrary\",\"inputs\":[{\"name\":\"_receiver\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_srcEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"_actualReceiveLib\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"lazyInboundNonce\",\"inputs\":[{\"name\":\"receiver\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"srcEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"sender\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"outputs\":[{\"name\":\"nonce\",\"type\":\"uint64\",\"internalType\":\"uint64\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"lzCompose\",\"inputs\":[{\"name\":\"_from\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_guid\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"_index\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"_message\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"_extraData\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"outputs\":[],\"stateMutability\":\"payable\"},{\"type\":\"function\",\"name\":\"lzComposeAlert\",\"inputs\":[{\"name\":\"_from\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_guid\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"_index\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"_gas\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"_value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"_message\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"_extraData\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"_reason\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"lzReceive\",\"inputs\":[{\"name\":\"_origin\",\"type\":\"tuple\",\"internalType\":\"structOrigin\",\"components\":[{\"name\":\"srcEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"sender\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"nonce\",\"type\":\"uint64\",\"internalType\":\"uint64\"}]},{\"name\":\"_receiver\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_guid\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"_message\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"_extraData\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"outputs\":[],\"stateMutability\":\"payable\"},{\"type\":\"function\",\"name\":\"lzReceiveAlert\",\"inputs\":[{\"name\":\"_origin\",\"type\":\"tuple\",\"internalType\":\"structOrigin\",\"components\":[{\"name\":\"srcEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"sender\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"nonce\",\"type\":\"uint64\",\"internalType\":\"uint64\"}]},{\"name\":\"_receiver\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_guid\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"_gas\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"_value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"_message\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"_extraData\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"_reason\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"lzToken\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"nativeToken\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"nextGuid\",\"inputs\":[{\"name\":\"_sender\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_dstEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"_receiver\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"nilify\",\"inputs\":[{\"name\":\"_oapp\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_srcEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"_sender\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"_nonce\",\"type\":\"uint64\",\"internalType\":\"uint64\"},{\"name\":\"_payloadHash\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"outboundNonce\",\"inputs\":[{\"name\":\"sender\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"dstEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"receiver\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"outputs\":[{\"name\":\"nonce\",\"type\":\"uint64\",\"internalType\":\"uint64\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"owner\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"quote\",\"inputs\":[{\"name\":\"_params\",\"type\":\"tuple\",\"internalType\":\"structMessagingParams\",\"components\":[{\"name\":\"dstEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"receiver\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"message\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"options\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"payInLzToken\",\"type\":\"bool\",\"internalType\":\"bool\"}]},{\"name\":\"_sender\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"\",\"type\":\"tuple\",\"internalType\":\"structMessagingFee\",\"components\":[{\"name\":\"nativeFee\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"lzTokenFee\",\"type\":\"uint256\",\"internalType\":\"uint256\"}]}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"receiveLibraryTimeout\",\"inputs\":[{\"name\":\"receiver\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"srcEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"}],\"outputs\":[{\"name\":\"lib\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"expiry\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"recoverToken\",\"inputs\":[{\"name\":\"_token\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_amount\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"registerLibrary\",\"inputs\":[{\"name\":\"_lib\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"renounceOwnership\",\"inputs\":[],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"send\",\"inputs\":[{\"name\":\"_params\",\"type\":\"tuple\",\"internalType\":\"structMessagingParams\",\"components\":[{\"name\":\"dstEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"receiver\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"message\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"options\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"payInLzToken\",\"type\":\"bool\",\"internalType\":\"bool\"}]},{\"name\":\"_refundAddress\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"\",\"type\":\"tuple\",\"internalType\":\"structMessagingReceipt\",\"components\":[{\"name\":\"guid\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"nonce\",\"type\":\"uint64\",\"internalType\":\"uint64\"},{\"name\":\"fee\",\"type\":\"tuple\",\"internalType\":\"structMessagingFee\",\"components\":[{\"name\":\"nativeFee\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"lzTokenFee\",\"type\":\"uint256\",\"internalType\":\"uint256\"}]}]}],\"stateMutability\":\"payable\"},{\"type\":\"function\",\"name\":\"sendCompose\",\"inputs\":[{\"name\":\"_to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_guid\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"_index\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"_message\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setConfig\",\"inputs\":[{\"name\":\"_oapp\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_lib\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_params\",\"type\":\"tuple[]\",\"internalType\":\"structSetConfigParam[]\",\"components\":[{\"name\":\"eid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"configType\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"config\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setDefaultReceiveLibrary\",\"inputs\":[{\"name\":\"_eid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"_newLib\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_gracePeriod\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setDefaultReceiveLibraryTimeout\",\"inputs\":[{\"name\":\"_eid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"_lib\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_expiry\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setDefaultSendLibrary\",\"inputs\":[{\"name\":\"_eid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"_newLib\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setDelegate\",\"inputs\":[{\"name\":\"_delegate\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setLzToken\",\"inputs\":[{\"name\":\"_lzToken\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setReceiveLibrary\",\"inputs\":[{\"name\":\"_oapp\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_eid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"_newLib\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_gracePeriod\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setReceiveLibraryTimeout\",\"inputs\":[{\"name\":\"_oapp\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_eid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"_lib\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_expiry\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setSendLibrary\",\"inputs\":[{\"name\":\"_oapp\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_eid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"_newLib\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"skip\",\"inputs\":[{\"name\":\"_oapp\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_srcEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"_sender\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"_nonce\",\"type\":\"uint64\",\"internalType\":\"uint64\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"transferOwnership\",\"inputs\":[{\"name\":\"newOwner\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"verifiable\",\"inputs\":[{\"name\":\"_origin\",\"type\":\"tuple\",\"internalType\":\"structOrigin\",\"components\":[{\"name\":\"srcEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"sender\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"nonce\",\"type\":\"uint64\",\"internalType\":\"uint64\"}]},{\"name\":\"_receiver\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"verify\",\"inputs\":[{\"name\":\"_origin\",\"type\":\"tuple\",\"internalType\":\"structOrigin\",\"components\":[{\"name\":\"srcEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"sender\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"nonce\",\"type\":\"uint64\",\"internalType\":\"uint64\"}]},{\"name\":\"_receiver\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_payloadHash\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"event\",\"name\":\"ComposeDelivered\",\"inputs\":[{\"name\":\"from\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"},{\"name\":\"to\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"},{\"name\":\"guid\",\"type\":\"bytes32\",\"indexed\":false,\"internalType\":\"bytes32\"},{\"name\":\"index\",\"type\":\"uint16\",\"indexed\":false,\"internalType\":\"uint16\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"ComposeSent\",\"inputs\":[{\"name\":\"from\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"},{\"name\":\"to\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"},{\"name\":\"guid\",\"type\":\"bytes32\",\"indexed\":false,\"internalType\":\"bytes32\"},{\"name\":\"index\",\"type\":\"uint16\",\"indexed\":false,\"internalType\":\"uint16\"},{\"name\":\"message\",\"type\":\"bytes\",\"indexed\":false,\"internalType\":\"bytes\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"DefaultReceiveLibrarySet\",\"inputs\":[{\"name\":\"eid\",\"type\":\"uint32\",\"indexed\":false,\"internalType\":\"uint32\"},{\"name\":\"newLib\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"DefaultReceiveLibraryTimeoutSet\",\"inputs\":[{\"name\":\"eid\",\"type\":\"uint32\",\"indexed\":false,\"internalType\":\"uint32\"},{\"name\":\"oldLib\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"},{\"name\":\"expiry\",\"type\":\"uint256\",\"indexed\":false,\"internalType\":\"uint256\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"DefaultSendLibrarySet\",\"inputs\":[{\"name\":\"eid\",\"type\":\"uint32\",\"indexed\":false,\"internalType\":\"uint32\"},{\"name\":\"newLib\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"DelegateSet\",\"inputs\":[{\"name\":\"sender\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"},{\"name\":\"delegate\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"InboundNonceSkipped\",\"inputs\":[{\"name\":\"srcEid\",\"type\":\"uint32\",\"indexed\":false,\"internalType\":\"uint32\"},{\"name\":\"sender\",\"type\":\"bytes32\",\"indexed\":false,\"internalType\":\"bytes32\"},{\"name\":\"receiver\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"},{\"name\":\"nonce\",\"type\":\"uint64\",\"indexed\":false,\"internalType\":\"uint64\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"LibraryRegistered\",\"inputs\":[{\"name\":\"newLib\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"LzComposeAlert\",\"inputs\":[{\"name\":\"from\",\"type\":\"address\",\"indexed\":true,\"internalType\":\"address\"},{\"name\":\"to\",\"type\":\"address\",\"indexed\":true,\"internalType\":\"address\"},{\"name\":\"executor\",\"type\":\"address\",\"indexed\":true,\"internalType\":\"address\"},{\"name\":\"guid\",\"type\":\"bytes32\",\"indexed\":false,\"internalType\":\"bytes32\"},{\"name\":\"index\",\"type\":\"uint16\",\"indexed\":false,\"internalType\":\"uint16\"},{\"name\":\"gas\",\"type\":\"uint256\",\"indexed\":false,\"internalType\":\"uint256\"},{\"name\":\"value\",\"type\":\"uint256\",\"indexed\":false,\"internalType\":\"uint256\"},{\"name\":\"message\",\"type\":\"bytes\",\"indexed\":false,\"internalType\":\"bytes\"},{\"name\":\"extraData\",\"type\":\"bytes\",\"indexed\":false,\"internalType\":\"bytes\"},{\"name\":\"reason\",\"type\":\"bytes\",\"indexed\":false,\"internalType\":\"bytes\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"LzReceiveAlert\",\"inputs\":[{\"name\":\"receiver\",\"type\":\"address\",\"indexed\":true,\"internalType\":\"address\"},{\"name\":\"executor\",\"type\":\"address\",\"indexed\":true,\"internalType\":\"address\"},{\"name\":\"origin\",\"type\":\"tuple\",\"indexed\":false,\"internalType\":\"structOrigin\",\"components\":[{\"name\":\"srcEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"sender\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"nonce\",\"type\":\"uint64\",\"internalType\":\"uint64\"}]},{\"name\":\"guid\",\"type\":\"bytes32\",\"indexed\":false,\"internalType\":\"bytes32\"},{\"name\":\"gas\",\"type\":\"uint256\",\"indexed\":false,\"internalType\":\"uint256\"},{\"name\":\"value\",\"type\":\"uint256\",\"indexed\":false,\"internalType\":\"uint256\"},{\"name\":\"message\",\"type\":\"bytes\",\"indexed\":false,\"internalType\":\"bytes\"},{\"name\":\"extraData\",\"type\":\"bytes\",\"indexed\":false,\"internalType\":\"bytes\"},{\"name\":\"reason\",\"type\":\"bytes\",\"indexed\":false,\"internalType\":\"bytes\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"LzTokenSet\",\"inputs\":[{\"name\":\"token\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"OwnershipTransferred\",\"inputs\":[{\"name\":\"previousOwner\",\"type\":\"address\",\"indexed\":true,\"internalType\":\"address\"},{\"name\":\"newOwner\",\"type\":\"address\",\"indexed\":true,\"internalType\":\"address\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"PacketBurnt\",\"inputs\":[{\"name\":\"srcEid\",\"type\":\"uint32\",\"indexed\":false,\"internalType\":\"uint32\"},{\"name\":\"sender\",\"type\":\"bytes32\",\"indexed\":false,\"internalType\":\"bytes32\"},{\"name\":\"receiver\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"},{\"name\":\"nonce\",\"type\":\"uint64\",\"indexed\":false,\"internalType\":\"uint64\"},{\"name\":\"payloadHash\",\"type\":\"bytes32\",\"indexed\":false,\"internalType\":\"bytes32\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"PacketDelivered\",\"inputs\":[{\"name\":\"origin\",\"type\":\"tuple\",\"indexed\":false,\"internalType\":\"structOrigin\",\"components\":[{\"name\":\"srcEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"sender\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"nonce\",\"type\":\"uint64\",\"internalType\":\"uint64\"}]},{\"name\":\"receiver\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"PacketNilified\",\"inputs\":[{\"name\":\"srcEid\",\"type\":\"uint32\",\"indexed\":false,\"internalType\":\"uint32\"},{\"name\":\"sender\",\"type\":\"bytes32\",\"indexed\":false,\"internalType\":\"bytes32\"},{\"name\":\"receiver\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"},{\"name\":\"nonce\",\"type\":\"uint64\",\"indexed\":false,\"internalType\":\"uint64\"},{\"name\":\"payloadHash\",\"type\":\"bytes32\",\"indexed\":false,\"internalType\":\"bytes32\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"PacketSent\",\"inputs\":[{\"name\":\"encodedPayload\",\"type\":\"bytes\",\"indexed\":false,\"internalType\":\"bytes\"},{\"name\":\"options\",\"type\":\"bytes\",\"indexed\":false,\"internalType\":\"bytes\"},{\"name\":\"sendLibrary\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"PacketVerified\",\"inputs\":[{\"name\":\"origin\",\"type\":\"tuple\",\"indexed\":false,\"internalType\":\"structOrigin\",\"components\":[{\"name\":\"srcEid\",\"type\":\"uint32\",\"internalType\":\"uint32\"},{\"name\":\"sender\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"nonce\",\"type\":\"uint64\",\"internalType\":\"uint64\"}]},{\"name\":\"receiver\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"},{\"name\":\"payloadHash\",\"type\":\"bytes32\",\"indexed\":false,\"internalType\":\"bytes32\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"ReceiveLibrarySet\",\"inputs\":[{\"name\":\"receiver\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"},{\"name\":\"eid\",\"type\":\"uint32\",\"indexed\":false,\"internalType\":\"uint32\"},{\"name\":\"newLib\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"ReceiveLibraryTimeoutSet\",\"inputs\":[{\"name\":\"receiver\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"},{\"name\":\"eid\",\"type\":\"uint32\",\"indexed\":false,\"internalType\":\"uint32\"},{\"name\":\"oldLib\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"},{\"name\":\"timeout\",\"type\":\"uint256\",\"indexed\":false,\"internalType\":\"uint256\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"SendLibrarySet\",\"inputs\":[{\"name\":\"sender\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"},{\"name\":\"eid\",\"type\":\"uint32\",\"indexed\":false,\"internalType\":\"uint32\"},{\"name\":\"newLib\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"}],\"anonymous\":false},{\"type\":\"error\",\"name\":\"LZ_AlreadyRegistered\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"LZ_ComposeExists\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"LZ_ComposeNotFound\",\"inputs\":[{\"name\":\"expected\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"actual\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}]},{\"type\":\"error\",\"name\":\"LZ_DefaultReceiveLibUnavailable\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"LZ_DefaultSendLibUnavailable\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"LZ_InsufficientFee\",\"inputs\":[{\"name\":\"requiredNative\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"suppliedNative\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"requiredLzToken\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"suppliedLzToken\",\"type\":\"uint256\",\"internalType\":\"uint256\"}]},{\"type\":\"error\",\"name\":\"LZ_InvalidExpiry\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"LZ_InvalidNonce\",\"inputs\":[{\"name\":\"nonce\",\"type\":\"uint64\",\"internalType\":\"uint64\"}]},{\"type\":\"error\",\"name\":\"LZ_InvalidPayloadHash\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"LZ_InvalidReceiveLibrary\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"LZ_LzTokenUnavailable\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"LZ_OnlyNonDefaultLib\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"LZ_OnlyReceiveLib\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"LZ_OnlyRegisteredLib\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"LZ_OnlyRegisteredOrDefaultLib\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"LZ_OnlySendLib\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"LZ_PathNotInitializable\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"LZ_PathNotVerifiable\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"LZ_PayloadHashNotFound\",\"inputs\":[{\"name\":\"expected\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"actual\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}]},{\"type\":\"error\",\"name\":\"LZ_SameValue\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"LZ_SendReentrancy\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"LZ_Unauthorized\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"LZ_UnsupportedEid\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"LZ_UnsupportedInterface\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"LZ_ZeroLzTokenFee\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"Transfer_NativeFailed\",\"inputs\":[{\"name\":\"_to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_value\",\"type\":\"uint256\",\"internalType\":\"uint256\"}]},{\"type\":\"error\",\"name\":\"Transfer_ToAddressIsZero\",\"inputs\":[]}]",
 }
 
 // EndpointV2ABI is the input ABI used to generate the binding from.
@@ -194,12 +216,12 @@ func (_EndpointV2 *EndpointV2TransactorRaw) Transact(opts *bind.TransactOpts, me
 	return _EndpointV2.Contract.contract.Transact(opts, method, params...)
 }
 
-// BLOCKREASONBOUNCED is a free data retrieval call binding the contract method 0xa46b26d9.
+// EMPTYPAYLOADHASH is a free data retrieval call binding the contract method 0xcb5026b9.
 //
-// Solidity: function BLOCK_REASON_BOUNCED() view returns(bytes32)
-func (_EndpointV2 *EndpointV2Caller) BLOCKREASONBOUNCED(opts *bind.CallOpts) ([32]byte, error) {
+// Solidity: function EMPTY_PAYLOAD_HASH() view returns(bytes32)
+func (_EndpointV2 *EndpointV2Caller) EMPTYPAYLOADHASH(opts *bind.CallOpts) ([32]byte, error) {
 	var out []interface{}
-	err := _EndpointV2.contract.Call(opts, &out, "BLOCK_REASON_BOUNCED")
+	err := _EndpointV2.contract.Call(opts, &out, "EMPTY_PAYLOAD_HASH")
 
 	if err != nil {
 		return *new([32]byte), err
@@ -211,26 +233,26 @@ func (_EndpointV2 *EndpointV2Caller) BLOCKREASONBOUNCED(opts *bind.CallOpts) ([3
 
 }
 
-// BLOCKREASONBOUNCED is a free data retrieval call binding the contract method 0xa46b26d9.
+// EMPTYPAYLOADHASH is a free data retrieval call binding the contract method 0xcb5026b9.
 //
-// Solidity: function BLOCK_REASON_BOUNCED() view returns(bytes32)
-func (_EndpointV2 *EndpointV2Session) BLOCKREASONBOUNCED() ([32]byte, error) {
-	return _EndpointV2.Contract.BLOCKREASONBOUNCED(&_EndpointV2.CallOpts)
+// Solidity: function EMPTY_PAYLOAD_HASH() view returns(bytes32)
+func (_EndpointV2 *EndpointV2Session) EMPTYPAYLOADHASH() ([32]byte, error) {
+	return _EndpointV2.Contract.EMPTYPAYLOADHASH(&_EndpointV2.CallOpts)
 }
 
-// BLOCKREASONBOUNCED is a free data retrieval call binding the contract method 0xa46b26d9.
+// EMPTYPAYLOADHASH is a free data retrieval call binding the contract method 0xcb5026b9.
 //
-// Solidity: function BLOCK_REASON_BOUNCED() view returns(bytes32)
-func (_EndpointV2 *EndpointV2CallerSession) BLOCKREASONBOUNCED() ([32]byte, error) {
-	return _EndpointV2.Contract.BLOCKREASONBOUNCED(&_EndpointV2.CallOpts)
+// Solidity: function EMPTY_PAYLOAD_HASH() view returns(bytes32)
+func (_EndpointV2 *EndpointV2CallerSession) EMPTYPAYLOADHASH() ([32]byte, error) {
+	return _EndpointV2.Contract.EMPTYPAYLOADHASH(&_EndpointV2.CallOpts)
 }
 
-// BLOCKREASONDUPLICATE is a free data retrieval call binding the contract method 0x8169fd1d.
+// NILPAYLOADHASH is a free data retrieval call binding the contract method 0x2baf0be7.
 //
-// Solidity: function BLOCK_REASON_DUPLICATE() view returns(bytes32)
-func (_EndpointV2 *EndpointV2Caller) BLOCKREASONDUPLICATE(opts *bind.CallOpts) ([32]byte, error) {
+// Solidity: function NIL_PAYLOAD_HASH() view returns(bytes32)
+func (_EndpointV2 *EndpointV2Caller) NILPAYLOADHASH(opts *bind.CallOpts) ([32]byte, error) {
 	var out []interface{}
-	err := _EndpointV2.contract.Call(opts, &out, "BLOCK_REASON_DUPLICATE")
+	err := _EndpointV2.contract.Call(opts, &out, "NIL_PAYLOAD_HASH")
 
 	if err != nil {
 		return *new([32]byte), err
@@ -242,49 +264,218 @@ func (_EndpointV2 *EndpointV2Caller) BLOCKREASONDUPLICATE(opts *bind.CallOpts) (
 
 }
 
-// BLOCKREASONDUPLICATE is a free data retrieval call binding the contract method 0x8169fd1d.
+// NILPAYLOADHASH is a free data retrieval call binding the contract method 0x2baf0be7.
 //
-// Solidity: function BLOCK_REASON_DUPLICATE() view returns(bytes32)
-func (_EndpointV2 *EndpointV2Session) BLOCKREASONDUPLICATE() ([32]byte, error) {
-	return _EndpointV2.Contract.BLOCKREASONDUPLICATE(&_EndpointV2.CallOpts)
+// Solidity: function NIL_PAYLOAD_HASH() view returns(bytes32)
+func (_EndpointV2 *EndpointV2Session) NILPAYLOADHASH() ([32]byte, error) {
+	return _EndpointV2.Contract.NILPAYLOADHASH(&_EndpointV2.CallOpts)
 }
 
-// BLOCKREASONDUPLICATE is a free data retrieval call binding the contract method 0x8169fd1d.
+// NILPAYLOADHASH is a free data retrieval call binding the contract method 0x2baf0be7.
 //
-// Solidity: function BLOCK_REASON_DUPLICATE() view returns(bytes32)
-func (_EndpointV2 *EndpointV2CallerSession) BLOCKREASONDUPLICATE() ([32]byte, error) {
-	return _EndpointV2.Contract.BLOCKREASONDUPLICATE(&_EndpointV2.CallOpts)
+// Solidity: function NIL_PAYLOAD_HASH() view returns(bytes32)
+func (_EndpointV2 *EndpointV2CallerSession) NILPAYLOADHASH() ([32]byte, error) {
+	return _EndpointV2.Contract.NILPAYLOADHASH(&_EndpointV2.CallOpts)
 }
 
-// DEFAULTVERSION is a free data retrieval call binding the contract method 0x24ba3f2c.
+// BlockedLibrary is a free data retrieval call binding the contract method 0x73318091.
 //
-// Solidity: function DEFAULT_VERSION() view returns(uint16)
-func (_EndpointV2 *EndpointV2Caller) DEFAULTVERSION(opts *bind.CallOpts) (uint16, error) {
+// Solidity: function blockedLibrary() view returns(address)
+func (_EndpointV2 *EndpointV2Caller) BlockedLibrary(opts *bind.CallOpts) (common.Address, error) {
 	var out []interface{}
-	err := _EndpointV2.contract.Call(opts, &out, "DEFAULT_VERSION")
+	err := _EndpointV2.contract.Call(opts, &out, "blockedLibrary")
 
 	if err != nil {
-		return *new(uint16), err
+		return *new(common.Address), err
 	}
 
-	out0 := *abi.ConvertType(out[0], new(uint16)).(*uint16)
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
 
 	return out0, err
 
 }
 
-// DEFAULTVERSION is a free data retrieval call binding the contract method 0x24ba3f2c.
+// BlockedLibrary is a free data retrieval call binding the contract method 0x73318091.
 //
-// Solidity: function DEFAULT_VERSION() view returns(uint16)
-func (_EndpointV2 *EndpointV2Session) DEFAULTVERSION() (uint16, error) {
-	return _EndpointV2.Contract.DEFAULTVERSION(&_EndpointV2.CallOpts)
+// Solidity: function blockedLibrary() view returns(address)
+func (_EndpointV2 *EndpointV2Session) BlockedLibrary() (common.Address, error) {
+	return _EndpointV2.Contract.BlockedLibrary(&_EndpointV2.CallOpts)
 }
 
-// DEFAULTVERSION is a free data retrieval call binding the contract method 0x24ba3f2c.
+// BlockedLibrary is a free data retrieval call binding the contract method 0x73318091.
 //
-// Solidity: function DEFAULT_VERSION() view returns(uint16)
-func (_EndpointV2 *EndpointV2CallerSession) DEFAULTVERSION() (uint16, error) {
-	return _EndpointV2.Contract.DEFAULTVERSION(&_EndpointV2.CallOpts)
+// Solidity: function blockedLibrary() view returns(address)
+func (_EndpointV2 *EndpointV2CallerSession) BlockedLibrary() (common.Address, error) {
+	return _EndpointV2.Contract.BlockedLibrary(&_EndpointV2.CallOpts)
+}
+
+// ComposeQueue is a free data retrieval call binding the contract method 0x35d330b0.
+//
+// Solidity: function composeQueue(address from, address to, bytes32 guid, uint16 index) view returns(bytes32 messageHash)
+func (_EndpointV2 *EndpointV2Caller) ComposeQueue(opts *bind.CallOpts, from common.Address, to common.Address, guid [32]byte, index uint16) ([32]byte, error) {
+	var out []interface{}
+	err := _EndpointV2.contract.Call(opts, &out, "composeQueue", from, to, guid, index)
+
+	if err != nil {
+		return *new([32]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
+
+	return out0, err
+
+}
+
+// ComposeQueue is a free data retrieval call binding the contract method 0x35d330b0.
+//
+// Solidity: function composeQueue(address from, address to, bytes32 guid, uint16 index) view returns(bytes32 messageHash)
+func (_EndpointV2 *EndpointV2Session) ComposeQueue(from common.Address, to common.Address, guid [32]byte, index uint16) ([32]byte, error) {
+	return _EndpointV2.Contract.ComposeQueue(&_EndpointV2.CallOpts, from, to, guid, index)
+}
+
+// ComposeQueue is a free data retrieval call binding the contract method 0x35d330b0.
+//
+// Solidity: function composeQueue(address from, address to, bytes32 guid, uint16 index) view returns(bytes32 messageHash)
+func (_EndpointV2 *EndpointV2CallerSession) ComposeQueue(from common.Address, to common.Address, guid [32]byte, index uint16) ([32]byte, error) {
+	return _EndpointV2.Contract.ComposeQueue(&_EndpointV2.CallOpts, from, to, guid, index)
+}
+
+// DefaultReceiveLibrary is a free data retrieval call binding the contract method 0x6f50a803.
+//
+// Solidity: function defaultReceiveLibrary(uint32 srcEid) view returns(address lib)
+func (_EndpointV2 *EndpointV2Caller) DefaultReceiveLibrary(opts *bind.CallOpts, srcEid uint32) (common.Address, error) {
+	var out []interface{}
+	err := _EndpointV2.contract.Call(opts, &out, "defaultReceiveLibrary", srcEid)
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
+}
+
+// DefaultReceiveLibrary is a free data retrieval call binding the contract method 0x6f50a803.
+//
+// Solidity: function defaultReceiveLibrary(uint32 srcEid) view returns(address lib)
+func (_EndpointV2 *EndpointV2Session) DefaultReceiveLibrary(srcEid uint32) (common.Address, error) {
+	return _EndpointV2.Contract.DefaultReceiveLibrary(&_EndpointV2.CallOpts, srcEid)
+}
+
+// DefaultReceiveLibrary is a free data retrieval call binding the contract method 0x6f50a803.
+//
+// Solidity: function defaultReceiveLibrary(uint32 srcEid) view returns(address lib)
+func (_EndpointV2 *EndpointV2CallerSession) DefaultReceiveLibrary(srcEid uint32) (common.Address, error) {
+	return _EndpointV2.Contract.DefaultReceiveLibrary(&_EndpointV2.CallOpts, srcEid)
+}
+
+// DefaultReceiveLibraryTimeout is a free data retrieval call binding the contract method 0x6e83f5bb.
+//
+// Solidity: function defaultReceiveLibraryTimeout(uint32 srcEid) view returns(address lib, uint256 expiry)
+func (_EndpointV2 *EndpointV2Caller) DefaultReceiveLibraryTimeout(opts *bind.CallOpts, srcEid uint32) (struct {
+	Lib    common.Address
+	Expiry *big.Int
+}, error) {
+	var out []interface{}
+	err := _EndpointV2.contract.Call(opts, &out, "defaultReceiveLibraryTimeout", srcEid)
+
+	outstruct := new(struct {
+		Lib    common.Address
+		Expiry *big.Int
+	})
+	if err != nil {
+		return *outstruct, err
+	}
+
+	outstruct.Lib = *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+	outstruct.Expiry = *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
+
+	return *outstruct, err
+
+}
+
+// DefaultReceiveLibraryTimeout is a free data retrieval call binding the contract method 0x6e83f5bb.
+//
+// Solidity: function defaultReceiveLibraryTimeout(uint32 srcEid) view returns(address lib, uint256 expiry)
+func (_EndpointV2 *EndpointV2Session) DefaultReceiveLibraryTimeout(srcEid uint32) (struct {
+	Lib    common.Address
+	Expiry *big.Int
+}, error) {
+	return _EndpointV2.Contract.DefaultReceiveLibraryTimeout(&_EndpointV2.CallOpts, srcEid)
+}
+
+// DefaultReceiveLibraryTimeout is a free data retrieval call binding the contract method 0x6e83f5bb.
+//
+// Solidity: function defaultReceiveLibraryTimeout(uint32 srcEid) view returns(address lib, uint256 expiry)
+func (_EndpointV2 *EndpointV2CallerSession) DefaultReceiveLibraryTimeout(srcEid uint32) (struct {
+	Lib    common.Address
+	Expiry *big.Int
+}, error) {
+	return _EndpointV2.Contract.DefaultReceiveLibraryTimeout(&_EndpointV2.CallOpts, srcEid)
+}
+
+// DefaultSendLibrary is a free data retrieval call binding the contract method 0xf64be4c7.
+//
+// Solidity: function defaultSendLibrary(uint32 dstEid) view returns(address lib)
+func (_EndpointV2 *EndpointV2Caller) DefaultSendLibrary(opts *bind.CallOpts, dstEid uint32) (common.Address, error) {
+	var out []interface{}
+	err := _EndpointV2.contract.Call(opts, &out, "defaultSendLibrary", dstEid)
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
+}
+
+// DefaultSendLibrary is a free data retrieval call binding the contract method 0xf64be4c7.
+//
+// Solidity: function defaultSendLibrary(uint32 dstEid) view returns(address lib)
+func (_EndpointV2 *EndpointV2Session) DefaultSendLibrary(dstEid uint32) (common.Address, error) {
+	return _EndpointV2.Contract.DefaultSendLibrary(&_EndpointV2.CallOpts, dstEid)
+}
+
+// DefaultSendLibrary is a free data retrieval call binding the contract method 0xf64be4c7.
+//
+// Solidity: function defaultSendLibrary(uint32 dstEid) view returns(address lib)
+func (_EndpointV2 *EndpointV2CallerSession) DefaultSendLibrary(dstEid uint32) (common.Address, error) {
+	return _EndpointV2.Contract.DefaultSendLibrary(&_EndpointV2.CallOpts, dstEid)
+}
+
+// Delegates is a free data retrieval call binding the contract method 0x587cde1e.
+//
+// Solidity: function delegates(address oapp) view returns(address delegate)
+func (_EndpointV2 *EndpointV2Caller) Delegates(opts *bind.CallOpts, oapp common.Address) (common.Address, error) {
+	var out []interface{}
+	err := _EndpointV2.contract.Call(opts, &out, "delegates", oapp)
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
+}
+
+// Delegates is a free data retrieval call binding the contract method 0x587cde1e.
+//
+// Solidity: function delegates(address oapp) view returns(address delegate)
+func (_EndpointV2 *EndpointV2Session) Delegates(oapp common.Address) (common.Address, error) {
+	return _EndpointV2.Contract.Delegates(&_EndpointV2.CallOpts, oapp)
+}
+
+// Delegates is a free data retrieval call binding the contract method 0x587cde1e.
+//
+// Solidity: function delegates(address oapp) view returns(address delegate)
+func (_EndpointV2 *EndpointV2CallerSession) Delegates(oapp common.Address) (common.Address, error) {
+	return _EndpointV2.Contract.Delegates(&_EndpointV2.CallOpts, oapp)
 }
 
 // Eid is a free data retrieval call binding the contract method 0x416ecebf.
@@ -318,133 +509,182 @@ func (_EndpointV2 *EndpointV2CallerSession) Eid() (uint32, error) {
 	return _EndpointV2.Contract.Eid(&_EndpointV2.CallOpts)
 }
 
-// GetNativeFee is a free data retrieval call binding the contract method 0xbce4dd56.
+// GetConfig is a free data retrieval call binding the contract method 0x2b3197b9.
 //
-// Solidity: function getNativeFee(bytes _packet) view returns(uint256)
-func (_EndpointV2 *EndpointV2Caller) GetNativeFee(opts *bind.CallOpts, _packet []byte) (*big.Int, error) {
+// Solidity: function getConfig(address _oapp, address _lib, uint32 _eid, uint32 _configType) view returns(bytes config)
+func (_EndpointV2 *EndpointV2Caller) GetConfig(opts *bind.CallOpts, _oapp common.Address, _lib common.Address, _eid uint32, _configType uint32) ([]byte, error) {
 	var out []interface{}
-	err := _EndpointV2.contract.Call(opts, &out, "getNativeFee", _packet)
+	err := _EndpointV2.contract.Call(opts, &out, "getConfig", _oapp, _lib, _eid, _configType)
 
 	if err != nil {
-		return *new(*big.Int), err
+		return *new([]byte), err
 	}
 
-	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+	out0 := *abi.ConvertType(out[0], new([]byte)).(*[]byte)
 
 	return out0, err
 
 }
 
-// GetNativeFee is a free data retrieval call binding the contract method 0xbce4dd56.
+// GetConfig is a free data retrieval call binding the contract method 0x2b3197b9.
 //
-// Solidity: function getNativeFee(bytes _packet) view returns(uint256)
-func (_EndpointV2 *EndpointV2Session) GetNativeFee(_packet []byte) (*big.Int, error) {
-	return _EndpointV2.Contract.GetNativeFee(&_EndpointV2.CallOpts, _packet)
+// Solidity: function getConfig(address _oapp, address _lib, uint32 _eid, uint32 _configType) view returns(bytes config)
+func (_EndpointV2 *EndpointV2Session) GetConfig(_oapp common.Address, _lib common.Address, _eid uint32, _configType uint32) ([]byte, error) {
+	return _EndpointV2.Contract.GetConfig(&_EndpointV2.CallOpts, _oapp, _lib, _eid, _configType)
 }
 
-// GetNativeFee is a free data retrieval call binding the contract method 0xbce4dd56.
+// GetConfig is a free data retrieval call binding the contract method 0x2b3197b9.
 //
-// Solidity: function getNativeFee(bytes _packet) view returns(uint256)
-func (_EndpointV2 *EndpointV2CallerSession) GetNativeFee(_packet []byte) (*big.Int, error) {
-	return _EndpointV2.Contract.GetNativeFee(&_EndpointV2.CallOpts, _packet)
-}
-
-// GetReceiveLibrary is a free data retrieval call binding the contract method 0x402f8468.
-//
-// Solidity: function getReceiveLibrary(address _oapp, uint32 _remoteEid) view returns(address receiveLib, bool isDefault)
-func (_EndpointV2 *EndpointV2Caller) GetReceiveLibrary(opts *bind.CallOpts, _oapp common.Address, _remoteEid uint32) (struct {
-	ReceiveLib common.Address
-	IsDefault  bool
-}, error) {
-	var out []interface{}
-	err := _EndpointV2.contract.Call(opts, &out, "getReceiveLibrary", _oapp, _remoteEid)
-
-	outstruct := new(struct {
-		ReceiveLib common.Address
-		IsDefault  bool
-	})
-	if err != nil {
-		return *outstruct, err
-	}
-
-	outstruct.ReceiveLib = *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
-	outstruct.IsDefault = *abi.ConvertType(out[1], new(bool)).(*bool)
-
-	return *outstruct, err
-
+// Solidity: function getConfig(address _oapp, address _lib, uint32 _eid, uint32 _configType) view returns(bytes config)
+func (_EndpointV2 *EndpointV2CallerSession) GetConfig(_oapp common.Address, _lib common.Address, _eid uint32, _configType uint32) ([]byte, error) {
+	return _EndpointV2.Contract.GetConfig(&_EndpointV2.CallOpts, _oapp, _lib, _eid, _configType)
 }
 
 // GetReceiveLibrary is a free data retrieval call binding the contract method 0x402f8468.
 //
-// Solidity: function getReceiveLibrary(address _oapp, uint32 _remoteEid) view returns(address receiveLib, bool isDefault)
-func (_EndpointV2 *EndpointV2Session) GetReceiveLibrary(_oapp common.Address, _remoteEid uint32) (struct {
-	ReceiveLib common.Address
-	IsDefault  bool
-}, error) {
-	return _EndpointV2.Contract.GetReceiveLibrary(&_EndpointV2.CallOpts, _oapp, _remoteEid)
-}
-
-// GetReceiveLibrary is a free data retrieval call binding the contract method 0x402f8468.
-//
-// Solidity: function getReceiveLibrary(address _oapp, uint32 _remoteEid) view returns(address receiveLib, bool isDefault)
-func (_EndpointV2 *EndpointV2CallerSession) GetReceiveLibrary(_oapp common.Address, _remoteEid uint32) (struct {
-	ReceiveLib common.Address
-	IsDefault  bool
-}, error) {
-	return _EndpointV2.Contract.GetReceiveLibrary(&_EndpointV2.CallOpts, _oapp, _remoteEid)
-}
-
-// GetSendLibrary is a free data retrieval call binding the contract method 0xb96a277f.
-//
-// Solidity: function getSendLibrary(address _oapp, uint32 _remoteEid) view returns(address sendLib, bool isDefault)
-func (_EndpointV2 *EndpointV2Caller) GetSendLibrary(opts *bind.CallOpts, _oapp common.Address, _remoteEid uint32) (struct {
-	SendLib   common.Address
+// Solidity: function getReceiveLibrary(address _receiver, uint32 _srcEid) view returns(address lib, bool isDefault)
+func (_EndpointV2 *EndpointV2Caller) GetReceiveLibrary(opts *bind.CallOpts, _receiver common.Address, _srcEid uint32) (struct {
+	Lib       common.Address
 	IsDefault bool
 }, error) {
 	var out []interface{}
-	err := _EndpointV2.contract.Call(opts, &out, "getSendLibrary", _oapp, _remoteEid)
+	err := _EndpointV2.contract.Call(opts, &out, "getReceiveLibrary", _receiver, _srcEid)
 
 	outstruct := new(struct {
-		SendLib   common.Address
+		Lib       common.Address
 		IsDefault bool
 	})
 	if err != nil {
 		return *outstruct, err
 	}
 
-	outstruct.SendLib = *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+	outstruct.Lib = *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
 	outstruct.IsDefault = *abi.ConvertType(out[1], new(bool)).(*bool)
 
 	return *outstruct, err
 
 }
 
-// GetSendLibrary is a free data retrieval call binding the contract method 0xb96a277f.
+// GetReceiveLibrary is a free data retrieval call binding the contract method 0x402f8468.
 //
-// Solidity: function getSendLibrary(address _oapp, uint32 _remoteEid) view returns(address sendLib, bool isDefault)
-func (_EndpointV2 *EndpointV2Session) GetSendLibrary(_oapp common.Address, _remoteEid uint32) (struct {
-	SendLib   common.Address
+// Solidity: function getReceiveLibrary(address _receiver, uint32 _srcEid) view returns(address lib, bool isDefault)
+func (_EndpointV2 *EndpointV2Session) GetReceiveLibrary(_receiver common.Address, _srcEid uint32) (struct {
+	Lib       common.Address
 	IsDefault bool
 }, error) {
-	return _EndpointV2.Contract.GetSendLibrary(&_EndpointV2.CallOpts, _oapp, _remoteEid)
+	return _EndpointV2.Contract.GetReceiveLibrary(&_EndpointV2.CallOpts, _receiver, _srcEid)
 }
 
-// GetSendLibrary is a free data retrieval call binding the contract method 0xb96a277f.
+// GetReceiveLibrary is a free data retrieval call binding the contract method 0x402f8468.
 //
-// Solidity: function getSendLibrary(address _oapp, uint32 _remoteEid) view returns(address sendLib, bool isDefault)
-func (_EndpointV2 *EndpointV2CallerSession) GetSendLibrary(_oapp common.Address, _remoteEid uint32) (struct {
-	SendLib   common.Address
+// Solidity: function getReceiveLibrary(address _receiver, uint32 _srcEid) view returns(address lib, bool isDefault)
+func (_EndpointV2 *EndpointV2CallerSession) GetReceiveLibrary(_receiver common.Address, _srcEid uint32) (struct {
+	Lib       common.Address
 	IsDefault bool
 }, error) {
-	return _EndpointV2.Contract.GetSendLibrary(&_EndpointV2.CallOpts, _oapp, _remoteEid)
+	return _EndpointV2.Contract.GetReceiveLibrary(&_EndpointV2.CallOpts, _receiver, _srcEid)
 }
 
-// InboundNonce is a free data retrieval call binding the contract method 0x11a83f17.
+// GetRegisteredLibraries is a free data retrieval call binding the contract method 0x9132e5c3.
 //
-// Solidity: function inboundNonce((uint32,bytes32,uint64) _origin) view returns(uint64)
-func (_EndpointV2 *EndpointV2Caller) InboundNonce(opts *bind.CallOpts, _origin Origin) (uint64, error) {
+// Solidity: function getRegisteredLibraries() view returns(address[])
+func (_EndpointV2 *EndpointV2Caller) GetRegisteredLibraries(opts *bind.CallOpts) ([]common.Address, error) {
 	var out []interface{}
-	err := _EndpointV2.contract.Call(opts, &out, "inboundNonce", _origin)
+	err := _EndpointV2.contract.Call(opts, &out, "getRegisteredLibraries")
+
+	if err != nil {
+		return *new([]common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([]common.Address)).(*[]common.Address)
+
+	return out0, err
+
+}
+
+// GetRegisteredLibraries is a free data retrieval call binding the contract method 0x9132e5c3.
+//
+// Solidity: function getRegisteredLibraries() view returns(address[])
+func (_EndpointV2 *EndpointV2Session) GetRegisteredLibraries() ([]common.Address, error) {
+	return _EndpointV2.Contract.GetRegisteredLibraries(&_EndpointV2.CallOpts)
+}
+
+// GetRegisteredLibraries is a free data retrieval call binding the contract method 0x9132e5c3.
+//
+// Solidity: function getRegisteredLibraries() view returns(address[])
+func (_EndpointV2 *EndpointV2CallerSession) GetRegisteredLibraries() ([]common.Address, error) {
+	return _EndpointV2.Contract.GetRegisteredLibraries(&_EndpointV2.CallOpts)
+}
+
+// GetSendContext is a free data retrieval call binding the contract method 0x14f651a9.
+//
+// Solidity: function getSendContext() view returns(uint32, address)
+func (_EndpointV2 *EndpointV2Caller) GetSendContext(opts *bind.CallOpts) (uint32, common.Address, error) {
+	var out []interface{}
+	err := _EndpointV2.contract.Call(opts, &out, "getSendContext")
+
+	if err != nil {
+		return *new(uint32), *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(uint32)).(*uint32)
+	out1 := *abi.ConvertType(out[1], new(common.Address)).(*common.Address)
+
+	return out0, out1, err
+
+}
+
+// GetSendContext is a free data retrieval call binding the contract method 0x14f651a9.
+//
+// Solidity: function getSendContext() view returns(uint32, address)
+func (_EndpointV2 *EndpointV2Session) GetSendContext() (uint32, common.Address, error) {
+	return _EndpointV2.Contract.GetSendContext(&_EndpointV2.CallOpts)
+}
+
+// GetSendContext is a free data retrieval call binding the contract method 0x14f651a9.
+//
+// Solidity: function getSendContext() view returns(uint32, address)
+func (_EndpointV2 *EndpointV2CallerSession) GetSendContext() (uint32, common.Address, error) {
+	return _EndpointV2.Contract.GetSendContext(&_EndpointV2.CallOpts)
+}
+
+// GetSendLibrary is a free data retrieval call binding the contract method 0xb96a277f.
+//
+// Solidity: function getSendLibrary(address _sender, uint32 _dstEid) view returns(address lib)
+func (_EndpointV2 *EndpointV2Caller) GetSendLibrary(opts *bind.CallOpts, _sender common.Address, _dstEid uint32) (common.Address, error) {
+	var out []interface{}
+	err := _EndpointV2.contract.Call(opts, &out, "getSendLibrary", _sender, _dstEid)
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
+}
+
+// GetSendLibrary is a free data retrieval call binding the contract method 0xb96a277f.
+//
+// Solidity: function getSendLibrary(address _sender, uint32 _dstEid) view returns(address lib)
+func (_EndpointV2 *EndpointV2Session) GetSendLibrary(_sender common.Address, _dstEid uint32) (common.Address, error) {
+	return _EndpointV2.Contract.GetSendLibrary(&_EndpointV2.CallOpts, _sender, _dstEid)
+}
+
+// GetSendLibrary is a free data retrieval call binding the contract method 0xb96a277f.
+//
+// Solidity: function getSendLibrary(address _sender, uint32 _dstEid) view returns(address lib)
+func (_EndpointV2 *EndpointV2CallerSession) GetSendLibrary(_sender common.Address, _dstEid uint32) (common.Address, error) {
+	return _EndpointV2.Contract.GetSendLibrary(&_EndpointV2.CallOpts, _sender, _dstEid)
+}
+
+// InboundNonce is a free data retrieval call binding the contract method 0xa0dd43fc.
+//
+// Solidity: function inboundNonce(address _receiver, uint32 _srcEid, bytes32 _sender) view returns(uint64)
+func (_EndpointV2 *EndpointV2Caller) InboundNonce(opts *bind.CallOpts, _receiver common.Address, _srcEid uint32, _sender [32]byte) (uint64, error) {
+	var out []interface{}
+	err := _EndpointV2.contract.Call(opts, &out, "inboundNonce", _receiver, _srcEid, _sender)
 
 	if err != nil {
 		return *new(uint64), err
@@ -456,26 +696,57 @@ func (_EndpointV2 *EndpointV2Caller) InboundNonce(opts *bind.CallOpts, _origin O
 
 }
 
-// InboundNonce is a free data retrieval call binding the contract method 0x11a83f17.
+// InboundNonce is a free data retrieval call binding the contract method 0xa0dd43fc.
 //
-// Solidity: function inboundNonce((uint32,bytes32,uint64) _origin) view returns(uint64)
-func (_EndpointV2 *EndpointV2Session) InboundNonce(_origin Origin) (uint64, error) {
-	return _EndpointV2.Contract.InboundNonce(&_EndpointV2.CallOpts, _origin)
+// Solidity: function inboundNonce(address _receiver, uint32 _srcEid, bytes32 _sender) view returns(uint64)
+func (_EndpointV2 *EndpointV2Session) InboundNonce(_receiver common.Address, _srcEid uint32, _sender [32]byte) (uint64, error) {
+	return _EndpointV2.Contract.InboundNonce(&_EndpointV2.CallOpts, _receiver, _srcEid, _sender)
 }
 
-// InboundNonce is a free data retrieval call binding the contract method 0x11a83f17.
+// InboundNonce is a free data retrieval call binding the contract method 0xa0dd43fc.
 //
-// Solidity: function inboundNonce((uint32,bytes32,uint64) _origin) view returns(uint64)
-func (_EndpointV2 *EndpointV2CallerSession) InboundNonce(_origin Origin) (uint64, error) {
-	return _EndpointV2.Contract.InboundNonce(&_EndpointV2.CallOpts, _origin)
+// Solidity: function inboundNonce(address _receiver, uint32 _srcEid, bytes32 _sender) view returns(uint64)
+func (_EndpointV2 *EndpointV2CallerSession) InboundNonce(_receiver common.Address, _srcEid uint32, _sender [32]byte) (uint64, error) {
+	return _EndpointV2.Contract.InboundNonce(&_EndpointV2.CallOpts, _receiver, _srcEid, _sender)
 }
 
-// IsDefaultReceiveLibrary is a free data retrieval call binding the contract method 0xc0033efe.
+// InboundPayloadHash is a free data retrieval call binding the contract method 0xc9fc7bcd.
 //
-// Solidity: function isDefaultReceiveLibrary(address _oapp) view returns(bool)
-func (_EndpointV2 *EndpointV2Caller) IsDefaultReceiveLibrary(opts *bind.CallOpts, _oapp common.Address) (bool, error) {
+// Solidity: function inboundPayloadHash(address receiver, uint32 srcEid, bytes32 sender, uint64 inboundNonce) view returns(bytes32 payloadHash)
+func (_EndpointV2 *EndpointV2Caller) InboundPayloadHash(opts *bind.CallOpts, receiver common.Address, srcEid uint32, sender [32]byte, inboundNonce uint64) ([32]byte, error) {
 	var out []interface{}
-	err := _EndpointV2.contract.Call(opts, &out, "isDefaultReceiveLibrary", _oapp)
+	err := _EndpointV2.contract.Call(opts, &out, "inboundPayloadHash", receiver, srcEid, sender, inboundNonce)
+
+	if err != nil {
+		return *new([32]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
+
+	return out0, err
+
+}
+
+// InboundPayloadHash is a free data retrieval call binding the contract method 0xc9fc7bcd.
+//
+// Solidity: function inboundPayloadHash(address receiver, uint32 srcEid, bytes32 sender, uint64 inboundNonce) view returns(bytes32 payloadHash)
+func (_EndpointV2 *EndpointV2Session) InboundPayloadHash(receiver common.Address, srcEid uint32, sender [32]byte, inboundNonce uint64) ([32]byte, error) {
+	return _EndpointV2.Contract.InboundPayloadHash(&_EndpointV2.CallOpts, receiver, srcEid, sender, inboundNonce)
+}
+
+// InboundPayloadHash is a free data retrieval call binding the contract method 0xc9fc7bcd.
+//
+// Solidity: function inboundPayloadHash(address receiver, uint32 srcEid, bytes32 sender, uint64 inboundNonce) view returns(bytes32 payloadHash)
+func (_EndpointV2 *EndpointV2CallerSession) InboundPayloadHash(receiver common.Address, srcEid uint32, sender [32]byte, inboundNonce uint64) ([32]byte, error) {
+	return _EndpointV2.Contract.InboundPayloadHash(&_EndpointV2.CallOpts, receiver, srcEid, sender, inboundNonce)
+}
+
+// Initializable is a free data retrieval call binding the contract method 0x861e1ca5.
+//
+// Solidity: function initializable((uint32,bytes32,uint64) _origin, address _receiver) view returns(bool)
+func (_EndpointV2 *EndpointV2Caller) Initializable(opts *bind.CallOpts, _origin Origin, _receiver common.Address) (bool, error) {
+	var out []interface{}
+	err := _EndpointV2.contract.Call(opts, &out, "initializable", _origin, _receiver)
 
 	if err != nil {
 		return *new(bool), err
@@ -487,26 +758,26 @@ func (_EndpointV2 *EndpointV2Caller) IsDefaultReceiveLibrary(opts *bind.CallOpts
 
 }
 
-// IsDefaultReceiveLibrary is a free data retrieval call binding the contract method 0xc0033efe.
+// Initializable is a free data retrieval call binding the contract method 0x861e1ca5.
 //
-// Solidity: function isDefaultReceiveLibrary(address _oapp) view returns(bool)
-func (_EndpointV2 *EndpointV2Session) IsDefaultReceiveLibrary(_oapp common.Address) (bool, error) {
-	return _EndpointV2.Contract.IsDefaultReceiveLibrary(&_EndpointV2.CallOpts, _oapp)
+// Solidity: function initializable((uint32,bytes32,uint64) _origin, address _receiver) view returns(bool)
+func (_EndpointV2 *EndpointV2Session) Initializable(_origin Origin, _receiver common.Address) (bool, error) {
+	return _EndpointV2.Contract.Initializable(&_EndpointV2.CallOpts, _origin, _receiver)
 }
 
-// IsDefaultReceiveLibrary is a free data retrieval call binding the contract method 0xc0033efe.
+// Initializable is a free data retrieval call binding the contract method 0x861e1ca5.
 //
-// Solidity: function isDefaultReceiveLibrary(address _oapp) view returns(bool)
-func (_EndpointV2 *EndpointV2CallerSession) IsDefaultReceiveLibrary(_oapp common.Address) (bool, error) {
-	return _EndpointV2.Contract.IsDefaultReceiveLibrary(&_EndpointV2.CallOpts, _oapp)
+// Solidity: function initializable((uint32,bytes32,uint64) _origin, address _receiver) view returns(bool)
+func (_EndpointV2 *EndpointV2CallerSession) Initializable(_origin Origin, _receiver common.Address) (bool, error) {
+	return _EndpointV2.Contract.Initializable(&_EndpointV2.CallOpts, _origin, _receiver)
 }
 
-// IsDefaultSendLibrary is a free data retrieval call binding the contract method 0xe9aa2d16.
+// IsDefaultSendLibrary is a free data retrieval call binding the contract method 0xdc93c8a2.
 //
-// Solidity: function isDefaultSendLibrary(address _oapp) view returns(bool)
-func (_EndpointV2 *EndpointV2Caller) IsDefaultSendLibrary(opts *bind.CallOpts, _oapp common.Address) (bool, error) {
+// Solidity: function isDefaultSendLibrary(address _sender, uint32 _dstEid) view returns(bool)
+func (_EndpointV2 *EndpointV2Caller) IsDefaultSendLibrary(opts *bind.CallOpts, _sender common.Address, _dstEid uint32) (bool, error) {
 	var out []interface{}
-	err := _EndpointV2.contract.Call(opts, &out, "isDefaultSendLibrary", _oapp)
+	err := _EndpointV2.contract.Call(opts, &out, "isDefaultSendLibrary", _sender, _dstEid)
 
 	if err != nil {
 		return *new(bool), err
@@ -518,26 +789,26 @@ func (_EndpointV2 *EndpointV2Caller) IsDefaultSendLibrary(opts *bind.CallOpts, _
 
 }
 
-// IsDefaultSendLibrary is a free data retrieval call binding the contract method 0xe9aa2d16.
+// IsDefaultSendLibrary is a free data retrieval call binding the contract method 0xdc93c8a2.
 //
-// Solidity: function isDefaultSendLibrary(address _oapp) view returns(bool)
-func (_EndpointV2 *EndpointV2Session) IsDefaultSendLibrary(_oapp common.Address) (bool, error) {
-	return _EndpointV2.Contract.IsDefaultSendLibrary(&_EndpointV2.CallOpts, _oapp)
+// Solidity: function isDefaultSendLibrary(address _sender, uint32 _dstEid) view returns(bool)
+func (_EndpointV2 *EndpointV2Session) IsDefaultSendLibrary(_sender common.Address, _dstEid uint32) (bool, error) {
+	return _EndpointV2.Contract.IsDefaultSendLibrary(&_EndpointV2.CallOpts, _sender, _dstEid)
 }
 
-// IsDefaultSendLibrary is a free data retrieval call binding the contract method 0xe9aa2d16.
+// IsDefaultSendLibrary is a free data retrieval call binding the contract method 0xdc93c8a2.
 //
-// Solidity: function isDefaultSendLibrary(address _oapp) view returns(bool)
-func (_EndpointV2 *EndpointV2CallerSession) IsDefaultSendLibrary(_oapp common.Address) (bool, error) {
-	return _EndpointV2.Contract.IsDefaultSendLibrary(&_EndpointV2.CallOpts, _oapp)
+// Solidity: function isDefaultSendLibrary(address _sender, uint32 _dstEid) view returns(bool)
+func (_EndpointV2 *EndpointV2CallerSession) IsDefaultSendLibrary(_sender common.Address, _dstEid uint32) (bool, error) {
+	return _EndpointV2.Contract.IsDefaultSendLibrary(&_EndpointV2.CallOpts, _sender, _dstEid)
 }
 
 // IsRegisteredLibrary is a free data retrieval call binding the contract method 0xdc706a62.
 //
-// Solidity: function isRegisteredLibrary(address _addr) view returns(bool)
-func (_EndpointV2 *EndpointV2Caller) IsRegisteredLibrary(opts *bind.CallOpts, _addr common.Address) (bool, error) {
+// Solidity: function isRegisteredLibrary(address lib) view returns(bool)
+func (_EndpointV2 *EndpointV2Caller) IsRegisteredLibrary(opts *bind.CallOpts, lib common.Address) (bool, error) {
 	var out []interface{}
-	err := _EndpointV2.contract.Call(opts, &out, "isRegisteredLibrary", _addr)
+	err := _EndpointV2.contract.Call(opts, &out, "isRegisteredLibrary", lib)
 
 	if err != nil {
 		return *new(bool), err
@@ -551,24 +822,117 @@ func (_EndpointV2 *EndpointV2Caller) IsRegisteredLibrary(opts *bind.CallOpts, _a
 
 // IsRegisteredLibrary is a free data retrieval call binding the contract method 0xdc706a62.
 //
-// Solidity: function isRegisteredLibrary(address _addr) view returns(bool)
-func (_EndpointV2 *EndpointV2Session) IsRegisteredLibrary(_addr common.Address) (bool, error) {
-	return _EndpointV2.Contract.IsRegisteredLibrary(&_EndpointV2.CallOpts, _addr)
+// Solidity: function isRegisteredLibrary(address lib) view returns(bool)
+func (_EndpointV2 *EndpointV2Session) IsRegisteredLibrary(lib common.Address) (bool, error) {
+	return _EndpointV2.Contract.IsRegisteredLibrary(&_EndpointV2.CallOpts, lib)
 }
 
 // IsRegisteredLibrary is a free data retrieval call binding the contract method 0xdc706a62.
 //
-// Solidity: function isRegisteredLibrary(address _addr) view returns(bool)
-func (_EndpointV2 *EndpointV2CallerSession) IsRegisteredLibrary(_addr common.Address) (bool, error) {
-	return _EndpointV2.Contract.IsRegisteredLibrary(&_EndpointV2.CallOpts, _addr)
+// Solidity: function isRegisteredLibrary(address lib) view returns(bool)
+func (_EndpointV2 *EndpointV2CallerSession) IsRegisteredLibrary(lib common.Address) (bool, error) {
+	return _EndpointV2.Contract.IsRegisteredLibrary(&_EndpointV2.CallOpts, lib)
 }
 
-// LazyInboundNonce is a free data retrieval call binding the contract method 0x5f13d4fa.
+// IsSendingMessage is a free data retrieval call binding the contract method 0x79624ca9.
 //
-// Solidity: function lazyInboundNonce((uint32,bytes32,uint64) _origin) view returns(uint64)
-func (_EndpointV2 *EndpointV2Caller) LazyInboundNonce(opts *bind.CallOpts, _origin Origin) (uint64, error) {
+// Solidity: function isSendingMessage() view returns(bool)
+func (_EndpointV2 *EndpointV2Caller) IsSendingMessage(opts *bind.CallOpts) (bool, error) {
 	var out []interface{}
-	err := _EndpointV2.contract.Call(opts, &out, "lazyInboundNonce", _origin)
+	err := _EndpointV2.contract.Call(opts, &out, "isSendingMessage")
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
+}
+
+// IsSendingMessage is a free data retrieval call binding the contract method 0x79624ca9.
+//
+// Solidity: function isSendingMessage() view returns(bool)
+func (_EndpointV2 *EndpointV2Session) IsSendingMessage() (bool, error) {
+	return _EndpointV2.Contract.IsSendingMessage(&_EndpointV2.CallOpts)
+}
+
+// IsSendingMessage is a free data retrieval call binding the contract method 0x79624ca9.
+//
+// Solidity: function isSendingMessage() view returns(bool)
+func (_EndpointV2 *EndpointV2CallerSession) IsSendingMessage() (bool, error) {
+	return _EndpointV2.Contract.IsSendingMessage(&_EndpointV2.CallOpts)
+}
+
+// IsSupportedEid is a free data retrieval call binding the contract method 0x6750cd4c.
+//
+// Solidity: function isSupportedEid(uint32 _eid) view returns(bool)
+func (_EndpointV2 *EndpointV2Caller) IsSupportedEid(opts *bind.CallOpts, _eid uint32) (bool, error) {
+	var out []interface{}
+	err := _EndpointV2.contract.Call(opts, &out, "isSupportedEid", _eid)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
+}
+
+// IsSupportedEid is a free data retrieval call binding the contract method 0x6750cd4c.
+//
+// Solidity: function isSupportedEid(uint32 _eid) view returns(bool)
+func (_EndpointV2 *EndpointV2Session) IsSupportedEid(_eid uint32) (bool, error) {
+	return _EndpointV2.Contract.IsSupportedEid(&_EndpointV2.CallOpts, _eid)
+}
+
+// IsSupportedEid is a free data retrieval call binding the contract method 0x6750cd4c.
+//
+// Solidity: function isSupportedEid(uint32 _eid) view returns(bool)
+func (_EndpointV2 *EndpointV2CallerSession) IsSupportedEid(_eid uint32) (bool, error) {
+	return _EndpointV2.Contract.IsSupportedEid(&_EndpointV2.CallOpts, _eid)
+}
+
+// IsValidReceiveLibrary is a free data retrieval call binding the contract method 0x9d7f9775.
+//
+// Solidity: function isValidReceiveLibrary(address _receiver, uint32 _srcEid, address _actualReceiveLib) view returns(bool)
+func (_EndpointV2 *EndpointV2Caller) IsValidReceiveLibrary(opts *bind.CallOpts, _receiver common.Address, _srcEid uint32, _actualReceiveLib common.Address) (bool, error) {
+	var out []interface{}
+	err := _EndpointV2.contract.Call(opts, &out, "isValidReceiveLibrary", _receiver, _srcEid, _actualReceiveLib)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
+}
+
+// IsValidReceiveLibrary is a free data retrieval call binding the contract method 0x9d7f9775.
+//
+// Solidity: function isValidReceiveLibrary(address _receiver, uint32 _srcEid, address _actualReceiveLib) view returns(bool)
+func (_EndpointV2 *EndpointV2Session) IsValidReceiveLibrary(_receiver common.Address, _srcEid uint32, _actualReceiveLib common.Address) (bool, error) {
+	return _EndpointV2.Contract.IsValidReceiveLibrary(&_EndpointV2.CallOpts, _receiver, _srcEid, _actualReceiveLib)
+}
+
+// IsValidReceiveLibrary is a free data retrieval call binding the contract method 0x9d7f9775.
+//
+// Solidity: function isValidReceiveLibrary(address _receiver, uint32 _srcEid, address _actualReceiveLib) view returns(bool)
+func (_EndpointV2 *EndpointV2CallerSession) IsValidReceiveLibrary(_receiver common.Address, _srcEid uint32, _actualReceiveLib common.Address) (bool, error) {
+	return _EndpointV2.Contract.IsValidReceiveLibrary(&_EndpointV2.CallOpts, _receiver, _srcEid, _actualReceiveLib)
+}
+
+// LazyInboundNonce is a free data retrieval call binding the contract method 0x5b17bb70.
+//
+// Solidity: function lazyInboundNonce(address receiver, uint32 srcEid, bytes32 sender) view returns(uint64 nonce)
+func (_EndpointV2 *EndpointV2Caller) LazyInboundNonce(opts *bind.CallOpts, receiver common.Address, srcEid uint32, sender [32]byte) (uint64, error) {
+	var out []interface{}
+	err := _EndpointV2.contract.Call(opts, &out, "lazyInboundNonce", receiver, srcEid, sender)
 
 	if err != nil {
 		return *new(uint64), err
@@ -580,18 +944,18 @@ func (_EndpointV2 *EndpointV2Caller) LazyInboundNonce(opts *bind.CallOpts, _orig
 
 }
 
-// LazyInboundNonce is a free data retrieval call binding the contract method 0x5f13d4fa.
+// LazyInboundNonce is a free data retrieval call binding the contract method 0x5b17bb70.
 //
-// Solidity: function lazyInboundNonce((uint32,bytes32,uint64) _origin) view returns(uint64)
-func (_EndpointV2 *EndpointV2Session) LazyInboundNonce(_origin Origin) (uint64, error) {
-	return _EndpointV2.Contract.LazyInboundNonce(&_EndpointV2.CallOpts, _origin)
+// Solidity: function lazyInboundNonce(address receiver, uint32 srcEid, bytes32 sender) view returns(uint64 nonce)
+func (_EndpointV2 *EndpointV2Session) LazyInboundNonce(receiver common.Address, srcEid uint32, sender [32]byte) (uint64, error) {
+	return _EndpointV2.Contract.LazyInboundNonce(&_EndpointV2.CallOpts, receiver, srcEid, sender)
 }
 
-// LazyInboundNonce is a free data retrieval call binding the contract method 0x5f13d4fa.
+// LazyInboundNonce is a free data retrieval call binding the contract method 0x5b17bb70.
 //
-// Solidity: function lazyInboundNonce((uint32,bytes32,uint64) _origin) view returns(uint64)
-func (_EndpointV2 *EndpointV2CallerSession) LazyInboundNonce(_origin Origin) (uint64, error) {
-	return _EndpointV2.Contract.LazyInboundNonce(&_EndpointV2.CallOpts, _origin)
+// Solidity: function lazyInboundNonce(address receiver, uint32 srcEid, bytes32 sender) view returns(uint64 nonce)
+func (_EndpointV2 *EndpointV2CallerSession) LazyInboundNonce(receiver common.Address, srcEid uint32, sender [32]byte) (uint64, error) {
+	return _EndpointV2.Contract.LazyInboundNonce(&_EndpointV2.CallOpts, receiver, srcEid, sender)
 }
 
 // LzToken is a free data retrieval call binding the contract method 0xe4fe1d94.
@@ -625,12 +989,12 @@ func (_EndpointV2 *EndpointV2CallerSession) LzToken() (common.Address, error) {
 	return _EndpointV2.Contract.LzToken(&_EndpointV2.CallOpts)
 }
 
-// LzTokenFeeCollector is a free data retrieval call binding the contract method 0xd0edba47.
+// NativeToken is a free data retrieval call binding the contract method 0xe1758bd8.
 //
-// Solidity: function lzTokenFeeCollector() view returns(address)
-func (_EndpointV2 *EndpointV2Caller) LzTokenFeeCollector(opts *bind.CallOpts) (common.Address, error) {
+// Solidity: function nativeToken() view returns(address)
+func (_EndpointV2 *EndpointV2Caller) NativeToken(opts *bind.CallOpts) (common.Address, error) {
 	var out []interface{}
-	err := _EndpointV2.contract.Call(opts, &out, "lzTokenFeeCollector")
+	err := _EndpointV2.contract.Call(opts, &out, "nativeToken")
 
 	if err != nil {
 		return *new(common.Address), err
@@ -642,112 +1006,26 @@ func (_EndpointV2 *EndpointV2Caller) LzTokenFeeCollector(opts *bind.CallOpts) (c
 
 }
 
-// LzTokenFeeCollector is a free data retrieval call binding the contract method 0xd0edba47.
+// NativeToken is a free data retrieval call binding the contract method 0xe1758bd8.
 //
-// Solidity: function lzTokenFeeCollector() view returns(address)
-func (_EndpointV2 *EndpointV2Session) LzTokenFeeCollector() (common.Address, error) {
-	return _EndpointV2.Contract.LzTokenFeeCollector(&_EndpointV2.CallOpts)
+// Solidity: function nativeToken() view returns(address)
+func (_EndpointV2 *EndpointV2Session) NativeToken() (common.Address, error) {
+	return _EndpointV2.Contract.NativeToken(&_EndpointV2.CallOpts)
 }
 
-// LzTokenFeeCollector is a free data retrieval call binding the contract method 0xd0edba47.
+// NativeToken is a free data retrieval call binding the contract method 0xe1758bd8.
 //
-// Solidity: function lzTokenFeeCollector() view returns(address)
-func (_EndpointV2 *EndpointV2CallerSession) LzTokenFeeCollector() (common.Address, error) {
-	return _EndpointV2.Contract.LzTokenFeeCollector(&_EndpointV2.CallOpts)
+// Solidity: function nativeToken() view returns(address)
+func (_EndpointV2 *EndpointV2CallerSession) NativeToken() (common.Address, error) {
+	return _EndpointV2.Contract.NativeToken(&_EndpointV2.CallOpts)
 }
 
-// MessageComposed is a free data retrieval call binding the contract method 0x29266437.
+// NextGuid is a free data retrieval call binding the contract method 0xaafe5e07.
 //
-// Solidity: function messageComposed(bytes32 ) view returns(address receiver, bytes32 guid, address composer, uint256 index)
-func (_EndpointV2 *EndpointV2Caller) MessageComposed(opts *bind.CallOpts, arg0 [32]byte) (struct {
-	Receiver common.Address
-	Guid     [32]byte
-	Composer common.Address
-	Index    *big.Int
-}, error) {
+// Solidity: function nextGuid(address _sender, uint32 _dstEid, bytes32 _receiver) view returns(bytes32)
+func (_EndpointV2 *EndpointV2Caller) NextGuid(opts *bind.CallOpts, _sender common.Address, _dstEid uint32, _receiver [32]byte) ([32]byte, error) {
 	var out []interface{}
-	err := _EndpointV2.contract.Call(opts, &out, "messageComposed", arg0)
-
-	outstruct := new(struct {
-		Receiver common.Address
-		Guid     [32]byte
-		Composer common.Address
-		Index    *big.Int
-	})
-	if err != nil {
-		return *outstruct, err
-	}
-
-	outstruct.Receiver = *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
-	outstruct.Guid = *abi.ConvertType(out[1], new([32]byte)).(*[32]byte)
-	outstruct.Composer = *abi.ConvertType(out[2], new(common.Address)).(*common.Address)
-	outstruct.Index = *abi.ConvertType(out[3], new(*big.Int)).(**big.Int)
-
-	return *outstruct, err
-
-}
-
-// MessageComposed is a free data retrieval call binding the contract method 0x29266437.
-//
-// Solidity: function messageComposed(bytes32 ) view returns(address receiver, bytes32 guid, address composer, uint256 index)
-func (_EndpointV2 *EndpointV2Session) MessageComposed(arg0 [32]byte) (struct {
-	Receiver common.Address
-	Guid     [32]byte
-	Composer common.Address
-	Index    *big.Int
-}, error) {
-	return _EndpointV2.Contract.MessageComposed(&_EndpointV2.CallOpts, arg0)
-}
-
-// MessageComposed is a free data retrieval call binding the contract method 0x29266437.
-//
-// Solidity: function messageComposed(bytes32 ) view returns(address receiver, bytes32 guid, address composer, uint256 index)
-func (_EndpointV2 *EndpointV2CallerSession) MessageComposed(arg0 [32]byte) (struct {
-	Receiver common.Address
-	Guid     [32]byte
-	Composer common.Address
-	Index    *big.Int
-}, error) {
-	return _EndpointV2.Contract.MessageComposed(&_EndpointV2.CallOpts, arg0)
-}
-
-// NativePayload is a free data retrieval call binding the contract method 0xd0382e95.
-//
-// Solidity: function nativePayload(bytes32 ) view returns(bytes)
-func (_EndpointV2 *EndpointV2Caller) NativePayload(opts *bind.CallOpts, arg0 [32]byte) ([]byte, error) {
-	var out []interface{}
-	err := _EndpointV2.contract.Call(opts, &out, "nativePayload", arg0)
-
-	if err != nil {
-		return *new([]byte), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new([]byte)).(*[]byte)
-
-	return out0, err
-
-}
-
-// NativePayload is a free data retrieval call binding the contract method 0xd0382e95.
-//
-// Solidity: function nativePayload(bytes32 ) view returns(bytes)
-func (_EndpointV2 *EndpointV2Session) NativePayload(arg0 [32]byte) ([]byte, error) {
-	return _EndpointV2.Contract.NativePayload(&_EndpointV2.CallOpts, arg0)
-}
-
-// NativePayload is a free data retrieval call binding the contract method 0xd0382e95.
-//
-// Solidity: function nativePayload(bytes32 ) view returns(bytes)
-func (_EndpointV2 *EndpointV2CallerSession) NativePayload(arg0 [32]byte) ([]byte, error) {
-	return _EndpointV2.Contract.NativePayload(&_EndpointV2.CallOpts, arg0)
-}
-
-// OutboundNonce is a free data retrieval call binding the contract method 0x511d54eb.
-//
-// Solidity: function outboundNonce(address , uint64 ) view returns(bytes32)
-func (_EndpointV2 *EndpointV2Caller) OutboundNonce(opts *bind.CallOpts, arg0 common.Address, arg1 uint64) ([32]byte, error) {
-	var out []interface{}
-	err := _EndpointV2.contract.Call(opts, &out, "outboundNonce", arg0, arg1)
+	err := _EndpointV2.contract.Call(opts, &out, "nextGuid", _sender, _dstEid, _receiver)
 
 	if err != nil {
 		return *new([32]byte), err
@@ -759,18 +1037,49 @@ func (_EndpointV2 *EndpointV2Caller) OutboundNonce(opts *bind.CallOpts, arg0 com
 
 }
 
-// OutboundNonce is a free data retrieval call binding the contract method 0x511d54eb.
+// NextGuid is a free data retrieval call binding the contract method 0xaafe5e07.
 //
-// Solidity: function outboundNonce(address , uint64 ) view returns(bytes32)
-func (_EndpointV2 *EndpointV2Session) OutboundNonce(arg0 common.Address, arg1 uint64) ([32]byte, error) {
-	return _EndpointV2.Contract.OutboundNonce(&_EndpointV2.CallOpts, arg0, arg1)
+// Solidity: function nextGuid(address _sender, uint32 _dstEid, bytes32 _receiver) view returns(bytes32)
+func (_EndpointV2 *EndpointV2Session) NextGuid(_sender common.Address, _dstEid uint32, _receiver [32]byte) ([32]byte, error) {
+	return _EndpointV2.Contract.NextGuid(&_EndpointV2.CallOpts, _sender, _dstEid, _receiver)
 }
 
-// OutboundNonce is a free data retrieval call binding the contract method 0x511d54eb.
+// NextGuid is a free data retrieval call binding the contract method 0xaafe5e07.
 //
-// Solidity: function outboundNonce(address , uint64 ) view returns(bytes32)
-func (_EndpointV2 *EndpointV2CallerSession) OutboundNonce(arg0 common.Address, arg1 uint64) ([32]byte, error) {
-	return _EndpointV2.Contract.OutboundNonce(&_EndpointV2.CallOpts, arg0, arg1)
+// Solidity: function nextGuid(address _sender, uint32 _dstEid, bytes32 _receiver) view returns(bytes32)
+func (_EndpointV2 *EndpointV2CallerSession) NextGuid(_sender common.Address, _dstEid uint32, _receiver [32]byte) ([32]byte, error) {
+	return _EndpointV2.Contract.NextGuid(&_EndpointV2.CallOpts, _sender, _dstEid, _receiver)
+}
+
+// OutboundNonce is a free data retrieval call binding the contract method 0x9c6d7340.
+//
+// Solidity: function outboundNonce(address sender, uint32 dstEid, bytes32 receiver) view returns(uint64 nonce)
+func (_EndpointV2 *EndpointV2Caller) OutboundNonce(opts *bind.CallOpts, sender common.Address, dstEid uint32, receiver [32]byte) (uint64, error) {
+	var out []interface{}
+	err := _EndpointV2.contract.Call(opts, &out, "outboundNonce", sender, dstEid, receiver)
+
+	if err != nil {
+		return *new(uint64), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(uint64)).(*uint64)
+
+	return out0, err
+
+}
+
+// OutboundNonce is a free data retrieval call binding the contract method 0x9c6d7340.
+//
+// Solidity: function outboundNonce(address sender, uint32 dstEid, bytes32 receiver) view returns(uint64 nonce)
+func (_EndpointV2 *EndpointV2Session) OutboundNonce(sender common.Address, dstEid uint32, receiver [32]byte) (uint64, error) {
+	return _EndpointV2.Contract.OutboundNonce(&_EndpointV2.CallOpts, sender, dstEid, receiver)
+}
+
+// OutboundNonce is a free data retrieval call binding the contract method 0x9c6d7340.
+//
+// Solidity: function outboundNonce(address sender, uint32 dstEid, bytes32 receiver) view returns(uint64 nonce)
+func (_EndpointV2 *EndpointV2CallerSession) OutboundNonce(sender common.Address, dstEid uint32, receiver [32]byte) (uint64, error) {
+	return _EndpointV2.Contract.OutboundNonce(&_EndpointV2.CallOpts, sender, dstEid, receiver)
 }
 
 // Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
@@ -804,12 +1113,88 @@ func (_EndpointV2 *EndpointV2CallerSession) Owner() (common.Address, error) {
 	return _EndpointV2.Contract.Owner(&_EndpointV2.CallOpts)
 }
 
-// PacketDelivered is a free data retrieval call binding the contract method 0x4eb9e16b.
+// Quote is a free data retrieval call binding the contract method 0xddc28c58.
 //
-// Solidity: function packetDelivered((uint32,bytes32,uint64) _origin, address _receiver, bytes32 _payloadHash) view returns(bool)
-func (_EndpointV2 *EndpointV2Caller) PacketDelivered(opts *bind.CallOpts, _origin Origin, _receiver common.Address, _payloadHash [32]byte) (bool, error) {
+// Solidity: function quote((uint32,bytes32,bytes,bytes,bool) _params, address _sender) view returns((uint256,uint256))
+func (_EndpointV2 *EndpointV2Caller) Quote(opts *bind.CallOpts, _params MessagingParams, _sender common.Address) (MessagingFee, error) {
 	var out []interface{}
-	err := _EndpointV2.contract.Call(opts, &out, "packetDelivered", _origin, _receiver, _payloadHash)
+	err := _EndpointV2.contract.Call(opts, &out, "quote", _params, _sender)
+
+	if err != nil {
+		return *new(MessagingFee), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(MessagingFee)).(*MessagingFee)
+
+	return out0, err
+
+}
+
+// Quote is a free data retrieval call binding the contract method 0xddc28c58.
+//
+// Solidity: function quote((uint32,bytes32,bytes,bytes,bool) _params, address _sender) view returns((uint256,uint256))
+func (_EndpointV2 *EndpointV2Session) Quote(_params MessagingParams, _sender common.Address) (MessagingFee, error) {
+	return _EndpointV2.Contract.Quote(&_EndpointV2.CallOpts, _params, _sender)
+}
+
+// Quote is a free data retrieval call binding the contract method 0xddc28c58.
+//
+// Solidity: function quote((uint32,bytes32,bytes,bytes,bool) _params, address _sender) view returns((uint256,uint256))
+func (_EndpointV2 *EndpointV2CallerSession) Quote(_params MessagingParams, _sender common.Address) (MessagingFee, error) {
+	return _EndpointV2.Contract.Quote(&_EndpointV2.CallOpts, _params, _sender)
+}
+
+// ReceiveLibraryTimeout is a free data retrieval call binding the contract method 0xef667aa1.
+//
+// Solidity: function receiveLibraryTimeout(address receiver, uint32 srcEid) view returns(address lib, uint256 expiry)
+func (_EndpointV2 *EndpointV2Caller) ReceiveLibraryTimeout(opts *bind.CallOpts, receiver common.Address, srcEid uint32) (struct {
+	Lib    common.Address
+	Expiry *big.Int
+}, error) {
+	var out []interface{}
+	err := _EndpointV2.contract.Call(opts, &out, "receiveLibraryTimeout", receiver, srcEid)
+
+	outstruct := new(struct {
+		Lib    common.Address
+		Expiry *big.Int
+	})
+	if err != nil {
+		return *outstruct, err
+	}
+
+	outstruct.Lib = *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+	outstruct.Expiry = *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
+
+	return *outstruct, err
+
+}
+
+// ReceiveLibraryTimeout is a free data retrieval call binding the contract method 0xef667aa1.
+//
+// Solidity: function receiveLibraryTimeout(address receiver, uint32 srcEid) view returns(address lib, uint256 expiry)
+func (_EndpointV2 *EndpointV2Session) ReceiveLibraryTimeout(receiver common.Address, srcEid uint32) (struct {
+	Lib    common.Address
+	Expiry *big.Int
+}, error) {
+	return _EndpointV2.Contract.ReceiveLibraryTimeout(&_EndpointV2.CallOpts, receiver, srcEid)
+}
+
+// ReceiveLibraryTimeout is a free data retrieval call binding the contract method 0xef667aa1.
+//
+// Solidity: function receiveLibraryTimeout(address receiver, uint32 srcEid) view returns(address lib, uint256 expiry)
+func (_EndpointV2 *EndpointV2CallerSession) ReceiveLibraryTimeout(receiver common.Address, srcEid uint32) (struct {
+	Lib    common.Address
+	Expiry *big.Int
+}, error) {
+	return _EndpointV2.Contract.ReceiveLibraryTimeout(&_EndpointV2.CallOpts, receiver, srcEid)
+}
+
+// Verifiable is a free data retrieval call binding the contract method 0xc9a54a99.
+//
+// Solidity: function verifiable((uint32,bytes32,uint64) _origin, address _receiver) view returns(bool)
+func (_EndpointV2 *EndpointV2Caller) Verifiable(opts *bind.CallOpts, _origin Origin, _receiver common.Address) (bool, error) {
+	var out []interface{}
+	err := _EndpointV2.contract.Call(opts, &out, "verifiable", _origin, _receiver)
 
 	if err != nil {
 		return *new(bool), err
@@ -821,184 +1206,207 @@ func (_EndpointV2 *EndpointV2Caller) PacketDelivered(opts *bind.CallOpts, _origi
 
 }
 
-// PacketDelivered is a free data retrieval call binding the contract method 0x4eb9e16b.
+// Verifiable is a free data retrieval call binding the contract method 0xc9a54a99.
 //
-// Solidity: function packetDelivered((uint32,bytes32,uint64) _origin, address _receiver, bytes32 _payloadHash) view returns(bool)
-func (_EndpointV2 *EndpointV2Session) PacketDelivered(_origin Origin, _receiver common.Address, _payloadHash [32]byte) (bool, error) {
-	return _EndpointV2.Contract.PacketDelivered(&_EndpointV2.CallOpts, _origin, _receiver, _payloadHash)
+// Solidity: function verifiable((uint32,bytes32,uint64) _origin, address _receiver) view returns(bool)
+func (_EndpointV2 *EndpointV2Session) Verifiable(_origin Origin, _receiver common.Address) (bool, error) {
+	return _EndpointV2.Contract.Verifiable(&_EndpointV2.CallOpts, _origin, _receiver)
 }
 
-// PacketDelivered is a free data retrieval call binding the contract method 0x4eb9e16b.
+// Verifiable is a free data retrieval call binding the contract method 0xc9a54a99.
 //
-// Solidity: function packetDelivered((uint32,bytes32,uint64) _origin, address _receiver, bytes32 _payloadHash) view returns(bool)
-func (_EndpointV2 *EndpointV2CallerSession) PacketDelivered(_origin Origin, _receiver common.Address, _payloadHash [32]byte) (bool, error) {
-	return _EndpointV2.Contract.PacketDelivered(&_EndpointV2.CallOpts, _origin, _receiver, _payloadHash)
+// Solidity: function verifiable((uint32,bytes32,uint64) _origin, address _receiver) view returns(bool)
+func (_EndpointV2 *EndpointV2CallerSession) Verifiable(_origin Origin, _receiver common.Address) (bool, error) {
+	return _EndpointV2.Contract.Verifiable(&_EndpointV2.CallOpts, _origin, _receiver)
 }
 
-// PacketSent is a free data retrieval call binding the contract method 0xb4a0c460.
+// Burn is a paid mutator transaction binding the contract method 0x40f80683.
 //
-// Solidity: function packetSent((uint32,bytes32,uint64) _origin, address _receiver) view returns(bool)
-func (_EndpointV2 *EndpointV2Caller) PacketSent(opts *bind.CallOpts, _origin Origin, _receiver common.Address) (bool, error) {
-	var out []interface{}
-	err := _EndpointV2.contract.Call(opts, &out, "packetSent", _origin, _receiver)
-
-	if err != nil {
-		return *new(bool), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
-
-	return out0, err
-
+// Solidity: function burn(address _oapp, uint32 _srcEid, bytes32 _sender, uint64 _nonce, bytes32 _payloadHash) returns()
+func (_EndpointV2 *EndpointV2Transactor) Burn(opts *bind.TransactOpts, _oapp common.Address, _srcEid uint32, _sender [32]byte, _nonce uint64, _payloadHash [32]byte) (*types.Transaction, error) {
+	return _EndpointV2.contract.Transact(opts, "burn", _oapp, _srcEid, _sender, _nonce, _payloadHash)
 }
 
-// PacketSent is a free data retrieval call binding the contract method 0xb4a0c460.
+// Burn is a paid mutator transaction binding the contract method 0x40f80683.
 //
-// Solidity: function packetSent((uint32,bytes32,uint64) _origin, address _receiver) view returns(bool)
-func (_EndpointV2 *EndpointV2Session) PacketSent(_origin Origin, _receiver common.Address) (bool, error) {
-	return _EndpointV2.Contract.PacketSent(&_EndpointV2.CallOpts, _origin, _receiver)
+// Solidity: function burn(address _oapp, uint32 _srcEid, bytes32 _sender, uint64 _nonce, bytes32 _payloadHash) returns()
+func (_EndpointV2 *EndpointV2Session) Burn(_oapp common.Address, _srcEid uint32, _sender [32]byte, _nonce uint64, _payloadHash [32]byte) (*types.Transaction, error) {
+	return _EndpointV2.Contract.Burn(&_EndpointV2.TransactOpts, _oapp, _srcEid, _sender, _nonce, _payloadHash)
 }
 
-// PacketSent is a free data retrieval call binding the contract method 0xb4a0c460.
+// Burn is a paid mutator transaction binding the contract method 0x40f80683.
 //
-// Solidity: function packetSent((uint32,bytes32,uint64) _origin, address _receiver) view returns(bool)
-func (_EndpointV2 *EndpointV2CallerSession) PacketSent(_origin Origin, _receiver common.Address) (bool, error) {
-	return _EndpointV2.Contract.PacketSent(&_EndpointV2.CallOpts, _origin, _receiver)
+// Solidity: function burn(address _oapp, uint32 _srcEid, bytes32 _sender, uint64 _nonce, bytes32 _payloadHash) returns()
+func (_EndpointV2 *EndpointV2TransactorSession) Burn(_oapp common.Address, _srcEid uint32, _sender [32]byte, _nonce uint64, _payloadHash [32]byte) (*types.Transaction, error) {
+	return _EndpointV2.Contract.Burn(&_EndpointV2.TransactOpts, _oapp, _srcEid, _sender, _nonce, _payloadHash)
 }
 
-// PacketVerified is a free data retrieval call binding the contract method 0x2ef342a7.
+// Clear is a paid mutator transaction binding the contract method 0x2a56c1b0.
 //
-// Solidity: function packetVerified((uint32,bytes32,uint64) _origin, address _receiver, bytes32 _payloadHash) view returns(bool)
-func (_EndpointV2 *EndpointV2Caller) PacketVerified(opts *bind.CallOpts, _origin Origin, _receiver common.Address, _payloadHash [32]byte) (bool, error) {
-	var out []interface{}
-	err := _EndpointV2.contract.Call(opts, &out, "packetVerified", _origin, _receiver, _payloadHash)
-
-	if err != nil {
-		return *new(bool), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
-
-	return out0, err
-
+// Solidity: function clear(address _oapp, (uint32,bytes32,uint64) _origin, bytes32 _guid, bytes _message) returns()
+func (_EndpointV2 *EndpointV2Transactor) Clear(opts *bind.TransactOpts, _oapp common.Address, _origin Origin, _guid [32]byte, _message []byte) (*types.Transaction, error) {
+	return _EndpointV2.contract.Transact(opts, "clear", _oapp, _origin, _guid, _message)
 }
 
-// PacketVerified is a free data retrieval call binding the contract method 0x2ef342a7.
+// Clear is a paid mutator transaction binding the contract method 0x2a56c1b0.
 //
-// Solidity: function packetVerified((uint32,bytes32,uint64) _origin, address _receiver, bytes32 _payloadHash) view returns(bool)
-func (_EndpointV2 *EndpointV2Session) PacketVerified(_origin Origin, _receiver common.Address, _payloadHash [32]byte) (bool, error) {
-	return _EndpointV2.Contract.PacketVerified(&_EndpointV2.CallOpts, _origin, _receiver, _payloadHash)
+// Solidity: function clear(address _oapp, (uint32,bytes32,uint64) _origin, bytes32 _guid, bytes _message) returns()
+func (_EndpointV2 *EndpointV2Session) Clear(_oapp common.Address, _origin Origin, _guid [32]byte, _message []byte) (*types.Transaction, error) {
+	return _EndpointV2.Contract.Clear(&_EndpointV2.TransactOpts, _oapp, _origin, _guid, _message)
 }
 
-// PacketVerified is a free data retrieval call binding the contract method 0x2ef342a7.
+// Clear is a paid mutator transaction binding the contract method 0x2a56c1b0.
 //
-// Solidity: function packetVerified((uint32,bytes32,uint64) _origin, address _receiver, bytes32 _payloadHash) view returns(bool)
-func (_EndpointV2 *EndpointV2CallerSession) PacketVerified(_origin Origin, _receiver common.Address, _payloadHash [32]byte) (bool, error) {
-	return _EndpointV2.Contract.PacketVerified(&_EndpointV2.CallOpts, _origin, _receiver, _payloadHash)
+// Solidity: function clear(address _oapp, (uint32,bytes32,uint64) _origin, bytes32 _guid, bytes _message) returns()
+func (_EndpointV2 *EndpointV2TransactorSession) Clear(_oapp common.Address, _origin Origin, _guid [32]byte, _message []byte) (*types.Transaction, error) {
+	return _EndpointV2.Contract.Clear(&_EndpointV2.TransactOpts, _oapp, _origin, _guid, _message)
 }
 
-// SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
+// LzCompose is a paid mutator transaction binding the contract method 0x91d20fa1.
 //
-// Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
-func (_EndpointV2 *EndpointV2Caller) SupportsInterface(opts *bind.CallOpts, interfaceId [4]byte) (bool, error) {
-	var out []interface{}
-	err := _EndpointV2.contract.Call(opts, &out, "supportsInterface", interfaceId)
-
-	if err != nil {
-		return *new(bool), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
-
-	return out0, err
-
+// Solidity: function lzCompose(address _from, address _to, bytes32 _guid, uint16 _index, bytes _message, bytes _extraData) payable returns()
+func (_EndpointV2 *EndpointV2Transactor) LzCompose(opts *bind.TransactOpts, _from common.Address, _to common.Address, _guid [32]byte, _index uint16, _message []byte, _extraData []byte) (*types.Transaction, error) {
+	return _EndpointV2.contract.Transact(opts, "lzCompose", _from, _to, _guid, _index, _message, _extraData)
 }
 
-// SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
+// LzCompose is a paid mutator transaction binding the contract method 0x91d20fa1.
 //
-// Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
-func (_EndpointV2 *EndpointV2Session) SupportsInterface(interfaceId [4]byte) (bool, error) {
-	return _EndpointV2.Contract.SupportsInterface(&_EndpointV2.CallOpts, interfaceId)
+// Solidity: function lzCompose(address _from, address _to, bytes32 _guid, uint16 _index, bytes _message, bytes _extraData) payable returns()
+func (_EndpointV2 *EndpointV2Session) LzCompose(_from common.Address, _to common.Address, _guid [32]byte, _index uint16, _message []byte, _extraData []byte) (*types.Transaction, error) {
+	return _EndpointV2.Contract.LzCompose(&_EndpointV2.TransactOpts, _from, _to, _guid, _index, _message, _extraData)
 }
 
-// SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
+// LzCompose is a paid mutator transaction binding the contract method 0x91d20fa1.
 //
-// Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
-func (_EndpointV2 *EndpointV2CallerSession) SupportsInterface(interfaceId [4]byte) (bool, error) {
-	return _EndpointV2.Contract.SupportsInterface(&_EndpointV2.CallOpts, interfaceId)
+// Solidity: function lzCompose(address _from, address _to, bytes32 _guid, uint16 _index, bytes _message, bytes _extraData) payable returns()
+func (_EndpointV2 *EndpointV2TransactorSession) LzCompose(_from common.Address, _to common.Address, _guid [32]byte, _index uint16, _message []byte, _extraData []byte) (*types.Transaction, error) {
+	return _EndpointV2.Contract.LzCompose(&_EndpointV2.TransactOpts, _from, _to, _guid, _index, _message, _extraData)
 }
 
-// Treasury is a free data retrieval call binding the contract method 0x61d027b3.
+// LzComposeAlert is a paid mutator transaction binding the contract method 0x697fe6b6.
 //
-// Solidity: function treasury() view returns(address)
-func (_EndpointV2 *EndpointV2Caller) Treasury(opts *bind.CallOpts) (common.Address, error) {
-	var out []interface{}
-	err := _EndpointV2.contract.Call(opts, &out, "treasury")
-
-	if err != nil {
-		return *new(common.Address), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
-
-	return out0, err
-
+// Solidity: function lzComposeAlert(address _from, address _to, bytes32 _guid, uint16 _index, uint256 _gas, uint256 _value, bytes _message, bytes _extraData, bytes _reason) returns()
+func (_EndpointV2 *EndpointV2Transactor) LzComposeAlert(opts *bind.TransactOpts, _from common.Address, _to common.Address, _guid [32]byte, _index uint16, _gas *big.Int, _value *big.Int, _message []byte, _extraData []byte, _reason []byte) (*types.Transaction, error) {
+	return _EndpointV2.contract.Transact(opts, "lzComposeAlert", _from, _to, _guid, _index, _gas, _value, _message, _extraData, _reason)
 }
 
-// Treasury is a free data retrieval call binding the contract method 0x61d027b3.
+// LzComposeAlert is a paid mutator transaction binding the contract method 0x697fe6b6.
 //
-// Solidity: function treasury() view returns(address)
-func (_EndpointV2 *EndpointV2Session) Treasury() (common.Address, error) {
-	return _EndpointV2.Contract.Treasury(&_EndpointV2.CallOpts)
+// Solidity: function lzComposeAlert(address _from, address _to, bytes32 _guid, uint16 _index, uint256 _gas, uint256 _value, bytes _message, bytes _extraData, bytes _reason) returns()
+func (_EndpointV2 *EndpointV2Session) LzComposeAlert(_from common.Address, _to common.Address, _guid [32]byte, _index uint16, _gas *big.Int, _value *big.Int, _message []byte, _extraData []byte, _reason []byte) (*types.Transaction, error) {
+	return _EndpointV2.Contract.LzComposeAlert(&_EndpointV2.TransactOpts, _from, _to, _guid, _index, _gas, _value, _message, _extraData, _reason)
 }
 
-// Treasury is a free data retrieval call binding the contract method 0x61d027b3.
+// LzComposeAlert is a paid mutator transaction binding the contract method 0x697fe6b6.
 //
-// Solidity: function treasury() view returns(address)
-func (_EndpointV2 *EndpointV2CallerSession) Treasury() (common.Address, error) {
-	return _EndpointV2.Contract.Treasury(&_EndpointV2.CallOpts)
+// Solidity: function lzComposeAlert(address _from, address _to, bytes32 _guid, uint16 _index, uint256 _gas, uint256 _value, bytes _message, bytes _extraData, bytes _reason) returns()
+func (_EndpointV2 *EndpointV2TransactorSession) LzComposeAlert(_from common.Address, _to common.Address, _guid [32]byte, _index uint16, _gas *big.Int, _value *big.Int, _message []byte, _extraData []byte, _reason []byte) (*types.Transaction, error) {
+	return _EndpointV2.Contract.LzComposeAlert(&_EndpointV2.TransactOpts, _from, _to, _guid, _index, _gas, _value, _message, _extraData, _reason)
 }
 
-// RemoveDefaultReceiveLibrary is a paid mutator transaction binding the contract method 0x8faf8d1b.
+// LzReceive is a paid mutator transaction binding the contract method 0x0c0c389e.
 //
-// Solidity: function removeDefaultReceiveLibrary(address _oapp, address _uln) returns()
-func (_EndpointV2 *EndpointV2Transactor) RemoveDefaultReceiveLibrary(opts *bind.TransactOpts, _oapp common.Address, _uln common.Address) (*types.Transaction, error) {
-	return _EndpointV2.contract.Transact(opts, "removeDefaultReceiveLibrary", _oapp, _uln)
+// Solidity: function lzReceive((uint32,bytes32,uint64) _origin, address _receiver, bytes32 _guid, bytes _message, bytes _extraData) payable returns()
+func (_EndpointV2 *EndpointV2Transactor) LzReceive(opts *bind.TransactOpts, _origin Origin, _receiver common.Address, _guid [32]byte, _message []byte, _extraData []byte) (*types.Transaction, error) {
+	return _EndpointV2.contract.Transact(opts, "lzReceive", _origin, _receiver, _guid, _message, _extraData)
 }
 
-// RemoveDefaultReceiveLibrary is a paid mutator transaction binding the contract method 0x8faf8d1b.
+// LzReceive is a paid mutator transaction binding the contract method 0x0c0c389e.
 //
-// Solidity: function removeDefaultReceiveLibrary(address _oapp, address _uln) returns()
-func (_EndpointV2 *EndpointV2Session) RemoveDefaultReceiveLibrary(_oapp common.Address, _uln common.Address) (*types.Transaction, error) {
-	return _EndpointV2.Contract.RemoveDefaultReceiveLibrary(&_EndpointV2.TransactOpts, _oapp, _uln)
+// Solidity: function lzReceive((uint32,bytes32,uint64) _origin, address _receiver, bytes32 _guid, bytes _message, bytes _extraData) payable returns()
+func (_EndpointV2 *EndpointV2Session) LzReceive(_origin Origin, _receiver common.Address, _guid [32]byte, _message []byte, _extraData []byte) (*types.Transaction, error) {
+	return _EndpointV2.Contract.LzReceive(&_EndpointV2.TransactOpts, _origin, _receiver, _guid, _message, _extraData)
 }
 
-// RemoveDefaultReceiveLibrary is a paid mutator transaction binding the contract method 0x8faf8d1b.
+// LzReceive is a paid mutator transaction binding the contract method 0x0c0c389e.
 //
-// Solidity: function removeDefaultReceiveLibrary(address _oapp, address _uln) returns()
-func (_EndpointV2 *EndpointV2TransactorSession) RemoveDefaultReceiveLibrary(_oapp common.Address, _uln common.Address) (*types.Transaction, error) {
-	return _EndpointV2.Contract.RemoveDefaultReceiveLibrary(&_EndpointV2.TransactOpts, _oapp, _uln)
+// Solidity: function lzReceive((uint32,bytes32,uint64) _origin, address _receiver, bytes32 _guid, bytes _message, bytes _extraData) payable returns()
+func (_EndpointV2 *EndpointV2TransactorSession) LzReceive(_origin Origin, _receiver common.Address, _guid [32]byte, _message []byte, _extraData []byte) (*types.Transaction, error) {
+	return _EndpointV2.Contract.LzReceive(&_EndpointV2.TransactOpts, _origin, _receiver, _guid, _message, _extraData)
 }
 
-// RemoveDefaultSendLibrary is a paid mutator transaction binding the contract method 0x7d1924c7.
+// LzReceiveAlert is a paid mutator transaction binding the contract method 0x6bf73fa3.
 //
-// Solidity: function removeDefaultSendLibrary(address _oapp) returns()
-func (_EndpointV2 *EndpointV2Transactor) RemoveDefaultSendLibrary(opts *bind.TransactOpts, _oapp common.Address) (*types.Transaction, error) {
-	return _EndpointV2.contract.Transact(opts, "removeDefaultSendLibrary", _oapp)
+// Solidity: function lzReceiveAlert((uint32,bytes32,uint64) _origin, address _receiver, bytes32 _guid, uint256 _gas, uint256 _value, bytes _message, bytes _extraData, bytes _reason) returns()
+func (_EndpointV2 *EndpointV2Transactor) LzReceiveAlert(opts *bind.TransactOpts, _origin Origin, _receiver common.Address, _guid [32]byte, _gas *big.Int, _value *big.Int, _message []byte, _extraData []byte, _reason []byte) (*types.Transaction, error) {
+	return _EndpointV2.contract.Transact(opts, "lzReceiveAlert", _origin, _receiver, _guid, _gas, _value, _message, _extraData, _reason)
 }
 
-// RemoveDefaultSendLibrary is a paid mutator transaction binding the contract method 0x7d1924c7.
+// LzReceiveAlert is a paid mutator transaction binding the contract method 0x6bf73fa3.
 //
-// Solidity: function removeDefaultSendLibrary(address _oapp) returns()
-func (_EndpointV2 *EndpointV2Session) RemoveDefaultSendLibrary(_oapp common.Address) (*types.Transaction, error) {
-	return _EndpointV2.Contract.RemoveDefaultSendLibrary(&_EndpointV2.TransactOpts, _oapp)
+// Solidity: function lzReceiveAlert((uint32,bytes32,uint64) _origin, address _receiver, bytes32 _guid, uint256 _gas, uint256 _value, bytes _message, bytes _extraData, bytes _reason) returns()
+func (_EndpointV2 *EndpointV2Session) LzReceiveAlert(_origin Origin, _receiver common.Address, _guid [32]byte, _gas *big.Int, _value *big.Int, _message []byte, _extraData []byte, _reason []byte) (*types.Transaction, error) {
+	return _EndpointV2.Contract.LzReceiveAlert(&_EndpointV2.TransactOpts, _origin, _receiver, _guid, _gas, _value, _message, _extraData, _reason)
 }
 
-// RemoveDefaultSendLibrary is a paid mutator transaction binding the contract method 0x7d1924c7.
+// LzReceiveAlert is a paid mutator transaction binding the contract method 0x6bf73fa3.
 //
-// Solidity: function removeDefaultSendLibrary(address _oapp) returns()
-func (_EndpointV2 *EndpointV2TransactorSession) RemoveDefaultSendLibrary(_oapp common.Address) (*types.Transaction, error) {
-	return _EndpointV2.Contract.RemoveDefaultSendLibrary(&_EndpointV2.TransactOpts, _oapp)
+// Solidity: function lzReceiveAlert((uint32,bytes32,uint64) _origin, address _receiver, bytes32 _guid, uint256 _gas, uint256 _value, bytes _message, bytes _extraData, bytes _reason) returns()
+func (_EndpointV2 *EndpointV2TransactorSession) LzReceiveAlert(_origin Origin, _receiver common.Address, _guid [32]byte, _gas *big.Int, _value *big.Int, _message []byte, _extraData []byte, _reason []byte) (*types.Transaction, error) {
+	return _EndpointV2.Contract.LzReceiveAlert(&_EndpointV2.TransactOpts, _origin, _receiver, _guid, _gas, _value, _message, _extraData, _reason)
+}
+
+// Nilify is a paid mutator transaction binding the contract method 0x2e80fbf3.
+//
+// Solidity: function nilify(address _oapp, uint32 _srcEid, bytes32 _sender, uint64 _nonce, bytes32 _payloadHash) returns()
+func (_EndpointV2 *EndpointV2Transactor) Nilify(opts *bind.TransactOpts, _oapp common.Address, _srcEid uint32, _sender [32]byte, _nonce uint64, _payloadHash [32]byte) (*types.Transaction, error) {
+	return _EndpointV2.contract.Transact(opts, "nilify", _oapp, _srcEid, _sender, _nonce, _payloadHash)
+}
+
+// Nilify is a paid mutator transaction binding the contract method 0x2e80fbf3.
+//
+// Solidity: function nilify(address _oapp, uint32 _srcEid, bytes32 _sender, uint64 _nonce, bytes32 _payloadHash) returns()
+func (_EndpointV2 *EndpointV2Session) Nilify(_oapp common.Address, _srcEid uint32, _sender [32]byte, _nonce uint64, _payloadHash [32]byte) (*types.Transaction, error) {
+	return _EndpointV2.Contract.Nilify(&_EndpointV2.TransactOpts, _oapp, _srcEid, _sender, _nonce, _payloadHash)
+}
+
+// Nilify is a paid mutator transaction binding the contract method 0x2e80fbf3.
+//
+// Solidity: function nilify(address _oapp, uint32 _srcEid, bytes32 _sender, uint64 _nonce, bytes32 _payloadHash) returns()
+func (_EndpointV2 *EndpointV2TransactorSession) Nilify(_oapp common.Address, _srcEid uint32, _sender [32]byte, _nonce uint64, _payloadHash [32]byte) (*types.Transaction, error) {
+	return _EndpointV2.Contract.Nilify(&_EndpointV2.TransactOpts, _oapp, _srcEid, _sender, _nonce, _payloadHash)
+}
+
+// RecoverToken is a paid mutator transaction binding the contract method 0xa7229fd9.
+//
+// Solidity: function recoverToken(address _token, address _to, uint256 _amount) returns()
+func (_EndpointV2 *EndpointV2Transactor) RecoverToken(opts *bind.TransactOpts, _token common.Address, _to common.Address, _amount *big.Int) (*types.Transaction, error) {
+	return _EndpointV2.contract.Transact(opts, "recoverToken", _token, _to, _amount)
+}
+
+// RecoverToken is a paid mutator transaction binding the contract method 0xa7229fd9.
+//
+// Solidity: function recoverToken(address _token, address _to, uint256 _amount) returns()
+func (_EndpointV2 *EndpointV2Session) RecoverToken(_token common.Address, _to common.Address, _amount *big.Int) (*types.Transaction, error) {
+	return _EndpointV2.Contract.RecoverToken(&_EndpointV2.TransactOpts, _token, _to, _amount)
+}
+
+// RecoverToken is a paid mutator transaction binding the contract method 0xa7229fd9.
+//
+// Solidity: function recoverToken(address _token, address _to, uint256 _amount) returns()
+func (_EndpointV2 *EndpointV2TransactorSession) RecoverToken(_token common.Address, _to common.Address, _amount *big.Int) (*types.Transaction, error) {
+	return _EndpointV2.Contract.RecoverToken(&_EndpointV2.TransactOpts, _token, _to, _amount)
+}
+
+// RegisterLibrary is a paid mutator transaction binding the contract method 0xe8964e81.
+//
+// Solidity: function registerLibrary(address _lib) returns()
+func (_EndpointV2 *EndpointV2Transactor) RegisterLibrary(opts *bind.TransactOpts, _lib common.Address) (*types.Transaction, error) {
+	return _EndpointV2.contract.Transact(opts, "registerLibrary", _lib)
+}
+
+// RegisterLibrary is a paid mutator transaction binding the contract method 0xe8964e81.
+//
+// Solidity: function registerLibrary(address _lib) returns()
+func (_EndpointV2 *EndpointV2Session) RegisterLibrary(_lib common.Address) (*types.Transaction, error) {
+	return _EndpointV2.Contract.RegisterLibrary(&_EndpointV2.TransactOpts, _lib)
+}
+
+// RegisterLibrary is a paid mutator transaction binding the contract method 0xe8964e81.
+//
+// Solidity: function registerLibrary(address _lib) returns()
+func (_EndpointV2 *EndpointV2TransactorSession) RegisterLibrary(_lib common.Address) (*types.Transaction, error) {
+	return _EndpointV2.Contract.RegisterLibrary(&_EndpointV2.TransactOpts, _lib)
 }
 
 // RenounceOwnership is a paid mutator transaction binding the contract method 0x715018a6.
@@ -1022,172 +1430,256 @@ func (_EndpointV2 *EndpointV2TransactorSession) RenounceOwnership() (*types.Tran
 	return _EndpointV2.Contract.RenounceOwnership(&_EndpointV2.TransactOpts)
 }
 
-// Send is a paid mutator transaction binding the contract method 0x7f0a3bf9.
+// Send is a paid mutator transaction binding the contract method 0x2637a450.
 //
-// Solidity: function send(bytes _message, bytes _options) payable returns((bytes32,uint64,uint256) receipt)
-func (_EndpointV2 *EndpointV2Transactor) Send(opts *bind.TransactOpts, _message []byte, _options []byte) (*types.Transaction, error) {
-	return _EndpointV2.contract.Transact(opts, "send", _message, _options)
+// Solidity: function send((uint32,bytes32,bytes,bytes,bool) _params, address _refundAddress) payable returns((bytes32,uint64,(uint256,uint256)))
+func (_EndpointV2 *EndpointV2Transactor) Send(opts *bind.TransactOpts, _params MessagingParams, _refundAddress common.Address) (*types.Transaction, error) {
+	return _EndpointV2.contract.Transact(opts, "send", _params, _refundAddress)
 }
 
-// Send is a paid mutator transaction binding the contract method 0x7f0a3bf9.
+// Send is a paid mutator transaction binding the contract method 0x2637a450.
 //
-// Solidity: function send(bytes _message, bytes _options) payable returns((bytes32,uint64,uint256) receipt)
-func (_EndpointV2 *EndpointV2Session) Send(_message []byte, _options []byte) (*types.Transaction, error) {
-	return _EndpointV2.Contract.Send(&_EndpointV2.TransactOpts, _message, _options)
+// Solidity: function send((uint32,bytes32,bytes,bytes,bool) _params, address _refundAddress) payable returns((bytes32,uint64,(uint256,uint256)))
+func (_EndpointV2 *EndpointV2Session) Send(_params MessagingParams, _refundAddress common.Address) (*types.Transaction, error) {
+	return _EndpointV2.Contract.Send(&_EndpointV2.TransactOpts, _params, _refundAddress)
 }
 
-// Send is a paid mutator transaction binding the contract method 0x7f0a3bf9.
+// Send is a paid mutator transaction binding the contract method 0x2637a450.
 //
-// Solidity: function send(bytes _message, bytes _options) payable returns((bytes32,uint64,uint256) receipt)
-func (_EndpointV2 *EndpointV2TransactorSession) Send(_message []byte, _options []byte) (*types.Transaction, error) {
-	return _EndpointV2.Contract.Send(&_EndpointV2.TransactOpts, _message, _options)
+// Solidity: function send((uint32,bytes32,bytes,bytes,bool) _params, address _refundAddress) payable returns((bytes32,uint64,(uint256,uint256)))
+func (_EndpointV2 *EndpointV2TransactorSession) Send(_params MessagingParams, _refundAddress common.Address) (*types.Transaction, error) {
+	return _EndpointV2.Contract.Send(&_EndpointV2.TransactOpts, _params, _refundAddress)
 }
 
-// SetDefaultReceiveLibrary is a paid mutator transaction binding the contract method 0xd86e58c1.
+// SendCompose is a paid mutator transaction binding the contract method 0x7cb59012.
 //
-// Solidity: function setDefaultReceiveLibrary(address _oapp, address _uln) returns()
-func (_EndpointV2 *EndpointV2Transactor) SetDefaultReceiveLibrary(opts *bind.TransactOpts, _oapp common.Address, _uln common.Address) (*types.Transaction, error) {
-	return _EndpointV2.contract.Transact(opts, "setDefaultReceiveLibrary", _oapp, _uln)
+// Solidity: function sendCompose(address _to, bytes32 _guid, uint16 _index, bytes _message) returns()
+func (_EndpointV2 *EndpointV2Transactor) SendCompose(opts *bind.TransactOpts, _to common.Address, _guid [32]byte, _index uint16, _message []byte) (*types.Transaction, error) {
+	return _EndpointV2.contract.Transact(opts, "sendCompose", _to, _guid, _index, _message)
 }
 
-// SetDefaultReceiveLibrary is a paid mutator transaction binding the contract method 0xd86e58c1.
+// SendCompose is a paid mutator transaction binding the contract method 0x7cb59012.
 //
-// Solidity: function setDefaultReceiveLibrary(address _oapp, address _uln) returns()
-func (_EndpointV2 *EndpointV2Session) SetDefaultReceiveLibrary(_oapp common.Address, _uln common.Address) (*types.Transaction, error) {
-	return _EndpointV2.Contract.SetDefaultReceiveLibrary(&_EndpointV2.TransactOpts, _oapp, _uln)
+// Solidity: function sendCompose(address _to, bytes32 _guid, uint16 _index, bytes _message) returns()
+func (_EndpointV2 *EndpointV2Session) SendCompose(_to common.Address, _guid [32]byte, _index uint16, _message []byte) (*types.Transaction, error) {
+	return _EndpointV2.Contract.SendCompose(&_EndpointV2.TransactOpts, _to, _guid, _index, _message)
 }
 
-// SetDefaultReceiveLibrary is a paid mutator transaction binding the contract method 0xd86e58c1.
+// SendCompose is a paid mutator transaction binding the contract method 0x7cb59012.
 //
-// Solidity: function setDefaultReceiveLibrary(address _oapp, address _uln) returns()
-func (_EndpointV2 *EndpointV2TransactorSession) SetDefaultReceiveLibrary(_oapp common.Address, _uln common.Address) (*types.Transaction, error) {
-	return _EndpointV2.Contract.SetDefaultReceiveLibrary(&_EndpointV2.TransactOpts, _oapp, _uln)
+// Solidity: function sendCompose(address _to, bytes32 _guid, uint16 _index, bytes _message) returns()
+func (_EndpointV2 *EndpointV2TransactorSession) SendCompose(_to common.Address, _guid [32]byte, _index uint16, _message []byte) (*types.Transaction, error) {
+	return _EndpointV2.Contract.SendCompose(&_EndpointV2.TransactOpts, _to, _guid, _index, _message)
 }
 
-// SetDefaultSendLibrary is a paid mutator transaction binding the contract method 0xb7afb04b.
+// SetConfig is a paid mutator transaction binding the contract method 0x6dbd9f90.
 //
-// Solidity: function setDefaultSendLibrary(address _oapp, address _sendLib) returns()
-func (_EndpointV2 *EndpointV2Transactor) SetDefaultSendLibrary(opts *bind.TransactOpts, _oapp common.Address, _sendLib common.Address) (*types.Transaction, error) {
-	return _EndpointV2.contract.Transact(opts, "setDefaultSendLibrary", _oapp, _sendLib)
+// Solidity: function setConfig(address _oapp, address _lib, (uint32,uint32,bytes)[] _params) returns()
+func (_EndpointV2 *EndpointV2Transactor) SetConfig(opts *bind.TransactOpts, _oapp common.Address, _lib common.Address, _params []SetConfigParam) (*types.Transaction, error) {
+	return _EndpointV2.contract.Transact(opts, "setConfig", _oapp, _lib, _params)
 }
 
-// SetDefaultSendLibrary is a paid mutator transaction binding the contract method 0xb7afb04b.
+// SetConfig is a paid mutator transaction binding the contract method 0x6dbd9f90.
 //
-// Solidity: function setDefaultSendLibrary(address _oapp, address _sendLib) returns()
-func (_EndpointV2 *EndpointV2Session) SetDefaultSendLibrary(_oapp common.Address, _sendLib common.Address) (*types.Transaction, error) {
-	return _EndpointV2.Contract.SetDefaultSendLibrary(&_EndpointV2.TransactOpts, _oapp, _sendLib)
+// Solidity: function setConfig(address _oapp, address _lib, (uint32,uint32,bytes)[] _params) returns()
+func (_EndpointV2 *EndpointV2Session) SetConfig(_oapp common.Address, _lib common.Address, _params []SetConfigParam) (*types.Transaction, error) {
+	return _EndpointV2.Contract.SetConfig(&_EndpointV2.TransactOpts, _oapp, _lib, _params)
 }
 
-// SetDefaultSendLibrary is a paid mutator transaction binding the contract method 0xb7afb04b.
+// SetConfig is a paid mutator transaction binding the contract method 0x6dbd9f90.
 //
-// Solidity: function setDefaultSendLibrary(address _oapp, address _sendLib) returns()
-func (_EndpointV2 *EndpointV2TransactorSession) SetDefaultSendLibrary(_oapp common.Address, _sendLib common.Address) (*types.Transaction, error) {
-	return _EndpointV2.Contract.SetDefaultSendLibrary(&_EndpointV2.TransactOpts, _oapp, _sendLib)
+// Solidity: function setConfig(address _oapp, address _lib, (uint32,uint32,bytes)[] _params) returns()
+func (_EndpointV2 *EndpointV2TransactorSession) SetConfig(_oapp common.Address, _lib common.Address, _params []SetConfigParam) (*types.Transaction, error) {
+	return _EndpointV2.Contract.SetConfig(&_EndpointV2.TransactOpts, _oapp, _lib, _params)
 }
 
-// SetLzTokenFeeCollector is a paid mutator transaction binding the contract method 0xa8f8cf92.
+// SetDefaultReceiveLibrary is a paid mutator transaction binding the contract method 0xa718531b.
 //
-// Solidity: function setLzTokenFeeCollector(address _newCollector) returns()
-func (_EndpointV2 *EndpointV2Transactor) SetLzTokenFeeCollector(opts *bind.TransactOpts, _newCollector common.Address) (*types.Transaction, error) {
-	return _EndpointV2.contract.Transact(opts, "setLzTokenFeeCollector", _newCollector)
+// Solidity: function setDefaultReceiveLibrary(uint32 _eid, address _newLib, uint256 _gracePeriod) returns()
+func (_EndpointV2 *EndpointV2Transactor) SetDefaultReceiveLibrary(opts *bind.TransactOpts, _eid uint32, _newLib common.Address, _gracePeriod *big.Int) (*types.Transaction, error) {
+	return _EndpointV2.contract.Transact(opts, "setDefaultReceiveLibrary", _eid, _newLib, _gracePeriod)
 }
 
-// SetLzTokenFeeCollector is a paid mutator transaction binding the contract method 0xa8f8cf92.
+// SetDefaultReceiveLibrary is a paid mutator transaction binding the contract method 0xa718531b.
 //
-// Solidity: function setLzTokenFeeCollector(address _newCollector) returns()
-func (_EndpointV2 *EndpointV2Session) SetLzTokenFeeCollector(_newCollector common.Address) (*types.Transaction, error) {
-	return _EndpointV2.Contract.SetLzTokenFeeCollector(&_EndpointV2.TransactOpts, _newCollector)
+// Solidity: function setDefaultReceiveLibrary(uint32 _eid, address _newLib, uint256 _gracePeriod) returns()
+func (_EndpointV2 *EndpointV2Session) SetDefaultReceiveLibrary(_eid uint32, _newLib common.Address, _gracePeriod *big.Int) (*types.Transaction, error) {
+	return _EndpointV2.Contract.SetDefaultReceiveLibrary(&_EndpointV2.TransactOpts, _eid, _newLib, _gracePeriod)
 }
 
-// SetLzTokenFeeCollector is a paid mutator transaction binding the contract method 0xa8f8cf92.
+// SetDefaultReceiveLibrary is a paid mutator transaction binding the contract method 0xa718531b.
 //
-// Solidity: function setLzTokenFeeCollector(address _newCollector) returns()
-func (_EndpointV2 *EndpointV2TransactorSession) SetLzTokenFeeCollector(_newCollector common.Address) (*types.Transaction, error) {
-	return _EndpointV2.Contract.SetLzTokenFeeCollector(&_EndpointV2.TransactOpts, _newCollector)
+// Solidity: function setDefaultReceiveLibrary(uint32 _eid, address _newLib, uint256 _gracePeriod) returns()
+func (_EndpointV2 *EndpointV2TransactorSession) SetDefaultReceiveLibrary(_eid uint32, _newLib common.Address, _gracePeriod *big.Int) (*types.Transaction, error) {
+	return _EndpointV2.Contract.SetDefaultReceiveLibrary(&_EndpointV2.TransactOpts, _eid, _newLib, _gracePeriod)
 }
 
-// SetReceiveLibrary is a paid mutator transaction binding the contract method 0x2a64b005.
+// SetDefaultReceiveLibraryTimeout is a paid mutator transaction binding the contract method 0xd4b4ec8f.
 //
-// Solidity: function setReceiveLibrary(address _oapp, uint32 _remoteEid, address _newReceiveLib, uint64 _gracePeriod) returns()
-func (_EndpointV2 *EndpointV2Transactor) SetReceiveLibrary(opts *bind.TransactOpts, _oapp common.Address, _remoteEid uint32, _newReceiveLib common.Address, _gracePeriod uint64) (*types.Transaction, error) {
-	return _EndpointV2.contract.Transact(opts, "setReceiveLibrary", _oapp, _remoteEid, _newReceiveLib, _gracePeriod)
+// Solidity: function setDefaultReceiveLibraryTimeout(uint32 _eid, address _lib, uint256 _expiry) returns()
+func (_EndpointV2 *EndpointV2Transactor) SetDefaultReceiveLibraryTimeout(opts *bind.TransactOpts, _eid uint32, _lib common.Address, _expiry *big.Int) (*types.Transaction, error) {
+	return _EndpointV2.contract.Transact(opts, "setDefaultReceiveLibraryTimeout", _eid, _lib, _expiry)
 }
 
-// SetReceiveLibrary is a paid mutator transaction binding the contract method 0x2a64b005.
+// SetDefaultReceiveLibraryTimeout is a paid mutator transaction binding the contract method 0xd4b4ec8f.
 //
-// Solidity: function setReceiveLibrary(address _oapp, uint32 _remoteEid, address _newReceiveLib, uint64 _gracePeriod) returns()
-func (_EndpointV2 *EndpointV2Session) SetReceiveLibrary(_oapp common.Address, _remoteEid uint32, _newReceiveLib common.Address, _gracePeriod uint64) (*types.Transaction, error) {
-	return _EndpointV2.Contract.SetReceiveLibrary(&_EndpointV2.TransactOpts, _oapp, _remoteEid, _newReceiveLib, _gracePeriod)
+// Solidity: function setDefaultReceiveLibraryTimeout(uint32 _eid, address _lib, uint256 _expiry) returns()
+func (_EndpointV2 *EndpointV2Session) SetDefaultReceiveLibraryTimeout(_eid uint32, _lib common.Address, _expiry *big.Int) (*types.Transaction, error) {
+	return _EndpointV2.Contract.SetDefaultReceiveLibraryTimeout(&_EndpointV2.TransactOpts, _eid, _lib, _expiry)
 }
 
-// SetReceiveLibrary is a paid mutator transaction binding the contract method 0x2a64b005.
+// SetDefaultReceiveLibraryTimeout is a paid mutator transaction binding the contract method 0xd4b4ec8f.
 //
-// Solidity: function setReceiveLibrary(address _oapp, uint32 _remoteEid, address _newReceiveLib, uint64 _gracePeriod) returns()
-func (_EndpointV2 *EndpointV2TransactorSession) SetReceiveLibrary(_oapp common.Address, _remoteEid uint32, _newReceiveLib common.Address, _gracePeriod uint64) (*types.Transaction, error) {
-	return _EndpointV2.Contract.SetReceiveLibrary(&_EndpointV2.TransactOpts, _oapp, _remoteEid, _newReceiveLib, _gracePeriod)
+// Solidity: function setDefaultReceiveLibraryTimeout(uint32 _eid, address _lib, uint256 _expiry) returns()
+func (_EndpointV2 *EndpointV2TransactorSession) SetDefaultReceiveLibraryTimeout(_eid uint32, _lib common.Address, _expiry *big.Int) (*types.Transaction, error) {
+	return _EndpointV2.Contract.SetDefaultReceiveLibraryTimeout(&_EndpointV2.TransactOpts, _eid, _lib, _expiry)
+}
+
+// SetDefaultSendLibrary is a paid mutator transaction binding the contract method 0xaafea312.
+//
+// Solidity: function setDefaultSendLibrary(uint32 _eid, address _newLib) returns()
+func (_EndpointV2 *EndpointV2Transactor) SetDefaultSendLibrary(opts *bind.TransactOpts, _eid uint32, _newLib common.Address) (*types.Transaction, error) {
+	return _EndpointV2.contract.Transact(opts, "setDefaultSendLibrary", _eid, _newLib)
+}
+
+// SetDefaultSendLibrary is a paid mutator transaction binding the contract method 0xaafea312.
+//
+// Solidity: function setDefaultSendLibrary(uint32 _eid, address _newLib) returns()
+func (_EndpointV2 *EndpointV2Session) SetDefaultSendLibrary(_eid uint32, _newLib common.Address) (*types.Transaction, error) {
+	return _EndpointV2.Contract.SetDefaultSendLibrary(&_EndpointV2.TransactOpts, _eid, _newLib)
+}
+
+// SetDefaultSendLibrary is a paid mutator transaction binding the contract method 0xaafea312.
+//
+// Solidity: function setDefaultSendLibrary(uint32 _eid, address _newLib) returns()
+func (_EndpointV2 *EndpointV2TransactorSession) SetDefaultSendLibrary(_eid uint32, _newLib common.Address) (*types.Transaction, error) {
+	return _EndpointV2.Contract.SetDefaultSendLibrary(&_EndpointV2.TransactOpts, _eid, _newLib)
+}
+
+// SetDelegate is a paid mutator transaction binding the contract method 0xca5eb5e1.
+//
+// Solidity: function setDelegate(address _delegate) returns()
+func (_EndpointV2 *EndpointV2Transactor) SetDelegate(opts *bind.TransactOpts, _delegate common.Address) (*types.Transaction, error) {
+	return _EndpointV2.contract.Transact(opts, "setDelegate", _delegate)
+}
+
+// SetDelegate is a paid mutator transaction binding the contract method 0xca5eb5e1.
+//
+// Solidity: function setDelegate(address _delegate) returns()
+func (_EndpointV2 *EndpointV2Session) SetDelegate(_delegate common.Address) (*types.Transaction, error) {
+	return _EndpointV2.Contract.SetDelegate(&_EndpointV2.TransactOpts, _delegate)
+}
+
+// SetDelegate is a paid mutator transaction binding the contract method 0xca5eb5e1.
+//
+// Solidity: function setDelegate(address _delegate) returns()
+func (_EndpointV2 *EndpointV2TransactorSession) SetDelegate(_delegate common.Address) (*types.Transaction, error) {
+	return _EndpointV2.Contract.SetDelegate(&_EndpointV2.TransactOpts, _delegate)
+}
+
+// SetLzToken is a paid mutator transaction binding the contract method 0xc28e0eed.
+//
+// Solidity: function setLzToken(address _lzToken) returns()
+func (_EndpointV2 *EndpointV2Transactor) SetLzToken(opts *bind.TransactOpts, _lzToken common.Address) (*types.Transaction, error) {
+	return _EndpointV2.contract.Transact(opts, "setLzToken", _lzToken)
+}
+
+// SetLzToken is a paid mutator transaction binding the contract method 0xc28e0eed.
+//
+// Solidity: function setLzToken(address _lzToken) returns()
+func (_EndpointV2 *EndpointV2Session) SetLzToken(_lzToken common.Address) (*types.Transaction, error) {
+	return _EndpointV2.Contract.SetLzToken(&_EndpointV2.TransactOpts, _lzToken)
+}
+
+// SetLzToken is a paid mutator transaction binding the contract method 0xc28e0eed.
+//
+// Solidity: function setLzToken(address _lzToken) returns()
+func (_EndpointV2 *EndpointV2TransactorSession) SetLzToken(_lzToken common.Address) (*types.Transaction, error) {
+	return _EndpointV2.Contract.SetLzToken(&_EndpointV2.TransactOpts, _lzToken)
+}
+
+// SetReceiveLibrary is a paid mutator transaction binding the contract method 0x6a14d715.
+//
+// Solidity: function setReceiveLibrary(address _oapp, uint32 _eid, address _newLib, uint256 _gracePeriod) returns()
+func (_EndpointV2 *EndpointV2Transactor) SetReceiveLibrary(opts *bind.TransactOpts, _oapp common.Address, _eid uint32, _newLib common.Address, _gracePeriod *big.Int) (*types.Transaction, error) {
+	return _EndpointV2.contract.Transact(opts, "setReceiveLibrary", _oapp, _eid, _newLib, _gracePeriod)
+}
+
+// SetReceiveLibrary is a paid mutator transaction binding the contract method 0x6a14d715.
+//
+// Solidity: function setReceiveLibrary(address _oapp, uint32 _eid, address _newLib, uint256 _gracePeriod) returns()
+func (_EndpointV2 *EndpointV2Session) SetReceiveLibrary(_oapp common.Address, _eid uint32, _newLib common.Address, _gracePeriod *big.Int) (*types.Transaction, error) {
+	return _EndpointV2.Contract.SetReceiveLibrary(&_EndpointV2.TransactOpts, _oapp, _eid, _newLib, _gracePeriod)
+}
+
+// SetReceiveLibrary is a paid mutator transaction binding the contract method 0x6a14d715.
+//
+// Solidity: function setReceiveLibrary(address _oapp, uint32 _eid, address _newLib, uint256 _gracePeriod) returns()
+func (_EndpointV2 *EndpointV2TransactorSession) SetReceiveLibrary(_oapp common.Address, _eid uint32, _newLib common.Address, _gracePeriod *big.Int) (*types.Transaction, error) {
+	return _EndpointV2.Contract.SetReceiveLibrary(&_EndpointV2.TransactOpts, _oapp, _eid, _newLib, _gracePeriod)
+}
+
+// SetReceiveLibraryTimeout is a paid mutator transaction binding the contract method 0x183c834f.
+//
+// Solidity: function setReceiveLibraryTimeout(address _oapp, uint32 _eid, address _lib, uint256 _expiry) returns()
+func (_EndpointV2 *EndpointV2Transactor) SetReceiveLibraryTimeout(opts *bind.TransactOpts, _oapp common.Address, _eid uint32, _lib common.Address, _expiry *big.Int) (*types.Transaction, error) {
+	return _EndpointV2.contract.Transact(opts, "setReceiveLibraryTimeout", _oapp, _eid, _lib, _expiry)
+}
+
+// SetReceiveLibraryTimeout is a paid mutator transaction binding the contract method 0x183c834f.
+//
+// Solidity: function setReceiveLibraryTimeout(address _oapp, uint32 _eid, address _lib, uint256 _expiry) returns()
+func (_EndpointV2 *EndpointV2Session) SetReceiveLibraryTimeout(_oapp common.Address, _eid uint32, _lib common.Address, _expiry *big.Int) (*types.Transaction, error) {
+	return _EndpointV2.Contract.SetReceiveLibraryTimeout(&_EndpointV2.TransactOpts, _oapp, _eid, _lib, _expiry)
+}
+
+// SetReceiveLibraryTimeout is a paid mutator transaction binding the contract method 0x183c834f.
+//
+// Solidity: function setReceiveLibraryTimeout(address _oapp, uint32 _eid, address _lib, uint256 _expiry) returns()
+func (_EndpointV2 *EndpointV2TransactorSession) SetReceiveLibraryTimeout(_oapp common.Address, _eid uint32, _lib common.Address, _expiry *big.Int) (*types.Transaction, error) {
+	return _EndpointV2.Contract.SetReceiveLibraryTimeout(&_EndpointV2.TransactOpts, _oapp, _eid, _lib, _expiry)
 }
 
 // SetSendLibrary is a paid mutator transaction binding the contract method 0x9535ff30.
 //
-// Solidity: function setSendLibrary(address _oapp, uint32 _remoteEid, address _newSendLib) returns()
-func (_EndpointV2 *EndpointV2Transactor) SetSendLibrary(opts *bind.TransactOpts, _oapp common.Address, _remoteEid uint32, _newSendLib common.Address) (*types.Transaction, error) {
-	return _EndpointV2.contract.Transact(opts, "setSendLibrary", _oapp, _remoteEid, _newSendLib)
+// Solidity: function setSendLibrary(address _oapp, uint32 _eid, address _newLib) returns()
+func (_EndpointV2 *EndpointV2Transactor) SetSendLibrary(opts *bind.TransactOpts, _oapp common.Address, _eid uint32, _newLib common.Address) (*types.Transaction, error) {
+	return _EndpointV2.contract.Transact(opts, "setSendLibrary", _oapp, _eid, _newLib)
 }
 
 // SetSendLibrary is a paid mutator transaction binding the contract method 0x9535ff30.
 //
-// Solidity: function setSendLibrary(address _oapp, uint32 _remoteEid, address _newSendLib) returns()
-func (_EndpointV2 *EndpointV2Session) SetSendLibrary(_oapp common.Address, _remoteEid uint32, _newSendLib common.Address) (*types.Transaction, error) {
-	return _EndpointV2.Contract.SetSendLibrary(&_EndpointV2.TransactOpts, _oapp, _remoteEid, _newSendLib)
+// Solidity: function setSendLibrary(address _oapp, uint32 _eid, address _newLib) returns()
+func (_EndpointV2 *EndpointV2Session) SetSendLibrary(_oapp common.Address, _eid uint32, _newLib common.Address) (*types.Transaction, error) {
+	return _EndpointV2.Contract.SetSendLibrary(&_EndpointV2.TransactOpts, _oapp, _eid, _newLib)
 }
 
 // SetSendLibrary is a paid mutator transaction binding the contract method 0x9535ff30.
 //
-// Solidity: function setSendLibrary(address _oapp, uint32 _remoteEid, address _newSendLib) returns()
-func (_EndpointV2 *EndpointV2TransactorSession) SetSendLibrary(_oapp common.Address, _remoteEid uint32, _newSendLib common.Address) (*types.Transaction, error) {
-	return _EndpointV2.Contract.SetSendLibrary(&_EndpointV2.TransactOpts, _oapp, _remoteEid, _newSendLib)
+// Solidity: function setSendLibrary(address _oapp, uint32 _eid, address _newLib) returns()
+func (_EndpointV2 *EndpointV2TransactorSession) SetSendLibrary(_oapp common.Address, _eid uint32, _newLib common.Address) (*types.Transaction, error) {
+	return _EndpointV2.Contract.SetSendLibrary(&_EndpointV2.TransactOpts, _oapp, _eid, _newLib)
 }
 
-// SetTreasury is a paid mutator transaction binding the contract method 0xf0f44260.
+// Skip is a paid mutator transaction binding the contract method 0xd70b8902.
 //
-// Solidity: function setTreasury(address _newTreasury) returns()
-func (_EndpointV2 *EndpointV2Transactor) SetTreasury(opts *bind.TransactOpts, _newTreasury common.Address) (*types.Transaction, error) {
-	return _EndpointV2.contract.Transact(opts, "setTreasury", _newTreasury)
+// Solidity: function skip(address _oapp, uint32 _srcEid, bytes32 _sender, uint64 _nonce) returns()
+func (_EndpointV2 *EndpointV2Transactor) Skip(opts *bind.TransactOpts, _oapp common.Address, _srcEid uint32, _sender [32]byte, _nonce uint64) (*types.Transaction, error) {
+	return _EndpointV2.contract.Transact(opts, "skip", _oapp, _srcEid, _sender, _nonce)
 }
 
-// SetTreasury is a paid mutator transaction binding the contract method 0xf0f44260.
+// Skip is a paid mutator transaction binding the contract method 0xd70b8902.
 //
-// Solidity: function setTreasury(address _newTreasury) returns()
-func (_EndpointV2 *EndpointV2Session) SetTreasury(_newTreasury common.Address) (*types.Transaction, error) {
-	return _EndpointV2.Contract.SetTreasury(&_EndpointV2.TransactOpts, _newTreasury)
+// Solidity: function skip(address _oapp, uint32 _srcEid, bytes32 _sender, uint64 _nonce) returns()
+func (_EndpointV2 *EndpointV2Session) Skip(_oapp common.Address, _srcEid uint32, _sender [32]byte, _nonce uint64) (*types.Transaction, error) {
+	return _EndpointV2.Contract.Skip(&_EndpointV2.TransactOpts, _oapp, _srcEid, _sender, _nonce)
 }
 
-// SetTreasury is a paid mutator transaction binding the contract method 0xf0f44260.
+// Skip is a paid mutator transaction binding the contract method 0xd70b8902.
 //
-// Solidity: function setTreasury(address _newTreasury) returns()
-func (_EndpointV2 *EndpointV2TransactorSession) SetTreasury(_newTreasury common.Address) (*types.Transaction, error) {
-	return _EndpointV2.Contract.SetTreasury(&_EndpointV2.TransactOpts, _newTreasury)
-}
-
-// Skip is a paid mutator transaction binding the contract method 0x20702a5c.
-//
-// Solidity: function skip((uint32,bytes32,uint64) _origin, address _receiver, bytes _message, address _composer, bytes32 _guid) returns()
-func (_EndpointV2 *EndpointV2Transactor) Skip(opts *bind.TransactOpts, _origin Origin, _receiver common.Address, _message []byte, _composer common.Address, _guid [32]byte) (*types.Transaction, error) {
-	return _EndpointV2.contract.Transact(opts, "skip", _origin, _receiver, _message, _composer, _guid)
-}
-
-// Skip is a paid mutator transaction binding the contract method 0x20702a5c.
-//
-// Solidity: function skip((uint32,bytes32,uint64) _origin, address _receiver, bytes _message, address _composer, bytes32 _guid) returns()
-func (_EndpointV2 *EndpointV2Session) Skip(_origin Origin, _receiver common.Address, _message []byte, _composer common.Address, _guid [32]byte) (*types.Transaction, error) {
-	return _EndpointV2.Contract.Skip(&_EndpointV2.TransactOpts, _origin, _receiver, _message, _composer, _guid)
-}
-
-// Skip is a paid mutator transaction binding the contract method 0x20702a5c.
-//
-// Solidity: function skip((uint32,bytes32,uint64) _origin, address _receiver, bytes _message, address _composer, bytes32 _guid) returns()
-func (_EndpointV2 *EndpointV2TransactorSession) Skip(_origin Origin, _receiver common.Address, _message []byte, _composer common.Address, _guid [32]byte) (*types.Transaction, error) {
-	return _EndpointV2.Contract.Skip(&_EndpointV2.TransactOpts, _origin, _receiver, _message, _composer, _guid)
+// Solidity: function skip(address _oapp, uint32 _srcEid, bytes32 _sender, uint64 _nonce) returns()
+func (_EndpointV2 *EndpointV2TransactorSession) Skip(_oapp common.Address, _srcEid uint32, _sender [32]byte, _nonce uint64) (*types.Transaction, error) {
+	return _EndpointV2.Contract.Skip(&_EndpointV2.TransactOpts, _oapp, _srcEid, _sender, _nonce)
 }
 
 // TransferOwnership is a paid mutator transaction binding the contract method 0xf2fde38b.
@@ -1230,6 +1722,281 @@ func (_EndpointV2 *EndpointV2Session) Verify(_origin Origin, _receiver common.Ad
 // Solidity: function verify((uint32,bytes32,uint64) _origin, address _receiver, bytes32 _payloadHash) returns()
 func (_EndpointV2 *EndpointV2TransactorSession) Verify(_origin Origin, _receiver common.Address, _payloadHash [32]byte) (*types.Transaction, error) {
 	return _EndpointV2.Contract.Verify(&_EndpointV2.TransactOpts, _origin, _receiver, _payloadHash)
+}
+
+// EndpointV2ComposeDeliveredIterator is returned from FilterComposeDelivered and is used to iterate over the raw logs and unpacked data for ComposeDelivered events raised by the EndpointV2 contract.
+type EndpointV2ComposeDeliveredIterator struct {
+	Event *EndpointV2ComposeDelivered // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *EndpointV2ComposeDeliveredIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(EndpointV2ComposeDelivered)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(EndpointV2ComposeDelivered)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *EndpointV2ComposeDeliveredIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *EndpointV2ComposeDeliveredIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// EndpointV2ComposeDelivered represents a ComposeDelivered event raised by the EndpointV2 contract.
+type EndpointV2ComposeDelivered struct {
+	From  common.Address
+	To    common.Address
+	Guid  [32]byte
+	Index uint16
+	Raw   types.Log // Blockchain specific contextual infos
+}
+
+// FilterComposeDelivered is a free log retrieval operation binding the contract event 0x0036c98efcf9e6641dfbc9051f66f405253e8e0c2ab4a24dccda15595b7378c8.
+//
+// Solidity: event ComposeDelivered(address from, address to, bytes32 guid, uint16 index)
+func (_EndpointV2 *EndpointV2Filterer) FilterComposeDelivered(opts *bind.FilterOpts) (*EndpointV2ComposeDeliveredIterator, error) {
+
+	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "ComposeDelivered")
+	if err != nil {
+		return nil, err
+	}
+	return &EndpointV2ComposeDeliveredIterator{contract: _EndpointV2.contract, event: "ComposeDelivered", logs: logs, sub: sub}, nil
+}
+
+// WatchComposeDelivered is a free log subscription operation binding the contract event 0x0036c98efcf9e6641dfbc9051f66f405253e8e0c2ab4a24dccda15595b7378c8.
+//
+// Solidity: event ComposeDelivered(address from, address to, bytes32 guid, uint16 index)
+func (_EndpointV2 *EndpointV2Filterer) WatchComposeDelivered(opts *bind.WatchOpts, sink chan<- *EndpointV2ComposeDelivered) (event.Subscription, error) {
+
+	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "ComposeDelivered")
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(EndpointV2ComposeDelivered)
+				if err := _EndpointV2.contract.UnpackLog(event, "ComposeDelivered", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseComposeDelivered is a log parse operation binding the contract event 0x0036c98efcf9e6641dfbc9051f66f405253e8e0c2ab4a24dccda15595b7378c8.
+//
+// Solidity: event ComposeDelivered(address from, address to, bytes32 guid, uint16 index)
+func (_EndpointV2 *EndpointV2Filterer) ParseComposeDelivered(log types.Log) (*EndpointV2ComposeDelivered, error) {
+	event := new(EndpointV2ComposeDelivered)
+	if err := _EndpointV2.contract.UnpackLog(event, "ComposeDelivered", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
+// EndpointV2ComposeSentIterator is returned from FilterComposeSent and is used to iterate over the raw logs and unpacked data for ComposeSent events raised by the EndpointV2 contract.
+type EndpointV2ComposeSentIterator struct {
+	Event *EndpointV2ComposeSent // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *EndpointV2ComposeSentIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(EndpointV2ComposeSent)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(EndpointV2ComposeSent)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *EndpointV2ComposeSentIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *EndpointV2ComposeSentIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// EndpointV2ComposeSent represents a ComposeSent event raised by the EndpointV2 contract.
+type EndpointV2ComposeSent struct {
+	From    common.Address
+	To      common.Address
+	Guid    [32]byte
+	Index   uint16
+	Message []byte
+	Raw     types.Log // Blockchain specific contextual infos
+}
+
+// FilterComposeSent is a free log retrieval operation binding the contract event 0x3d52ff888d033fd3dd1d8057da59e850c91d91a72c41dfa445b247dfedeb6dc1.
+//
+// Solidity: event ComposeSent(address from, address to, bytes32 guid, uint16 index, bytes message)
+func (_EndpointV2 *EndpointV2Filterer) FilterComposeSent(opts *bind.FilterOpts) (*EndpointV2ComposeSentIterator, error) {
+
+	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "ComposeSent")
+	if err != nil {
+		return nil, err
+	}
+	return &EndpointV2ComposeSentIterator{contract: _EndpointV2.contract, event: "ComposeSent", logs: logs, sub: sub}, nil
+}
+
+// WatchComposeSent is a free log subscription operation binding the contract event 0x3d52ff888d033fd3dd1d8057da59e850c91d91a72c41dfa445b247dfedeb6dc1.
+//
+// Solidity: event ComposeSent(address from, address to, bytes32 guid, uint16 index, bytes message)
+func (_EndpointV2 *EndpointV2Filterer) WatchComposeSent(opts *bind.WatchOpts, sink chan<- *EndpointV2ComposeSent) (event.Subscription, error) {
+
+	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "ComposeSent")
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(EndpointV2ComposeSent)
+				if err := _EndpointV2.contract.UnpackLog(event, "ComposeSent", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseComposeSent is a log parse operation binding the contract event 0x3d52ff888d033fd3dd1d8057da59e850c91d91a72c41dfa445b247dfedeb6dc1.
+//
+// Solidity: event ComposeSent(address from, address to, bytes32 guid, uint16 index, bytes message)
+func (_EndpointV2 *EndpointV2Filterer) ParseComposeSent(log types.Log) (*EndpointV2ComposeSent, error) {
+	event := new(EndpointV2ComposeSent)
+	if err := _EndpointV2.contract.UnpackLog(event, "ComposeSent", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
 }
 
 // EndpointV2DefaultReceiveLibrarySetIterator is returned from FilterDefaultReceiveLibrarySet and is used to iterate over the raw logs and unpacked data for DefaultReceiveLibrarySet events raised by the EndpointV2 contract.
@@ -1301,39 +2068,29 @@ func (it *EndpointV2DefaultReceiveLibrarySetIterator) Close() error {
 
 // EndpointV2DefaultReceiveLibrarySet represents a DefaultReceiveLibrarySet event raised by the EndpointV2 contract.
 type EndpointV2DefaultReceiveLibrarySet struct {
-	Oapp common.Address
-	Uln  common.Address
-	Raw  types.Log // Blockchain specific contextual infos
+	Eid    uint32
+	NewLib common.Address
+	Raw    types.Log // Blockchain specific contextual infos
 }
 
-// FilterDefaultReceiveLibrarySet is a free log retrieval operation binding the contract event 0x75d57c5f698e5d43789fc0f3dfa60b2828a82b3b47326514a8fd7675ef9850d0.
+// FilterDefaultReceiveLibrarySet is a free log retrieval operation binding the contract event 0xc16891855cffb4a5ac51ac11864a3f3c96ba816cc45fe686c987ae36277de5ec.
 //
-// Solidity: event DefaultReceiveLibrarySet(address indexed oapp, address uln)
-func (_EndpointV2 *EndpointV2Filterer) FilterDefaultReceiveLibrarySet(opts *bind.FilterOpts, oapp []common.Address) (*EndpointV2DefaultReceiveLibrarySetIterator, error) {
+// Solidity: event DefaultReceiveLibrarySet(uint32 eid, address newLib)
+func (_EndpointV2 *EndpointV2Filterer) FilterDefaultReceiveLibrarySet(opts *bind.FilterOpts) (*EndpointV2DefaultReceiveLibrarySetIterator, error) {
 
-	var oappRule []interface{}
-	for _, oappItem := range oapp {
-		oappRule = append(oappRule, oappItem)
-	}
-
-	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "DefaultReceiveLibrarySet", oappRule)
+	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "DefaultReceiveLibrarySet")
 	if err != nil {
 		return nil, err
 	}
 	return &EndpointV2DefaultReceiveLibrarySetIterator{contract: _EndpointV2.contract, event: "DefaultReceiveLibrarySet", logs: logs, sub: sub}, nil
 }
 
-// WatchDefaultReceiveLibrarySet is a free log subscription operation binding the contract event 0x75d57c5f698e5d43789fc0f3dfa60b2828a82b3b47326514a8fd7675ef9850d0.
+// WatchDefaultReceiveLibrarySet is a free log subscription operation binding the contract event 0xc16891855cffb4a5ac51ac11864a3f3c96ba816cc45fe686c987ae36277de5ec.
 //
-// Solidity: event DefaultReceiveLibrarySet(address indexed oapp, address uln)
-func (_EndpointV2 *EndpointV2Filterer) WatchDefaultReceiveLibrarySet(opts *bind.WatchOpts, sink chan<- *EndpointV2DefaultReceiveLibrarySet, oapp []common.Address) (event.Subscription, error) {
+// Solidity: event DefaultReceiveLibrarySet(uint32 eid, address newLib)
+func (_EndpointV2 *EndpointV2Filterer) WatchDefaultReceiveLibrarySet(opts *bind.WatchOpts, sink chan<- *EndpointV2DefaultReceiveLibrarySet) (event.Subscription, error) {
 
-	var oappRule []interface{}
-	for _, oappItem := range oapp {
-		oappRule = append(oappRule, oappItem)
-	}
-
-	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "DefaultReceiveLibrarySet", oappRule)
+	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "DefaultReceiveLibrarySet")
 	if err != nil {
 		return nil, err
 	}
@@ -1365,12 +2122,148 @@ func (_EndpointV2 *EndpointV2Filterer) WatchDefaultReceiveLibrarySet(opts *bind.
 	}), nil
 }
 
-// ParseDefaultReceiveLibrarySet is a log parse operation binding the contract event 0x75d57c5f698e5d43789fc0f3dfa60b2828a82b3b47326514a8fd7675ef9850d0.
+// ParseDefaultReceiveLibrarySet is a log parse operation binding the contract event 0xc16891855cffb4a5ac51ac11864a3f3c96ba816cc45fe686c987ae36277de5ec.
 //
-// Solidity: event DefaultReceiveLibrarySet(address indexed oapp, address uln)
+// Solidity: event DefaultReceiveLibrarySet(uint32 eid, address newLib)
 func (_EndpointV2 *EndpointV2Filterer) ParseDefaultReceiveLibrarySet(log types.Log) (*EndpointV2DefaultReceiveLibrarySet, error) {
 	event := new(EndpointV2DefaultReceiveLibrarySet)
 	if err := _EndpointV2.contract.UnpackLog(event, "DefaultReceiveLibrarySet", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
+// EndpointV2DefaultReceiveLibraryTimeoutSetIterator is returned from FilterDefaultReceiveLibraryTimeoutSet and is used to iterate over the raw logs and unpacked data for DefaultReceiveLibraryTimeoutSet events raised by the EndpointV2 contract.
+type EndpointV2DefaultReceiveLibraryTimeoutSetIterator struct {
+	Event *EndpointV2DefaultReceiveLibraryTimeoutSet // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *EndpointV2DefaultReceiveLibraryTimeoutSetIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(EndpointV2DefaultReceiveLibraryTimeoutSet)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(EndpointV2DefaultReceiveLibraryTimeoutSet)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *EndpointV2DefaultReceiveLibraryTimeoutSetIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *EndpointV2DefaultReceiveLibraryTimeoutSetIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// EndpointV2DefaultReceiveLibraryTimeoutSet represents a DefaultReceiveLibraryTimeoutSet event raised by the EndpointV2 contract.
+type EndpointV2DefaultReceiveLibraryTimeoutSet struct {
+	Eid    uint32
+	OldLib common.Address
+	Expiry *big.Int
+	Raw    types.Log // Blockchain specific contextual infos
+}
+
+// FilterDefaultReceiveLibraryTimeoutSet is a free log retrieval operation binding the contract event 0x55b28633cdb29709386f555dfc54418592ad475ce7a65a78ac5928af60ffb8f8.
+//
+// Solidity: event DefaultReceiveLibraryTimeoutSet(uint32 eid, address oldLib, uint256 expiry)
+func (_EndpointV2 *EndpointV2Filterer) FilterDefaultReceiveLibraryTimeoutSet(opts *bind.FilterOpts) (*EndpointV2DefaultReceiveLibraryTimeoutSetIterator, error) {
+
+	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "DefaultReceiveLibraryTimeoutSet")
+	if err != nil {
+		return nil, err
+	}
+	return &EndpointV2DefaultReceiveLibraryTimeoutSetIterator{contract: _EndpointV2.contract, event: "DefaultReceiveLibraryTimeoutSet", logs: logs, sub: sub}, nil
+}
+
+// WatchDefaultReceiveLibraryTimeoutSet is a free log subscription operation binding the contract event 0x55b28633cdb29709386f555dfc54418592ad475ce7a65a78ac5928af60ffb8f8.
+//
+// Solidity: event DefaultReceiveLibraryTimeoutSet(uint32 eid, address oldLib, uint256 expiry)
+func (_EndpointV2 *EndpointV2Filterer) WatchDefaultReceiveLibraryTimeoutSet(opts *bind.WatchOpts, sink chan<- *EndpointV2DefaultReceiveLibraryTimeoutSet) (event.Subscription, error) {
+
+	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "DefaultReceiveLibraryTimeoutSet")
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(EndpointV2DefaultReceiveLibraryTimeoutSet)
+				if err := _EndpointV2.contract.UnpackLog(event, "DefaultReceiveLibraryTimeoutSet", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseDefaultReceiveLibraryTimeoutSet is a log parse operation binding the contract event 0x55b28633cdb29709386f555dfc54418592ad475ce7a65a78ac5928af60ffb8f8.
+//
+// Solidity: event DefaultReceiveLibraryTimeoutSet(uint32 eid, address oldLib, uint256 expiry)
+func (_EndpointV2 *EndpointV2Filterer) ParseDefaultReceiveLibraryTimeoutSet(log types.Log) (*EndpointV2DefaultReceiveLibraryTimeoutSet, error) {
+	event := new(EndpointV2DefaultReceiveLibraryTimeoutSet)
+	if err := _EndpointV2.contract.UnpackLog(event, "DefaultReceiveLibraryTimeoutSet", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log
@@ -1446,39 +2339,29 @@ func (it *EndpointV2DefaultSendLibrarySetIterator) Close() error {
 
 // EndpointV2DefaultSendLibrarySet represents a DefaultSendLibrarySet event raised by the EndpointV2 contract.
 type EndpointV2DefaultSendLibrarySet struct {
-	Oapp    common.Address
-	SendLib common.Address
-	Raw     types.Log // Blockchain specific contextual infos
+	Eid    uint32
+	NewLib common.Address
+	Raw    types.Log // Blockchain specific contextual infos
 }
 
-// FilterDefaultSendLibrarySet is a free log retrieval operation binding the contract event 0x6e09482bf7892d31b5b1925098416d80f0237f96d029346d3d1fd87592ebd0c7.
+// FilterDefaultSendLibrarySet is a free log retrieval operation binding the contract event 0x16aa0f528038ab41019e95bae5b418a50ba8532c5800e3b7ea2f517d3fa625f5.
 //
-// Solidity: event DefaultSendLibrarySet(address indexed oapp, address sendLib)
-func (_EndpointV2 *EndpointV2Filterer) FilterDefaultSendLibrarySet(opts *bind.FilterOpts, oapp []common.Address) (*EndpointV2DefaultSendLibrarySetIterator, error) {
+// Solidity: event DefaultSendLibrarySet(uint32 eid, address newLib)
+func (_EndpointV2 *EndpointV2Filterer) FilterDefaultSendLibrarySet(opts *bind.FilterOpts) (*EndpointV2DefaultSendLibrarySetIterator, error) {
 
-	var oappRule []interface{}
-	for _, oappItem := range oapp {
-		oappRule = append(oappRule, oappItem)
-	}
-
-	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "DefaultSendLibrarySet", oappRule)
+	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "DefaultSendLibrarySet")
 	if err != nil {
 		return nil, err
 	}
 	return &EndpointV2DefaultSendLibrarySetIterator{contract: _EndpointV2.contract, event: "DefaultSendLibrarySet", logs: logs, sub: sub}, nil
 }
 
-// WatchDefaultSendLibrarySet is a free log subscription operation binding the contract event 0x6e09482bf7892d31b5b1925098416d80f0237f96d029346d3d1fd87592ebd0c7.
+// WatchDefaultSendLibrarySet is a free log subscription operation binding the contract event 0x16aa0f528038ab41019e95bae5b418a50ba8532c5800e3b7ea2f517d3fa625f5.
 //
-// Solidity: event DefaultSendLibrarySet(address indexed oapp, address sendLib)
-func (_EndpointV2 *EndpointV2Filterer) WatchDefaultSendLibrarySet(opts *bind.WatchOpts, sink chan<- *EndpointV2DefaultSendLibrarySet, oapp []common.Address) (event.Subscription, error) {
+// Solidity: event DefaultSendLibrarySet(uint32 eid, address newLib)
+func (_EndpointV2 *EndpointV2Filterer) WatchDefaultSendLibrarySet(opts *bind.WatchOpts, sink chan<- *EndpointV2DefaultSendLibrarySet) (event.Subscription, error) {
 
-	var oappRule []interface{}
-	for _, oappItem := range oapp {
-		oappRule = append(oappRule, oappItem)
-	}
-
-	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "DefaultSendLibrarySet", oappRule)
+	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "DefaultSendLibrarySet")
 	if err != nil {
 		return nil, err
 	}
@@ -1510,9 +2393,9 @@ func (_EndpointV2 *EndpointV2Filterer) WatchDefaultSendLibrarySet(opts *bind.Wat
 	}), nil
 }
 
-// ParseDefaultSendLibrarySet is a log parse operation binding the contract event 0x6e09482bf7892d31b5b1925098416d80f0237f96d029346d3d1fd87592ebd0c7.
+// ParseDefaultSendLibrarySet is a log parse operation binding the contract event 0x16aa0f528038ab41019e95bae5b418a50ba8532c5800e3b7ea2f517d3fa625f5.
 //
-// Solidity: event DefaultSendLibrarySet(address indexed oapp, address sendLib)
+// Solidity: event DefaultSendLibrarySet(uint32 eid, address newLib)
 func (_EndpointV2 *EndpointV2Filterer) ParseDefaultSendLibrarySet(log types.Log) (*EndpointV2DefaultSendLibrarySet, error) {
 	event := new(EndpointV2DefaultSendLibrarySet)
 	if err := _EndpointV2.contract.UnpackLog(event, "DefaultSendLibrarySet", log); err != nil {
@@ -1522,9 +2405,9 @@ func (_EndpointV2 *EndpointV2Filterer) ParseDefaultSendLibrarySet(log types.Log)
 	return event, nil
 }
 
-// EndpointV2InitializedIterator is returned from FilterInitialized and is used to iterate over the raw logs and unpacked data for Initialized events raised by the EndpointV2 contract.
-type EndpointV2InitializedIterator struct {
-	Event *EndpointV2Initialized // Event containing the contract specifics and raw log
+// EndpointV2DelegateSetIterator is returned from FilterDelegateSet and is used to iterate over the raw logs and unpacked data for DelegateSet events raised by the EndpointV2 contract.
+type EndpointV2DelegateSetIterator struct {
+	Event *EndpointV2DelegateSet // Event containing the contract specifics and raw log
 
 	contract *bind.BoundContract // Generic contract to use for unpacking event data
 	event    string              // Event name to use for unpacking event data
@@ -1538,7 +2421,7 @@ type EndpointV2InitializedIterator struct {
 // Next advances the iterator to the subsequent event, returning whether there
 // are any more events found. In case of a retrieval or parsing error, false is
 // returned and Error() can be queried for the exact failure.
-func (it *EndpointV2InitializedIterator) Next() bool {
+func (it *EndpointV2DelegateSetIterator) Next() bool {
 	// If the iterator failed, stop iterating
 	if it.fail != nil {
 		return false
@@ -1547,7 +2430,7 @@ func (it *EndpointV2InitializedIterator) Next() bool {
 	if it.done {
 		select {
 		case log := <-it.logs:
-			it.Event = new(EndpointV2Initialized)
+			it.Event = new(EndpointV2DelegateSet)
 			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 				it.fail = err
 				return false
@@ -1562,7 +2445,7 @@ func (it *EndpointV2InitializedIterator) Next() bool {
 	// Iterator still in progress, wait for either a data or an error event
 	select {
 	case log := <-it.logs:
-		it.Event = new(EndpointV2Initialized)
+		it.Event = new(EndpointV2DelegateSet)
 		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 			it.fail = err
 			return false
@@ -1578,41 +2461,42 @@ func (it *EndpointV2InitializedIterator) Next() bool {
 }
 
 // Error returns any retrieval or parsing error occurred during filtering.
-func (it *EndpointV2InitializedIterator) Error() error {
+func (it *EndpointV2DelegateSetIterator) Error() error {
 	return it.fail
 }
 
 // Close terminates the iteration process, releasing any pending underlying
 // resources.
-func (it *EndpointV2InitializedIterator) Close() error {
+func (it *EndpointV2DelegateSetIterator) Close() error {
 	it.sub.Unsubscribe()
 	return nil
 }
 
-// EndpointV2Initialized represents a Initialized event raised by the EndpointV2 contract.
-type EndpointV2Initialized struct {
-	Version uint16
-	Raw     types.Log // Blockchain specific contextual infos
+// EndpointV2DelegateSet represents a DelegateSet event raised by the EndpointV2 contract.
+type EndpointV2DelegateSet struct {
+	Sender   common.Address
+	Delegate common.Address
+	Raw      types.Log // Blockchain specific contextual infos
 }
 
-// FilterInitialized is a free log retrieval operation binding the contract event 0xc80eaabd798ec84cc42c71a5226e2dff95376cf50c32a53de2a2732b8d293e31.
+// FilterDelegateSet is a free log retrieval operation binding the contract event 0x6ee10e9ed4d6ce9742703a498707862f4b00f1396a87195eb93267b3d7983981.
 //
-// Solidity: event Initialized(uint16 version)
-func (_EndpointV2 *EndpointV2Filterer) FilterInitialized(opts *bind.FilterOpts) (*EndpointV2InitializedIterator, error) {
+// Solidity: event DelegateSet(address sender, address delegate)
+func (_EndpointV2 *EndpointV2Filterer) FilterDelegateSet(opts *bind.FilterOpts) (*EndpointV2DelegateSetIterator, error) {
 
-	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "Initialized")
+	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "DelegateSet")
 	if err != nil {
 		return nil, err
 	}
-	return &EndpointV2InitializedIterator{contract: _EndpointV2.contract, event: "Initialized", logs: logs, sub: sub}, nil
+	return &EndpointV2DelegateSetIterator{contract: _EndpointV2.contract, event: "DelegateSet", logs: logs, sub: sub}, nil
 }
 
-// WatchInitialized is a free log subscription operation binding the contract event 0xc80eaabd798ec84cc42c71a5226e2dff95376cf50c32a53de2a2732b8d293e31.
+// WatchDelegateSet is a free log subscription operation binding the contract event 0x6ee10e9ed4d6ce9742703a498707862f4b00f1396a87195eb93267b3d7983981.
 //
-// Solidity: event Initialized(uint16 version)
-func (_EndpointV2 *EndpointV2Filterer) WatchInitialized(opts *bind.WatchOpts, sink chan<- *EndpointV2Initialized) (event.Subscription, error) {
+// Solidity: event DelegateSet(address sender, address delegate)
+func (_EndpointV2 *EndpointV2Filterer) WatchDelegateSet(opts *bind.WatchOpts, sink chan<- *EndpointV2DelegateSet) (event.Subscription, error) {
 
-	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "Initialized")
+	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "DelegateSet")
 	if err != nil {
 		return nil, err
 	}
@@ -1622,8 +2506,8 @@ func (_EndpointV2 *EndpointV2Filterer) WatchInitialized(opts *bind.WatchOpts, si
 			select {
 			case log := <-logs:
 				// New log arrived, parse the event and forward to the user
-				event := new(EndpointV2Initialized)
-				if err := _EndpointV2.contract.UnpackLog(event, "Initialized", log); err != nil {
+				event := new(EndpointV2DelegateSet)
+				if err := _EndpointV2.contract.UnpackLog(event, "DelegateSet", log); err != nil {
 					return err
 				}
 				event.Raw = log
@@ -1644,21 +2528,21 @@ func (_EndpointV2 *EndpointV2Filterer) WatchInitialized(opts *bind.WatchOpts, si
 	}), nil
 }
 
-// ParseInitialized is a log parse operation binding the contract event 0xc80eaabd798ec84cc42c71a5226e2dff95376cf50c32a53de2a2732b8d293e31.
+// ParseDelegateSet is a log parse operation binding the contract event 0x6ee10e9ed4d6ce9742703a498707862f4b00f1396a87195eb93267b3d7983981.
 //
-// Solidity: event Initialized(uint16 version)
-func (_EndpointV2 *EndpointV2Filterer) ParseInitialized(log types.Log) (*EndpointV2Initialized, error) {
-	event := new(EndpointV2Initialized)
-	if err := _EndpointV2.contract.UnpackLog(event, "Initialized", log); err != nil {
+// Solidity: event DelegateSet(address sender, address delegate)
+func (_EndpointV2 *EndpointV2Filterer) ParseDelegateSet(log types.Log) (*EndpointV2DelegateSet, error) {
+	event := new(EndpointV2DelegateSet)
+	if err := _EndpointV2.contract.UnpackLog(event, "DelegateSet", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log
 	return event, nil
 }
 
-// EndpointV2LzTokenFeeCollectorUpdatedIterator is returned from FilterLzTokenFeeCollectorUpdated and is used to iterate over the raw logs and unpacked data for LzTokenFeeCollectorUpdated events raised by the EndpointV2 contract.
-type EndpointV2LzTokenFeeCollectorUpdatedIterator struct {
-	Event *EndpointV2LzTokenFeeCollectorUpdated // Event containing the contract specifics and raw log
+// EndpointV2InboundNonceSkippedIterator is returned from FilterInboundNonceSkipped and is used to iterate over the raw logs and unpacked data for InboundNonceSkipped events raised by the EndpointV2 contract.
+type EndpointV2InboundNonceSkippedIterator struct {
+	Event *EndpointV2InboundNonceSkipped // Event containing the contract specifics and raw log
 
 	contract *bind.BoundContract // Generic contract to use for unpacking event data
 	event    string              // Event name to use for unpacking event data
@@ -1672,7 +2556,7 @@ type EndpointV2LzTokenFeeCollectorUpdatedIterator struct {
 // Next advances the iterator to the subsequent event, returning whether there
 // are any more events found. In case of a retrieval or parsing error, false is
 // returned and Error() can be queried for the exact failure.
-func (it *EndpointV2LzTokenFeeCollectorUpdatedIterator) Next() bool {
+func (it *EndpointV2InboundNonceSkippedIterator) Next() bool {
 	// If the iterator failed, stop iterating
 	if it.fail != nil {
 		return false
@@ -1681,7 +2565,7 @@ func (it *EndpointV2LzTokenFeeCollectorUpdatedIterator) Next() bool {
 	if it.done {
 		select {
 		case log := <-it.logs:
-			it.Event = new(EndpointV2LzTokenFeeCollectorUpdated)
+			it.Event = new(EndpointV2InboundNonceSkipped)
 			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 				it.fail = err
 				return false
@@ -1696,7 +2580,7 @@ func (it *EndpointV2LzTokenFeeCollectorUpdatedIterator) Next() bool {
 	// Iterator still in progress, wait for either a data or an error event
 	select {
 	case log := <-it.logs:
-		it.Event = new(EndpointV2LzTokenFeeCollectorUpdated)
+		it.Event = new(EndpointV2InboundNonceSkipped)
 		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 			it.fail = err
 			return false
@@ -1712,51 +2596,44 @@ func (it *EndpointV2LzTokenFeeCollectorUpdatedIterator) Next() bool {
 }
 
 // Error returns any retrieval or parsing error occurred during filtering.
-func (it *EndpointV2LzTokenFeeCollectorUpdatedIterator) Error() error {
+func (it *EndpointV2InboundNonceSkippedIterator) Error() error {
 	return it.fail
 }
 
 // Close terminates the iteration process, releasing any pending underlying
 // resources.
-func (it *EndpointV2LzTokenFeeCollectorUpdatedIterator) Close() error {
+func (it *EndpointV2InboundNonceSkippedIterator) Close() error {
 	it.sub.Unsubscribe()
 	return nil
 }
 
-// EndpointV2LzTokenFeeCollectorUpdated represents a LzTokenFeeCollectorUpdated event raised by the EndpointV2 contract.
-type EndpointV2LzTokenFeeCollectorUpdated struct {
-	NewFeeCollector common.Address
-	Raw             types.Log // Blockchain specific contextual infos
+// EndpointV2InboundNonceSkipped represents a InboundNonceSkipped event raised by the EndpointV2 contract.
+type EndpointV2InboundNonceSkipped struct {
+	SrcEid   uint32
+	Sender   [32]byte
+	Receiver common.Address
+	Nonce    uint64
+	Raw      types.Log // Blockchain specific contextual infos
 }
 
-// FilterLzTokenFeeCollectorUpdated is a free log retrieval operation binding the contract event 0xe2e17c3336b07514e0f8adde7f0a5c10095238d7f5982ad5c64ae9cc1d3dd084.
+// FilterInboundNonceSkipped is a free log retrieval operation binding the contract event 0x28f40053783033ef755556a0c3315379141f51a33aed8334174ffbadd90bde48.
 //
-// Solidity: event LzTokenFeeCollectorUpdated(address indexed newFeeCollector)
-func (_EndpointV2 *EndpointV2Filterer) FilterLzTokenFeeCollectorUpdated(opts *bind.FilterOpts, newFeeCollector []common.Address) (*EndpointV2LzTokenFeeCollectorUpdatedIterator, error) {
+// Solidity: event InboundNonceSkipped(uint32 srcEid, bytes32 sender, address receiver, uint64 nonce)
+func (_EndpointV2 *EndpointV2Filterer) FilterInboundNonceSkipped(opts *bind.FilterOpts) (*EndpointV2InboundNonceSkippedIterator, error) {
 
-	var newFeeCollectorRule []interface{}
-	for _, newFeeCollectorItem := range newFeeCollector {
-		newFeeCollectorRule = append(newFeeCollectorRule, newFeeCollectorItem)
-	}
-
-	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "LzTokenFeeCollectorUpdated", newFeeCollectorRule)
+	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "InboundNonceSkipped")
 	if err != nil {
 		return nil, err
 	}
-	return &EndpointV2LzTokenFeeCollectorUpdatedIterator{contract: _EndpointV2.contract, event: "LzTokenFeeCollectorUpdated", logs: logs, sub: sub}, nil
+	return &EndpointV2InboundNonceSkippedIterator{contract: _EndpointV2.contract, event: "InboundNonceSkipped", logs: logs, sub: sub}, nil
 }
 
-// WatchLzTokenFeeCollectorUpdated is a free log subscription operation binding the contract event 0xe2e17c3336b07514e0f8adde7f0a5c10095238d7f5982ad5c64ae9cc1d3dd084.
+// WatchInboundNonceSkipped is a free log subscription operation binding the contract event 0x28f40053783033ef755556a0c3315379141f51a33aed8334174ffbadd90bde48.
 //
-// Solidity: event LzTokenFeeCollectorUpdated(address indexed newFeeCollector)
-func (_EndpointV2 *EndpointV2Filterer) WatchLzTokenFeeCollectorUpdated(opts *bind.WatchOpts, sink chan<- *EndpointV2LzTokenFeeCollectorUpdated, newFeeCollector []common.Address) (event.Subscription, error) {
+// Solidity: event InboundNonceSkipped(uint32 srcEid, bytes32 sender, address receiver, uint64 nonce)
+func (_EndpointV2 *EndpointV2Filterer) WatchInboundNonceSkipped(opts *bind.WatchOpts, sink chan<- *EndpointV2InboundNonceSkipped) (event.Subscription, error) {
 
-	var newFeeCollectorRule []interface{}
-	for _, newFeeCollectorItem := range newFeeCollector {
-		newFeeCollectorRule = append(newFeeCollectorRule, newFeeCollectorItem)
-	}
-
-	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "LzTokenFeeCollectorUpdated", newFeeCollectorRule)
+	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "InboundNonceSkipped")
 	if err != nil {
 		return nil, err
 	}
@@ -1766,8 +2643,8 @@ func (_EndpointV2 *EndpointV2Filterer) WatchLzTokenFeeCollectorUpdated(opts *bin
 			select {
 			case log := <-logs:
 				// New log arrived, parse the event and forward to the user
-				event := new(EndpointV2LzTokenFeeCollectorUpdated)
-				if err := _EndpointV2.contract.UnpackLog(event, "LzTokenFeeCollectorUpdated", log); err != nil {
+				event := new(EndpointV2InboundNonceSkipped)
+				if err := _EndpointV2.contract.UnpackLog(event, "InboundNonceSkipped", log); err != nil {
 					return err
 				}
 				event.Raw = log
@@ -1788,21 +2665,21 @@ func (_EndpointV2 *EndpointV2Filterer) WatchLzTokenFeeCollectorUpdated(opts *bin
 	}), nil
 }
 
-// ParseLzTokenFeeCollectorUpdated is a log parse operation binding the contract event 0xe2e17c3336b07514e0f8adde7f0a5c10095238d7f5982ad5c64ae9cc1d3dd084.
+// ParseInboundNonceSkipped is a log parse operation binding the contract event 0x28f40053783033ef755556a0c3315379141f51a33aed8334174ffbadd90bde48.
 //
-// Solidity: event LzTokenFeeCollectorUpdated(address indexed newFeeCollector)
-func (_EndpointV2 *EndpointV2Filterer) ParseLzTokenFeeCollectorUpdated(log types.Log) (*EndpointV2LzTokenFeeCollectorUpdated, error) {
-	event := new(EndpointV2LzTokenFeeCollectorUpdated)
-	if err := _EndpointV2.contract.UnpackLog(event, "LzTokenFeeCollectorUpdated", log); err != nil {
+// Solidity: event InboundNonceSkipped(uint32 srcEid, bytes32 sender, address receiver, uint64 nonce)
+func (_EndpointV2 *EndpointV2Filterer) ParseInboundNonceSkipped(log types.Log) (*EndpointV2InboundNonceSkipped, error) {
+	event := new(EndpointV2InboundNonceSkipped)
+	if err := _EndpointV2.contract.UnpackLog(event, "InboundNonceSkipped", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log
 	return event, nil
 }
 
-// EndpointV2LzTokenUpdatedIterator is returned from FilterLzTokenUpdated and is used to iterate over the raw logs and unpacked data for LzTokenUpdated events raised by the EndpointV2 contract.
-type EndpointV2LzTokenUpdatedIterator struct {
-	Event *EndpointV2LzTokenUpdated // Event containing the contract specifics and raw log
+// EndpointV2LibraryRegisteredIterator is returned from FilterLibraryRegistered and is used to iterate over the raw logs and unpacked data for LibraryRegistered events raised by the EndpointV2 contract.
+type EndpointV2LibraryRegisteredIterator struct {
+	Event *EndpointV2LibraryRegistered // Event containing the contract specifics and raw log
 
 	contract *bind.BoundContract // Generic contract to use for unpacking event data
 	event    string              // Event name to use for unpacking event data
@@ -1816,7 +2693,7 @@ type EndpointV2LzTokenUpdatedIterator struct {
 // Next advances the iterator to the subsequent event, returning whether there
 // are any more events found. In case of a retrieval or parsing error, false is
 // returned and Error() can be queried for the exact failure.
-func (it *EndpointV2LzTokenUpdatedIterator) Next() bool {
+func (it *EndpointV2LibraryRegisteredIterator) Next() bool {
 	// If the iterator failed, stop iterating
 	if it.fail != nil {
 		return false
@@ -1825,7 +2702,7 @@ func (it *EndpointV2LzTokenUpdatedIterator) Next() bool {
 	if it.done {
 		select {
 		case log := <-it.logs:
-			it.Event = new(EndpointV2LzTokenUpdated)
+			it.Event = new(EndpointV2LibraryRegistered)
 			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 				it.fail = err
 				return false
@@ -1840,7 +2717,7 @@ func (it *EndpointV2LzTokenUpdatedIterator) Next() bool {
 	// Iterator still in progress, wait for either a data or an error event
 	select {
 	case log := <-it.logs:
-		it.Event = new(EndpointV2LzTokenUpdated)
+		it.Event = new(EndpointV2LibraryRegistered)
 		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 			it.fail = err
 			return false
@@ -1856,196 +2733,41 @@ func (it *EndpointV2LzTokenUpdatedIterator) Next() bool {
 }
 
 // Error returns any retrieval or parsing error occurred during filtering.
-func (it *EndpointV2LzTokenUpdatedIterator) Error() error {
+func (it *EndpointV2LibraryRegisteredIterator) Error() error {
 	return it.fail
 }
 
 // Close terminates the iteration process, releasing any pending underlying
 // resources.
-func (it *EndpointV2LzTokenUpdatedIterator) Close() error {
+func (it *EndpointV2LibraryRegisteredIterator) Close() error {
 	it.sub.Unsubscribe()
 	return nil
 }
 
-// EndpointV2LzTokenUpdated represents a LzTokenUpdated event raised by the EndpointV2 contract.
-type EndpointV2LzTokenUpdated struct {
-	NewCompositionFee common.Address
-	Raw               types.Log // Blockchain specific contextual infos
-}
-
-// FilterLzTokenUpdated is a free log retrieval operation binding the contract event 0xef29788352270a67ade1b3b0ab5aa38c7ae32f1aa4a3eeda6a00184fb985f298.
-//
-// Solidity: event LzTokenUpdated(address indexed newCompositionFee)
-func (_EndpointV2 *EndpointV2Filterer) FilterLzTokenUpdated(opts *bind.FilterOpts, newCompositionFee []common.Address) (*EndpointV2LzTokenUpdatedIterator, error) {
-
-	var newCompositionFeeRule []interface{}
-	for _, newCompositionFeeItem := range newCompositionFee {
-		newCompositionFeeRule = append(newCompositionFeeRule, newCompositionFeeItem)
-	}
-
-	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "LzTokenUpdated", newCompositionFeeRule)
-	if err != nil {
-		return nil, err
-	}
-	return &EndpointV2LzTokenUpdatedIterator{contract: _EndpointV2.contract, event: "LzTokenUpdated", logs: logs, sub: sub}, nil
-}
-
-// WatchLzTokenUpdated is a free log subscription operation binding the contract event 0xef29788352270a67ade1b3b0ab5aa38c7ae32f1aa4a3eeda6a00184fb985f298.
-//
-// Solidity: event LzTokenUpdated(address indexed newCompositionFee)
-func (_EndpointV2 *EndpointV2Filterer) WatchLzTokenUpdated(opts *bind.WatchOpts, sink chan<- *EndpointV2LzTokenUpdated, newCompositionFee []common.Address) (event.Subscription, error) {
-
-	var newCompositionFeeRule []interface{}
-	for _, newCompositionFeeItem := range newCompositionFee {
-		newCompositionFeeRule = append(newCompositionFeeRule, newCompositionFeeItem)
-	}
-
-	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "LzTokenUpdated", newCompositionFeeRule)
-	if err != nil {
-		return nil, err
-	}
-	return event.NewSubscription(func(quit <-chan struct{}) error {
-		defer sub.Unsubscribe()
-		for {
-			select {
-			case log := <-logs:
-				// New log arrived, parse the event and forward to the user
-				event := new(EndpointV2LzTokenUpdated)
-				if err := _EndpointV2.contract.UnpackLog(event, "LzTokenUpdated", log); err != nil {
-					return err
-				}
-				event.Raw = log
-
-				select {
-				case sink <- event:
-				case err := <-sub.Err():
-					return err
-				case <-quit:
-					return nil
-				}
-			case err := <-sub.Err():
-				return err
-			case <-quit:
-				return nil
-			}
-		}
-	}), nil
-}
-
-// ParseLzTokenUpdated is a log parse operation binding the contract event 0xef29788352270a67ade1b3b0ab5aa38c7ae32f1aa4a3eeda6a00184fb985f298.
-//
-// Solidity: event LzTokenUpdated(address indexed newCompositionFee)
-func (_EndpointV2 *EndpointV2Filterer) ParseLzTokenUpdated(log types.Log) (*EndpointV2LzTokenUpdated, error) {
-	event := new(EndpointV2LzTokenUpdated)
-	if err := _EndpointV2.contract.UnpackLog(event, "LzTokenUpdated", log); err != nil {
-		return nil, err
-	}
-	event.Raw = log
-	return event, nil
-}
-
-// EndpointV2NativeFeePaidIterator is returned from FilterNativeFeePaid and is used to iterate over the raw logs and unpacked data for NativeFeePaid events raised by the EndpointV2 contract.
-type EndpointV2NativeFeePaidIterator struct {
-	Event *EndpointV2NativeFeePaid // Event containing the contract specifics and raw log
-
-	contract *bind.BoundContract // Generic contract to use for unpacking event data
-	event    string              // Event name to use for unpacking event data
-
-	logs chan types.Log        // Log channel receiving the found contract events
-	sub  ethereum.Subscription // Subscription for errors, completion and termination
-	done bool                  // Whether the subscription completed delivering logs
-	fail error                 // Occurred error to stop iteration
-}
-
-// Next advances the iterator to the subsequent event, returning whether there
-// are any more events found. In case of a retrieval or parsing error, false is
-// returned and Error() can be queried for the exact failure.
-func (it *EndpointV2NativeFeePaidIterator) Next() bool {
-	// If the iterator failed, stop iterating
-	if it.fail != nil {
-		return false
-	}
-	// If the iterator completed, deliver directly whatever's available
-	if it.done {
-		select {
-		case log := <-it.logs:
-			it.Event = new(EndpointV2NativeFeePaid)
-			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
-				it.fail = err
-				return false
-			}
-			it.Event.Raw = log
-			return true
-
-		default:
-			return false
-		}
-	}
-	// Iterator still in progress, wait for either a data or an error event
-	select {
-	case log := <-it.logs:
-		it.Event = new(EndpointV2NativeFeePaid)
-		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
-			it.fail = err
-			return false
-		}
-		it.Event.Raw = log
-		return true
-
-	case err := <-it.sub.Err():
-		it.done = true
-		it.fail = err
-		return it.Next()
-	}
-}
-
-// Error returns any retrieval or parsing error occurred during filtering.
-func (it *EndpointV2NativeFeePaidIterator) Error() error {
-	return it.fail
-}
-
-// Close terminates the iteration process, releasing any pending underlying
-// resources.
-func (it *EndpointV2NativeFeePaidIterator) Close() error {
-	it.sub.Unsubscribe()
-	return nil
-}
-
-// EndpointV2NativeFeePaid represents a NativeFeePaid event raised by the EndpointV2 contract.
-type EndpointV2NativeFeePaid struct {
-	Uln    common.Address
-	Amount *big.Int
+// EndpointV2LibraryRegistered represents a LibraryRegistered event raised by the EndpointV2 contract.
+type EndpointV2LibraryRegistered struct {
+	NewLib common.Address
 	Raw    types.Log // Blockchain specific contextual infos
 }
 
-// FilterNativeFeePaid is a free log retrieval operation binding the contract event 0xfae01433a7b6c07798414842e23859da937c7f1a5bbafb464c123b07760b5e45.
+// FilterLibraryRegistered is a free log retrieval operation binding the contract event 0x6b374d56679ca9463f27c85c6311e2bb7fde69bf201d3da39d53f10bd9d78af5.
 //
-// Solidity: event NativeFeePaid(address indexed uln, uint256 amount)
-func (_EndpointV2 *EndpointV2Filterer) FilterNativeFeePaid(opts *bind.FilterOpts, uln []common.Address) (*EndpointV2NativeFeePaidIterator, error) {
+// Solidity: event LibraryRegistered(address newLib)
+func (_EndpointV2 *EndpointV2Filterer) FilterLibraryRegistered(opts *bind.FilterOpts) (*EndpointV2LibraryRegisteredIterator, error) {
 
-	var ulnRule []interface{}
-	for _, ulnItem := range uln {
-		ulnRule = append(ulnRule, ulnItem)
-	}
-
-	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "NativeFeePaid", ulnRule)
+	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "LibraryRegistered")
 	if err != nil {
 		return nil, err
 	}
-	return &EndpointV2NativeFeePaidIterator{contract: _EndpointV2.contract, event: "NativeFeePaid", logs: logs, sub: sub}, nil
+	return &EndpointV2LibraryRegisteredIterator{contract: _EndpointV2.contract, event: "LibraryRegistered", logs: logs, sub: sub}, nil
 }
 
-// WatchNativeFeePaid is a free log subscription operation binding the contract event 0xfae01433a7b6c07798414842e23859da937c7f1a5bbafb464c123b07760b5e45.
+// WatchLibraryRegistered is a free log subscription operation binding the contract event 0x6b374d56679ca9463f27c85c6311e2bb7fde69bf201d3da39d53f10bd9d78af5.
 //
-// Solidity: event NativeFeePaid(address indexed uln, uint256 amount)
-func (_EndpointV2 *EndpointV2Filterer) WatchNativeFeePaid(opts *bind.WatchOpts, sink chan<- *EndpointV2NativeFeePaid, uln []common.Address) (event.Subscription, error) {
+// Solidity: event LibraryRegistered(address newLib)
+func (_EndpointV2 *EndpointV2Filterer) WatchLibraryRegistered(opts *bind.WatchOpts, sink chan<- *EndpointV2LibraryRegistered) (event.Subscription, error) {
 
-	var ulnRule []interface{}
-	for _, ulnItem := range uln {
-		ulnRule = append(ulnRule, ulnItem)
-	}
-
-	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "NativeFeePaid", ulnRule)
+	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "LibraryRegistered")
 	if err != nil {
 		return nil, err
 	}
@@ -2055,8 +2777,8 @@ func (_EndpointV2 *EndpointV2Filterer) WatchNativeFeePaid(opts *bind.WatchOpts, 
 			select {
 			case log := <-logs:
 				// New log arrived, parse the event and forward to the user
-				event := new(EndpointV2NativeFeePaid)
-				if err := _EndpointV2.contract.UnpackLog(event, "NativeFeePaid", log); err != nil {
+				event := new(EndpointV2LibraryRegistered)
+				if err := _EndpointV2.contract.UnpackLog(event, "LibraryRegistered", log); err != nil {
 					return err
 				}
 				event.Raw = log
@@ -2077,21 +2799,21 @@ func (_EndpointV2 *EndpointV2Filterer) WatchNativeFeePaid(opts *bind.WatchOpts, 
 	}), nil
 }
 
-// ParseNativeFeePaid is a log parse operation binding the contract event 0xfae01433a7b6c07798414842e23859da937c7f1a5bbafb464c123b07760b5e45.
+// ParseLibraryRegistered is a log parse operation binding the contract event 0x6b374d56679ca9463f27c85c6311e2bb7fde69bf201d3da39d53f10bd9d78af5.
 //
-// Solidity: event NativeFeePaid(address indexed uln, uint256 amount)
-func (_EndpointV2 *EndpointV2Filterer) ParseNativeFeePaid(log types.Log) (*EndpointV2NativeFeePaid, error) {
-	event := new(EndpointV2NativeFeePaid)
-	if err := _EndpointV2.contract.UnpackLog(event, "NativeFeePaid", log); err != nil {
+// Solidity: event LibraryRegistered(address newLib)
+func (_EndpointV2 *EndpointV2Filterer) ParseLibraryRegistered(log types.Log) (*EndpointV2LibraryRegistered, error) {
+	event := new(EndpointV2LibraryRegistered)
+	if err := _EndpointV2.contract.UnpackLog(event, "LibraryRegistered", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log
 	return event, nil
 }
 
-// EndpointV2NewRelayerIterator is returned from FilterNewRelayer and is used to iterate over the raw logs and unpacked data for NewRelayer events raised by the EndpointV2 contract.
-type EndpointV2NewRelayerIterator struct {
-	Event *EndpointV2NewRelayer // Event containing the contract specifics and raw log
+// EndpointV2LzComposeAlertIterator is returned from FilterLzComposeAlert and is used to iterate over the raw logs and unpacked data for LzComposeAlert events raised by the EndpointV2 contract.
+type EndpointV2LzComposeAlertIterator struct {
+	Event *EndpointV2LzComposeAlert // Event containing the contract specifics and raw log
 
 	contract *bind.BoundContract // Generic contract to use for unpacking event data
 	event    string              // Event name to use for unpacking event data
@@ -2105,7 +2827,7 @@ type EndpointV2NewRelayerIterator struct {
 // Next advances the iterator to the subsequent event, returning whether there
 // are any more events found. In case of a retrieval or parsing error, false is
 // returned and Error() can be queried for the exact failure.
-func (it *EndpointV2NewRelayerIterator) Next() bool {
+func (it *EndpointV2LzComposeAlertIterator) Next() bool {
 	// If the iterator failed, stop iterating
 	if it.fail != nil {
 		return false
@@ -2114,7 +2836,7 @@ func (it *EndpointV2NewRelayerIterator) Next() bool {
 	if it.done {
 		select {
 		case log := <-it.logs:
-			it.Event = new(EndpointV2NewRelayer)
+			it.Event = new(EndpointV2LzComposeAlert)
 			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 				it.fail = err
 				return false
@@ -2129,7 +2851,7 @@ func (it *EndpointV2NewRelayerIterator) Next() bool {
 	// Iterator still in progress, wait for either a data or an error event
 	select {
 	case log := <-it.logs:
-		it.Event = new(EndpointV2NewRelayer)
+		it.Event = new(EndpointV2LzComposeAlert)
 		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 			it.fail = err
 			return false
@@ -2145,41 +2867,76 @@ func (it *EndpointV2NewRelayerIterator) Next() bool {
 }
 
 // Error returns any retrieval or parsing error occurred during filtering.
-func (it *EndpointV2NewRelayerIterator) Error() error {
+func (it *EndpointV2LzComposeAlertIterator) Error() error {
 	return it.fail
 }
 
 // Close terminates the iteration process, releasing any pending underlying
 // resources.
-func (it *EndpointV2NewRelayerIterator) Close() error {
+func (it *EndpointV2LzComposeAlertIterator) Close() error {
 	it.sub.Unsubscribe()
 	return nil
 }
 
-// EndpointV2NewRelayer represents a NewRelayer event raised by the EndpointV2 contract.
-type EndpointV2NewRelayer struct {
-	NewRelayer common.Address
-	Raw        types.Log // Blockchain specific contextual infos
+// EndpointV2LzComposeAlert represents a LzComposeAlert event raised by the EndpointV2 contract.
+type EndpointV2LzComposeAlert struct {
+	From      common.Address
+	To        common.Address
+	Executor  common.Address
+	Guid      [32]byte
+	Index     uint16
+	Gas       *big.Int
+	Value     *big.Int
+	Message   []byte
+	ExtraData []byte
+	Reason    []byte
+	Raw       types.Log // Blockchain specific contextual infos
 }
 
-// FilterNewRelayer is a free log retrieval operation binding the contract event 0x580142b724d5ec9ac79a79c1a74837f611bfc6a32d918bf700d0b8f8bff90d5b.
+// FilterLzComposeAlert is a free log retrieval operation binding the contract event 0x8a0b1dce321c5c5fb42349bce46d18087c04140de520917661fb923e44a904b9.
 //
-// Solidity: event NewRelayer(address newRelayer)
-func (_EndpointV2 *EndpointV2Filterer) FilterNewRelayer(opts *bind.FilterOpts) (*EndpointV2NewRelayerIterator, error) {
+// Solidity: event LzComposeAlert(address indexed from, address indexed to, address indexed executor, bytes32 guid, uint16 index, uint256 gas, uint256 value, bytes message, bytes extraData, bytes reason)
+func (_EndpointV2 *EndpointV2Filterer) FilterLzComposeAlert(opts *bind.FilterOpts, from []common.Address, to []common.Address, executor []common.Address) (*EndpointV2LzComposeAlertIterator, error) {
 
-	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "NewRelayer")
+	var fromRule []interface{}
+	for _, fromItem := range from {
+		fromRule = append(fromRule, fromItem)
+	}
+	var toRule []interface{}
+	for _, toItem := range to {
+		toRule = append(toRule, toItem)
+	}
+	var executorRule []interface{}
+	for _, executorItem := range executor {
+		executorRule = append(executorRule, executorItem)
+	}
+
+	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "LzComposeAlert", fromRule, toRule, executorRule)
 	if err != nil {
 		return nil, err
 	}
-	return &EndpointV2NewRelayerIterator{contract: _EndpointV2.contract, event: "NewRelayer", logs: logs, sub: sub}, nil
+	return &EndpointV2LzComposeAlertIterator{contract: _EndpointV2.contract, event: "LzComposeAlert", logs: logs, sub: sub}, nil
 }
 
-// WatchNewRelayer is a free log subscription operation binding the contract event 0x580142b724d5ec9ac79a79c1a74837f611bfc6a32d918bf700d0b8f8bff90d5b.
+// WatchLzComposeAlert is a free log subscription operation binding the contract event 0x8a0b1dce321c5c5fb42349bce46d18087c04140de520917661fb923e44a904b9.
 //
-// Solidity: event NewRelayer(address newRelayer)
-func (_EndpointV2 *EndpointV2Filterer) WatchNewRelayer(opts *bind.WatchOpts, sink chan<- *EndpointV2NewRelayer) (event.Subscription, error) {
+// Solidity: event LzComposeAlert(address indexed from, address indexed to, address indexed executor, bytes32 guid, uint16 index, uint256 gas, uint256 value, bytes message, bytes extraData, bytes reason)
+func (_EndpointV2 *EndpointV2Filterer) WatchLzComposeAlert(opts *bind.WatchOpts, sink chan<- *EndpointV2LzComposeAlert, from []common.Address, to []common.Address, executor []common.Address) (event.Subscription, error) {
 
-	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "NewRelayer")
+	var fromRule []interface{}
+	for _, fromItem := range from {
+		fromRule = append(fromRule, fromItem)
+	}
+	var toRule []interface{}
+	for _, toItem := range to {
+		toRule = append(toRule, toItem)
+	}
+	var executorRule []interface{}
+	for _, executorItem := range executor {
+		executorRule = append(executorRule, executorItem)
+	}
+
+	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "LzComposeAlert", fromRule, toRule, executorRule)
 	if err != nil {
 		return nil, err
 	}
@@ -2189,8 +2946,8 @@ func (_EndpointV2 *EndpointV2Filterer) WatchNewRelayer(opts *bind.WatchOpts, sin
 			select {
 			case log := <-logs:
 				// New log arrived, parse the event and forward to the user
-				event := new(EndpointV2NewRelayer)
-				if err := _EndpointV2.contract.UnpackLog(event, "NewRelayer", log); err != nil {
+				event := new(EndpointV2LzComposeAlert)
+				if err := _EndpointV2.contract.UnpackLog(event, "LzComposeAlert", log); err != nil {
 					return err
 				}
 				event.Raw = log
@@ -2211,12 +2968,306 @@ func (_EndpointV2 *EndpointV2Filterer) WatchNewRelayer(opts *bind.WatchOpts, sin
 	}), nil
 }
 
-// ParseNewRelayer is a log parse operation binding the contract event 0x580142b724d5ec9ac79a79c1a74837f611bfc6a32d918bf700d0b8f8bff90d5b.
+// ParseLzComposeAlert is a log parse operation binding the contract event 0x8a0b1dce321c5c5fb42349bce46d18087c04140de520917661fb923e44a904b9.
 //
-// Solidity: event NewRelayer(address newRelayer)
-func (_EndpointV2 *EndpointV2Filterer) ParseNewRelayer(log types.Log) (*EndpointV2NewRelayer, error) {
-	event := new(EndpointV2NewRelayer)
-	if err := _EndpointV2.contract.UnpackLog(event, "NewRelayer", log); err != nil {
+// Solidity: event LzComposeAlert(address indexed from, address indexed to, address indexed executor, bytes32 guid, uint16 index, uint256 gas, uint256 value, bytes message, bytes extraData, bytes reason)
+func (_EndpointV2 *EndpointV2Filterer) ParseLzComposeAlert(log types.Log) (*EndpointV2LzComposeAlert, error) {
+	event := new(EndpointV2LzComposeAlert)
+	if err := _EndpointV2.contract.UnpackLog(event, "LzComposeAlert", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
+// EndpointV2LzReceiveAlertIterator is returned from FilterLzReceiveAlert and is used to iterate over the raw logs and unpacked data for LzReceiveAlert events raised by the EndpointV2 contract.
+type EndpointV2LzReceiveAlertIterator struct {
+	Event *EndpointV2LzReceiveAlert // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *EndpointV2LzReceiveAlertIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(EndpointV2LzReceiveAlert)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(EndpointV2LzReceiveAlert)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *EndpointV2LzReceiveAlertIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *EndpointV2LzReceiveAlertIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// EndpointV2LzReceiveAlert represents a LzReceiveAlert event raised by the EndpointV2 contract.
+type EndpointV2LzReceiveAlert struct {
+	Receiver  common.Address
+	Executor  common.Address
+	Origin    Origin
+	Guid      [32]byte
+	Gas       *big.Int
+	Value     *big.Int
+	Message   []byte
+	ExtraData []byte
+	Reason    []byte
+	Raw       types.Log // Blockchain specific contextual infos
+}
+
+// FilterLzReceiveAlert is a free log retrieval operation binding the contract event 0x7edfa10fe10193301ad8a8bea7e968c7bcabcc64981f368e3aeada40ce26ae2c.
+//
+// Solidity: event LzReceiveAlert(address indexed receiver, address indexed executor, (uint32,bytes32,uint64) origin, bytes32 guid, uint256 gas, uint256 value, bytes message, bytes extraData, bytes reason)
+func (_EndpointV2 *EndpointV2Filterer) FilterLzReceiveAlert(opts *bind.FilterOpts, receiver []common.Address, executor []common.Address) (*EndpointV2LzReceiveAlertIterator, error) {
+
+	var receiverRule []interface{}
+	for _, receiverItem := range receiver {
+		receiverRule = append(receiverRule, receiverItem)
+	}
+	var executorRule []interface{}
+	for _, executorItem := range executor {
+		executorRule = append(executorRule, executorItem)
+	}
+
+	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "LzReceiveAlert", receiverRule, executorRule)
+	if err != nil {
+		return nil, err
+	}
+	return &EndpointV2LzReceiveAlertIterator{contract: _EndpointV2.contract, event: "LzReceiveAlert", logs: logs, sub: sub}, nil
+}
+
+// WatchLzReceiveAlert is a free log subscription operation binding the contract event 0x7edfa10fe10193301ad8a8bea7e968c7bcabcc64981f368e3aeada40ce26ae2c.
+//
+// Solidity: event LzReceiveAlert(address indexed receiver, address indexed executor, (uint32,bytes32,uint64) origin, bytes32 guid, uint256 gas, uint256 value, bytes message, bytes extraData, bytes reason)
+func (_EndpointV2 *EndpointV2Filterer) WatchLzReceiveAlert(opts *bind.WatchOpts, sink chan<- *EndpointV2LzReceiveAlert, receiver []common.Address, executor []common.Address) (event.Subscription, error) {
+
+	var receiverRule []interface{}
+	for _, receiverItem := range receiver {
+		receiverRule = append(receiverRule, receiverItem)
+	}
+	var executorRule []interface{}
+	for _, executorItem := range executor {
+		executorRule = append(executorRule, executorItem)
+	}
+
+	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "LzReceiveAlert", receiverRule, executorRule)
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(EndpointV2LzReceiveAlert)
+				if err := _EndpointV2.contract.UnpackLog(event, "LzReceiveAlert", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseLzReceiveAlert is a log parse operation binding the contract event 0x7edfa10fe10193301ad8a8bea7e968c7bcabcc64981f368e3aeada40ce26ae2c.
+//
+// Solidity: event LzReceiveAlert(address indexed receiver, address indexed executor, (uint32,bytes32,uint64) origin, bytes32 guid, uint256 gas, uint256 value, bytes message, bytes extraData, bytes reason)
+func (_EndpointV2 *EndpointV2Filterer) ParseLzReceiveAlert(log types.Log) (*EndpointV2LzReceiveAlert, error) {
+	event := new(EndpointV2LzReceiveAlert)
+	if err := _EndpointV2.contract.UnpackLog(event, "LzReceiveAlert", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
+// EndpointV2LzTokenSetIterator is returned from FilterLzTokenSet and is used to iterate over the raw logs and unpacked data for LzTokenSet events raised by the EndpointV2 contract.
+type EndpointV2LzTokenSetIterator struct {
+	Event *EndpointV2LzTokenSet // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *EndpointV2LzTokenSetIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(EndpointV2LzTokenSet)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(EndpointV2LzTokenSet)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *EndpointV2LzTokenSetIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *EndpointV2LzTokenSetIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// EndpointV2LzTokenSet represents a LzTokenSet event raised by the EndpointV2 contract.
+type EndpointV2LzTokenSet struct {
+	Token common.Address
+	Raw   types.Log // Blockchain specific contextual infos
+}
+
+// FilterLzTokenSet is a free log retrieval operation binding the contract event 0xd476ec5ec1ac11cec3714d41e7ea49419471aceb9bd0dff1becfc3e363a62396.
+//
+// Solidity: event LzTokenSet(address token)
+func (_EndpointV2 *EndpointV2Filterer) FilterLzTokenSet(opts *bind.FilterOpts) (*EndpointV2LzTokenSetIterator, error) {
+
+	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "LzTokenSet")
+	if err != nil {
+		return nil, err
+	}
+	return &EndpointV2LzTokenSetIterator{contract: _EndpointV2.contract, event: "LzTokenSet", logs: logs, sub: sub}, nil
+}
+
+// WatchLzTokenSet is a free log subscription operation binding the contract event 0xd476ec5ec1ac11cec3714d41e7ea49419471aceb9bd0dff1becfc3e363a62396.
+//
+// Solidity: event LzTokenSet(address token)
+func (_EndpointV2 *EndpointV2Filterer) WatchLzTokenSet(opts *bind.WatchOpts, sink chan<- *EndpointV2LzTokenSet) (event.Subscription, error) {
+
+	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "LzTokenSet")
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(EndpointV2LzTokenSet)
+				if err := _EndpointV2.contract.UnpackLog(event, "LzTokenSet", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseLzTokenSet is a log parse operation binding the contract event 0xd476ec5ec1ac11cec3714d41e7ea49419471aceb9bd0dff1becfc3e363a62396.
+//
+// Solidity: event LzTokenSet(address token)
+func (_EndpointV2 *EndpointV2Filterer) ParseLzTokenSet(log types.Log) (*EndpointV2LzTokenSet, error) {
+	event := new(EndpointV2LzTokenSet)
+	if err := _EndpointV2.contract.UnpackLog(event, "LzTokenSet", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log
@@ -2445,14 +3496,17 @@ func (it *EndpointV2PacketBurntIterator) Close() error {
 
 // EndpointV2PacketBurnt represents a PacketBurnt event raised by the EndpointV2 contract.
 type EndpointV2PacketBurnt struct {
-	Guid    [32]byte
-	Success bool
-	Raw     types.Log // Blockchain specific contextual infos
+	SrcEid      uint32
+	Sender      [32]byte
+	Receiver    common.Address
+	Nonce       uint64
+	PayloadHash [32]byte
+	Raw         types.Log // Blockchain specific contextual infos
 }
 
-// FilterPacketBurnt is a free log retrieval operation binding the contract event 0xe5b79e71d459391825ef6937987b7c0b32d8fac7d7aa80700d5f5c16fdbe4e33.
+// FilterPacketBurnt is a free log retrieval operation binding the contract event 0x7f68a37a6e69a0de35024a234558f9efe4b33b58657753d21eaaa82d51c3510e.
 //
-// Solidity: event PacketBurnt(bytes32 guid, bool success)
+// Solidity: event PacketBurnt(uint32 srcEid, bytes32 sender, address receiver, uint64 nonce, bytes32 payloadHash)
 func (_EndpointV2 *EndpointV2Filterer) FilterPacketBurnt(opts *bind.FilterOpts) (*EndpointV2PacketBurntIterator, error) {
 
 	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "PacketBurnt")
@@ -2462,9 +3516,9 @@ func (_EndpointV2 *EndpointV2Filterer) FilterPacketBurnt(opts *bind.FilterOpts) 
 	return &EndpointV2PacketBurntIterator{contract: _EndpointV2.contract, event: "PacketBurnt", logs: logs, sub: sub}, nil
 }
 
-// WatchPacketBurnt is a free log subscription operation binding the contract event 0xe5b79e71d459391825ef6937987b7c0b32d8fac7d7aa80700d5f5c16fdbe4e33.
+// WatchPacketBurnt is a free log subscription operation binding the contract event 0x7f68a37a6e69a0de35024a234558f9efe4b33b58657753d21eaaa82d51c3510e.
 //
-// Solidity: event PacketBurnt(bytes32 guid, bool success)
+// Solidity: event PacketBurnt(uint32 srcEid, bytes32 sender, address receiver, uint64 nonce, bytes32 payloadHash)
 func (_EndpointV2 *EndpointV2Filterer) WatchPacketBurnt(opts *bind.WatchOpts, sink chan<- *EndpointV2PacketBurnt) (event.Subscription, error) {
 
 	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "PacketBurnt")
@@ -2499,9 +3553,9 @@ func (_EndpointV2 *EndpointV2Filterer) WatchPacketBurnt(opts *bind.WatchOpts, si
 	}), nil
 }
 
-// ParsePacketBurnt is a log parse operation binding the contract event 0xe5b79e71d459391825ef6937987b7c0b32d8fac7d7aa80700d5f5c16fdbe4e33.
+// ParsePacketBurnt is a log parse operation binding the contract event 0x7f68a37a6e69a0de35024a234558f9efe4b33b58657753d21eaaa82d51c3510e.
 //
-// Solidity: event PacketBurnt(bytes32 guid, bool success)
+// Solidity: event PacketBurnt(uint32 srcEid, bytes32 sender, address receiver, uint64 nonce, bytes32 payloadHash)
 func (_EndpointV2 *EndpointV2Filterer) ParsePacketBurnt(log types.Log) (*EndpointV2PacketBurnt, error) {
 	event := new(EndpointV2PacketBurnt)
 	if err := _EndpointV2.contract.UnpackLog(event, "PacketBurnt", log); err != nil {
@@ -2580,13 +3634,14 @@ func (it *EndpointV2PacketDeliveredIterator) Close() error {
 
 // EndpointV2PacketDelivered represents a PacketDelivered event raised by the EndpointV2 contract.
 type EndpointV2PacketDelivered struct {
-	Guid [32]byte
-	Raw  types.Log // Blockchain specific contextual infos
+	Origin   Origin
+	Receiver common.Address
+	Raw      types.Log // Blockchain specific contextual infos
 }
 
-// FilterPacketDelivered is a free log retrieval operation binding the contract event 0x1d88581d0a3d78a17f0a642defe5d0612655d98f4427c3d8ea86fbbf4e8bfb05.
+// FilterPacketDelivered is a free log retrieval operation binding the contract event 0x3cd5e48f9730b129dc7550f0fcea9c767b7be37837cd10e55eb35f734f4bca04.
 //
-// Solidity: event PacketDelivered(bytes32 guid)
+// Solidity: event PacketDelivered((uint32,bytes32,uint64) origin, address receiver)
 func (_EndpointV2 *EndpointV2Filterer) FilterPacketDelivered(opts *bind.FilterOpts) (*EndpointV2PacketDeliveredIterator, error) {
 
 	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "PacketDelivered")
@@ -2596,9 +3651,9 @@ func (_EndpointV2 *EndpointV2Filterer) FilterPacketDelivered(opts *bind.FilterOp
 	return &EndpointV2PacketDeliveredIterator{contract: _EndpointV2.contract, event: "PacketDelivered", logs: logs, sub: sub}, nil
 }
 
-// WatchPacketDelivered is a free log subscription operation binding the contract event 0x1d88581d0a3d78a17f0a642defe5d0612655d98f4427c3d8ea86fbbf4e8bfb05.
+// WatchPacketDelivered is a free log subscription operation binding the contract event 0x3cd5e48f9730b129dc7550f0fcea9c767b7be37837cd10e55eb35f734f4bca04.
 //
-// Solidity: event PacketDelivered(bytes32 guid)
+// Solidity: event PacketDelivered((uint32,bytes32,uint64) origin, address receiver)
 func (_EndpointV2 *EndpointV2Filterer) WatchPacketDelivered(opts *bind.WatchOpts, sink chan<- *EndpointV2PacketDelivered) (event.Subscription, error) {
 
 	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "PacketDelivered")
@@ -2633,9 +3688,9 @@ func (_EndpointV2 *EndpointV2Filterer) WatchPacketDelivered(opts *bind.WatchOpts
 	}), nil
 }
 
-// ParsePacketDelivered is a log parse operation binding the contract event 0x1d88581d0a3d78a17f0a642defe5d0612655d98f4427c3d8ea86fbbf4e8bfb05.
+// ParsePacketDelivered is a log parse operation binding the contract event 0x3cd5e48f9730b129dc7550f0fcea9c767b7be37837cd10e55eb35f734f4bca04.
 //
-// Solidity: event PacketDelivered(bytes32 guid)
+// Solidity: event PacketDelivered((uint32,bytes32,uint64) origin, address receiver)
 func (_EndpointV2 *EndpointV2Filterer) ParsePacketDelivered(log types.Log) (*EndpointV2PacketDelivered, error) {
 	event := new(EndpointV2PacketDelivered)
 	if err := _EndpointV2.contract.UnpackLog(event, "PacketDelivered", log); err != nil {
@@ -2645,9 +3700,9 @@ func (_EndpointV2 *EndpointV2Filterer) ParsePacketDelivered(log types.Log) (*End
 	return event, nil
 }
 
-// EndpointV2PacketFeeTransferredIterator is returned from FilterPacketFeeTransferred and is used to iterate over the raw logs and unpacked data for PacketFeeTransferred events raised by the EndpointV2 contract.
-type EndpointV2PacketFeeTransferredIterator struct {
-	Event *EndpointV2PacketFeeTransferred // Event containing the contract specifics and raw log
+// EndpointV2PacketNilifiedIterator is returned from FilterPacketNilified and is used to iterate over the raw logs and unpacked data for PacketNilified events raised by the EndpointV2 contract.
+type EndpointV2PacketNilifiedIterator struct {
+	Event *EndpointV2PacketNilified // Event containing the contract specifics and raw log
 
 	contract *bind.BoundContract // Generic contract to use for unpacking event data
 	event    string              // Event name to use for unpacking event data
@@ -2661,7 +3716,7 @@ type EndpointV2PacketFeeTransferredIterator struct {
 // Next advances the iterator to the subsequent event, returning whether there
 // are any more events found. In case of a retrieval or parsing error, false is
 // returned and Error() can be queried for the exact failure.
-func (it *EndpointV2PacketFeeTransferredIterator) Next() bool {
+func (it *EndpointV2PacketNilifiedIterator) Next() bool {
 	// If the iterator failed, stop iterating
 	if it.fail != nil {
 		return false
@@ -2670,7 +3725,7 @@ func (it *EndpointV2PacketFeeTransferredIterator) Next() bool {
 	if it.done {
 		select {
 		case log := <-it.logs:
-			it.Event = new(EndpointV2PacketFeeTransferred)
+			it.Event = new(EndpointV2PacketNilified)
 			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 				it.fail = err
 				return false
@@ -2685,7 +3740,7 @@ func (it *EndpointV2PacketFeeTransferredIterator) Next() bool {
 	// Iterator still in progress, wait for either a data or an error event
 	select {
 	case log := <-it.logs:
-		it.Event = new(EndpointV2PacketFeeTransferred)
+		it.Event = new(EndpointV2PacketNilified)
 		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 			it.fail = err
 			return false
@@ -2701,61 +3756,45 @@ func (it *EndpointV2PacketFeeTransferredIterator) Next() bool {
 }
 
 // Error returns any retrieval or parsing error occurred during filtering.
-func (it *EndpointV2PacketFeeTransferredIterator) Error() error {
+func (it *EndpointV2PacketNilifiedIterator) Error() error {
 	return it.fail
 }
 
 // Close terminates the iteration process, releasing any pending underlying
 // resources.
-func (it *EndpointV2PacketFeeTransferredIterator) Close() error {
+func (it *EndpointV2PacketNilifiedIterator) Close() error {
 	it.sub.Unsubscribe()
 	return nil
 }
 
-// EndpointV2PacketFeeTransferred represents a PacketFeeTransferred event raised by the EndpointV2 contract.
-type EndpointV2PacketFeeTransferred struct {
-	SendLib   common.Address
-	Guid      [32]byte
-	NativeFee *big.Int
-	Raw       types.Log // Blockchain specific contextual infos
+// EndpointV2PacketNilified represents a PacketNilified event raised by the EndpointV2 contract.
+type EndpointV2PacketNilified struct {
+	SrcEid      uint32
+	Sender      [32]byte
+	Receiver    common.Address
+	Nonce       uint64
+	PayloadHash [32]byte
+	Raw         types.Log // Blockchain specific contextual infos
 }
 
-// FilterPacketFeeTransferred is a free log retrieval operation binding the contract event 0x036bdd083028fc45c48b9ea92828a44f8d3739856bac464b3f594822b81c6286.
+// FilterPacketNilified is a free log retrieval operation binding the contract event 0xaf0450c392c4f702515a457a362328c8aa21916048ca6d0419e248b30cb55292.
 //
-// Solidity: event PacketFeeTransferred(address indexed sendLib, bytes32 indexed guid, uint256 nativeFee)
-func (_EndpointV2 *EndpointV2Filterer) FilterPacketFeeTransferred(opts *bind.FilterOpts, sendLib []common.Address, guid [][32]byte) (*EndpointV2PacketFeeTransferredIterator, error) {
+// Solidity: event PacketNilified(uint32 srcEid, bytes32 sender, address receiver, uint64 nonce, bytes32 payloadHash)
+func (_EndpointV2 *EndpointV2Filterer) FilterPacketNilified(opts *bind.FilterOpts) (*EndpointV2PacketNilifiedIterator, error) {
 
-	var sendLibRule []interface{}
-	for _, sendLibItem := range sendLib {
-		sendLibRule = append(sendLibRule, sendLibItem)
-	}
-	var guidRule []interface{}
-	for _, guidItem := range guid {
-		guidRule = append(guidRule, guidItem)
-	}
-
-	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "PacketFeeTransferred", sendLibRule, guidRule)
+	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "PacketNilified")
 	if err != nil {
 		return nil, err
 	}
-	return &EndpointV2PacketFeeTransferredIterator{contract: _EndpointV2.contract, event: "PacketFeeTransferred", logs: logs, sub: sub}, nil
+	return &EndpointV2PacketNilifiedIterator{contract: _EndpointV2.contract, event: "PacketNilified", logs: logs, sub: sub}, nil
 }
 
-// WatchPacketFeeTransferred is a free log subscription operation binding the contract event 0x036bdd083028fc45c48b9ea92828a44f8d3739856bac464b3f594822b81c6286.
+// WatchPacketNilified is a free log subscription operation binding the contract event 0xaf0450c392c4f702515a457a362328c8aa21916048ca6d0419e248b30cb55292.
 //
-// Solidity: event PacketFeeTransferred(address indexed sendLib, bytes32 indexed guid, uint256 nativeFee)
-func (_EndpointV2 *EndpointV2Filterer) WatchPacketFeeTransferred(opts *bind.WatchOpts, sink chan<- *EndpointV2PacketFeeTransferred, sendLib []common.Address, guid [][32]byte) (event.Subscription, error) {
+// Solidity: event PacketNilified(uint32 srcEid, bytes32 sender, address receiver, uint64 nonce, bytes32 payloadHash)
+func (_EndpointV2 *EndpointV2Filterer) WatchPacketNilified(opts *bind.WatchOpts, sink chan<- *EndpointV2PacketNilified) (event.Subscription, error) {
 
-	var sendLibRule []interface{}
-	for _, sendLibItem := range sendLib {
-		sendLibRule = append(sendLibRule, sendLibItem)
-	}
-	var guidRule []interface{}
-	for _, guidItem := range guid {
-		guidRule = append(guidRule, guidItem)
-	}
-
-	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "PacketFeeTransferred", sendLibRule, guidRule)
+	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "PacketNilified")
 	if err != nil {
 		return nil, err
 	}
@@ -2765,8 +3804,8 @@ func (_EndpointV2 *EndpointV2Filterer) WatchPacketFeeTransferred(opts *bind.Watc
 			select {
 			case log := <-logs:
 				// New log arrived, parse the event and forward to the user
-				event := new(EndpointV2PacketFeeTransferred)
-				if err := _EndpointV2.contract.UnpackLog(event, "PacketFeeTransferred", log); err != nil {
+				event := new(EndpointV2PacketNilified)
+				if err := _EndpointV2.contract.UnpackLog(event, "PacketNilified", log); err != nil {
 					return err
 				}
 				event.Raw = log
@@ -2787,12 +3826,12 @@ func (_EndpointV2 *EndpointV2Filterer) WatchPacketFeeTransferred(opts *bind.Watc
 	}), nil
 }
 
-// ParsePacketFeeTransferred is a log parse operation binding the contract event 0x036bdd083028fc45c48b9ea92828a44f8d3739856bac464b3f594822b81c6286.
+// ParsePacketNilified is a log parse operation binding the contract event 0xaf0450c392c4f702515a457a362328c8aa21916048ca6d0419e248b30cb55292.
 //
-// Solidity: event PacketFeeTransferred(address indexed sendLib, bytes32 indexed guid, uint256 nativeFee)
-func (_EndpointV2 *EndpointV2Filterer) ParsePacketFeeTransferred(log types.Log) (*EndpointV2PacketFeeTransferred, error) {
-	event := new(EndpointV2PacketFeeTransferred)
-	if err := _EndpointV2.contract.UnpackLog(event, "PacketFeeTransferred", log); err != nil {
+// Solidity: event PacketNilified(uint32 srcEid, bytes32 sender, address receiver, uint64 nonce, bytes32 payloadHash)
+func (_EndpointV2 *EndpointV2Filterer) ParsePacketNilified(log types.Log) (*EndpointV2PacketNilified, error) {
+	event := new(EndpointV2PacketNilified)
+	if err := _EndpointV2.contract.UnpackLog(event, "PacketNilified", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log
@@ -2868,15 +3907,15 @@ func (it *EndpointV2PacketSentIterator) Close() error {
 
 // EndpointV2PacketSent represents a PacketSent event raised by the EndpointV2 contract.
 type EndpointV2PacketSent struct {
-	PacketHeader []byte
-	Payload      []byte
-	Options      []byte
-	Raw          types.Log // Blockchain specific contextual infos
+	EncodedPayload []byte
+	Options        []byte
+	SendLibrary    common.Address
+	Raw            types.Log // Blockchain specific contextual infos
 }
 
-// FilterPacketSent is a free log retrieval operation binding the contract event 0x46641819ee54cd5f17e30766afaa5c13418264067e9dec5ea84557ec978977b2.
+// FilterPacketSent is a free log retrieval operation binding the contract event 0x1ab700d4ced0c005b164c0f789fd09fcbb0156d4c2041b8a3bfbcd961cd1567f.
 //
-// Solidity: event PacketSent(bytes packetHeader, bytes payload, bytes options)
+// Solidity: event PacketSent(bytes encodedPayload, bytes options, address sendLibrary)
 func (_EndpointV2 *EndpointV2Filterer) FilterPacketSent(opts *bind.FilterOpts) (*EndpointV2PacketSentIterator, error) {
 
 	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "PacketSent")
@@ -2886,9 +3925,9 @@ func (_EndpointV2 *EndpointV2Filterer) FilterPacketSent(opts *bind.FilterOpts) (
 	return &EndpointV2PacketSentIterator{contract: _EndpointV2.contract, event: "PacketSent", logs: logs, sub: sub}, nil
 }
 
-// WatchPacketSent is a free log subscription operation binding the contract event 0x46641819ee54cd5f17e30766afaa5c13418264067e9dec5ea84557ec978977b2.
+// WatchPacketSent is a free log subscription operation binding the contract event 0x1ab700d4ced0c005b164c0f789fd09fcbb0156d4c2041b8a3bfbcd961cd1567f.
 //
-// Solidity: event PacketSent(bytes packetHeader, bytes payload, bytes options)
+// Solidity: event PacketSent(bytes encodedPayload, bytes options, address sendLibrary)
 func (_EndpointV2 *EndpointV2Filterer) WatchPacketSent(opts *bind.WatchOpts, sink chan<- *EndpointV2PacketSent) (event.Subscription, error) {
 
 	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "PacketSent")
@@ -2923,9 +3962,9 @@ func (_EndpointV2 *EndpointV2Filterer) WatchPacketSent(opts *bind.WatchOpts, sin
 	}), nil
 }
 
-// ParsePacketSent is a log parse operation binding the contract event 0x46641819ee54cd5f17e30766afaa5c13418264067e9dec5ea84557ec978977b2.
+// ParsePacketSent is a log parse operation binding the contract event 0x1ab700d4ced0c005b164c0f789fd09fcbb0156d4c2041b8a3bfbcd961cd1567f.
 //
-// Solidity: event PacketSent(bytes packetHeader, bytes payload, bytes options)
+// Solidity: event PacketSent(bytes encodedPayload, bytes options, address sendLibrary)
 func (_EndpointV2 *EndpointV2Filterer) ParsePacketSent(log types.Log) (*EndpointV2PacketSent, error) {
 	event := new(EndpointV2PacketSent)
 	if err := _EndpointV2.contract.UnpackLog(event, "PacketSent", log); err != nil {
@@ -3140,49 +4179,30 @@ func (it *EndpointV2ReceiveLibrarySetIterator) Close() error {
 
 // EndpointV2ReceiveLibrarySet represents a ReceiveLibrarySet event raised by the EndpointV2 contract.
 type EndpointV2ReceiveLibrarySet struct {
-	Oapp          common.Address
-	RemoteEid     uint32
-	OldReceiveLib common.Address
-	NewReceiveLib common.Address
-	Raw           types.Log // Blockchain specific contextual infos
+	Receiver common.Address
+	Eid      uint32
+	NewLib   common.Address
+	Raw      types.Log // Blockchain specific contextual infos
 }
 
-// FilterReceiveLibrarySet is a free log retrieval operation binding the contract event 0xc0833c35bb1d0beadca36bed54c7098819e109542a6d233d33c7c2039c8ec9aa.
+// FilterReceiveLibrarySet is a free log retrieval operation binding the contract event 0xcd6f92f5ac6185a5acfa02c92090746cec64d777269cbcd0ed031e396657a1c2.
 //
-// Solidity: event ReceiveLibrarySet(address indexed oapp, uint32 indexed remoteEid, address oldReceiveLib, address newReceiveLib)
-func (_EndpointV2 *EndpointV2Filterer) FilterReceiveLibrarySet(opts *bind.FilterOpts, oapp []common.Address, remoteEid []uint32) (*EndpointV2ReceiveLibrarySetIterator, error) {
+// Solidity: event ReceiveLibrarySet(address receiver, uint32 eid, address newLib)
+func (_EndpointV2 *EndpointV2Filterer) FilterReceiveLibrarySet(opts *bind.FilterOpts) (*EndpointV2ReceiveLibrarySetIterator, error) {
 
-	var oappRule []interface{}
-	for _, oappItem := range oapp {
-		oappRule = append(oappRule, oappItem)
-	}
-	var remoteEidRule []interface{}
-	for _, remoteEidItem := range remoteEid {
-		remoteEidRule = append(remoteEidRule, remoteEidItem)
-	}
-
-	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "ReceiveLibrarySet", oappRule, remoteEidRule)
+	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "ReceiveLibrarySet")
 	if err != nil {
 		return nil, err
 	}
 	return &EndpointV2ReceiveLibrarySetIterator{contract: _EndpointV2.contract, event: "ReceiveLibrarySet", logs: logs, sub: sub}, nil
 }
 
-// WatchReceiveLibrarySet is a free log subscription operation binding the contract event 0xc0833c35bb1d0beadca36bed54c7098819e109542a6d233d33c7c2039c8ec9aa.
+// WatchReceiveLibrarySet is a free log subscription operation binding the contract event 0xcd6f92f5ac6185a5acfa02c92090746cec64d777269cbcd0ed031e396657a1c2.
 //
-// Solidity: event ReceiveLibrarySet(address indexed oapp, uint32 indexed remoteEid, address oldReceiveLib, address newReceiveLib)
-func (_EndpointV2 *EndpointV2Filterer) WatchReceiveLibrarySet(opts *bind.WatchOpts, sink chan<- *EndpointV2ReceiveLibrarySet, oapp []common.Address, remoteEid []uint32) (event.Subscription, error) {
+// Solidity: event ReceiveLibrarySet(address receiver, uint32 eid, address newLib)
+func (_EndpointV2 *EndpointV2Filterer) WatchReceiveLibrarySet(opts *bind.WatchOpts, sink chan<- *EndpointV2ReceiveLibrarySet) (event.Subscription, error) {
 
-	var oappRule []interface{}
-	for _, oappItem := range oapp {
-		oappRule = append(oappRule, oappItem)
-	}
-	var remoteEidRule []interface{}
-	for _, remoteEidItem := range remoteEid {
-		remoteEidRule = append(remoteEidRule, remoteEidItem)
-	}
-
-	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "ReceiveLibrarySet", oappRule, remoteEidRule)
+	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "ReceiveLibrarySet")
 	if err != nil {
 		return nil, err
 	}
@@ -3214,9 +4234,9 @@ func (_EndpointV2 *EndpointV2Filterer) WatchReceiveLibrarySet(opts *bind.WatchOp
 	}), nil
 }
 
-// ParseReceiveLibrarySet is a log parse operation binding the contract event 0xc0833c35bb1d0beadca36bed54c7098819e109542a6d233d33c7c2039c8ec9aa.
+// ParseReceiveLibrarySet is a log parse operation binding the contract event 0xcd6f92f5ac6185a5acfa02c92090746cec64d777269cbcd0ed031e396657a1c2.
 //
-// Solidity: event ReceiveLibrarySet(address indexed oapp, uint32 indexed remoteEid, address oldReceiveLib, address newReceiveLib)
+// Solidity: event ReceiveLibrarySet(address receiver, uint32 eid, address newLib)
 func (_EndpointV2 *EndpointV2Filterer) ParseReceiveLibrarySet(log types.Log) (*EndpointV2ReceiveLibrarySet, error) {
 	event := new(EndpointV2ReceiveLibrarySet)
 	if err := _EndpointV2.contract.UnpackLog(event, "ReceiveLibrarySet", log); err != nil {
@@ -3295,48 +4315,31 @@ func (it *EndpointV2ReceiveLibraryTimeoutSetIterator) Close() error {
 
 // EndpointV2ReceiveLibraryTimeoutSet represents a ReceiveLibraryTimeoutSet event raised by the EndpointV2 contract.
 type EndpointV2ReceiveLibraryTimeoutSet struct {
-	Oapp      common.Address
-	RemoteEid uint32
-	Timeout   uint64
-	Raw       types.Log // Blockchain specific contextual infos
+	Receiver common.Address
+	Eid      uint32
+	OldLib   common.Address
+	Timeout  *big.Int
+	Raw      types.Log // Blockchain specific contextual infos
 }
 
-// FilterReceiveLibraryTimeoutSet is a free log retrieval operation binding the contract event 0xf18663bc25fb7dbe12713e0b6098ff4cac24a0c1e1f47d5028885c4537688a33.
+// FilterReceiveLibraryTimeoutSet is a free log retrieval operation binding the contract event 0x4e0a5bbfa0c11a64effb1ada324b5437a17272e1aed9320398715ef71bb20928.
 //
-// Solidity: event ReceiveLibraryTimeoutSet(address indexed oapp, uint32 indexed remoteEid, uint64 timeout)
-func (_EndpointV2 *EndpointV2Filterer) FilterReceiveLibraryTimeoutSet(opts *bind.FilterOpts, oapp []common.Address, remoteEid []uint32) (*EndpointV2ReceiveLibraryTimeoutSetIterator, error) {
+// Solidity: event ReceiveLibraryTimeoutSet(address receiver, uint32 eid, address oldLib, uint256 timeout)
+func (_EndpointV2 *EndpointV2Filterer) FilterReceiveLibraryTimeoutSet(opts *bind.FilterOpts) (*EndpointV2ReceiveLibraryTimeoutSetIterator, error) {
 
-	var oappRule []interface{}
-	for _, oappItem := range oapp {
-		oappRule = append(oappRule, oappItem)
-	}
-	var remoteEidRule []interface{}
-	for _, remoteEidItem := range remoteEid {
-		remoteEidRule = append(remoteEidRule, remoteEidItem)
-	}
-
-	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "ReceiveLibraryTimeoutSet", oappRule, remoteEidRule)
+	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "ReceiveLibraryTimeoutSet")
 	if err != nil {
 		return nil, err
 	}
 	return &EndpointV2ReceiveLibraryTimeoutSetIterator{contract: _EndpointV2.contract, event: "ReceiveLibraryTimeoutSet", logs: logs, sub: sub}, nil
 }
 
-// WatchReceiveLibraryTimeoutSet is a free log subscription operation binding the contract event 0xf18663bc25fb7dbe12713e0b6098ff4cac24a0c1e1f47d5028885c4537688a33.
+// WatchReceiveLibraryTimeoutSet is a free log subscription operation binding the contract event 0x4e0a5bbfa0c11a64effb1ada324b5437a17272e1aed9320398715ef71bb20928.
 //
-// Solidity: event ReceiveLibraryTimeoutSet(address indexed oapp, uint32 indexed remoteEid, uint64 timeout)
-func (_EndpointV2 *EndpointV2Filterer) WatchReceiveLibraryTimeoutSet(opts *bind.WatchOpts, sink chan<- *EndpointV2ReceiveLibraryTimeoutSet, oapp []common.Address, remoteEid []uint32) (event.Subscription, error) {
+// Solidity: event ReceiveLibraryTimeoutSet(address receiver, uint32 eid, address oldLib, uint256 timeout)
+func (_EndpointV2 *EndpointV2Filterer) WatchReceiveLibraryTimeoutSet(opts *bind.WatchOpts, sink chan<- *EndpointV2ReceiveLibraryTimeoutSet) (event.Subscription, error) {
 
-	var oappRule []interface{}
-	for _, oappItem := range oapp {
-		oappRule = append(oappRule, oappItem)
-	}
-	var remoteEidRule []interface{}
-	for _, remoteEidItem := range remoteEid {
-		remoteEidRule = append(remoteEidRule, remoteEidItem)
-	}
-
-	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "ReceiveLibraryTimeoutSet", oappRule, remoteEidRule)
+	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "ReceiveLibraryTimeoutSet")
 	if err != nil {
 		return nil, err
 	}
@@ -3368,9 +4371,9 @@ func (_EndpointV2 *EndpointV2Filterer) WatchReceiveLibraryTimeoutSet(opts *bind.
 	}), nil
 }
 
-// ParseReceiveLibraryTimeoutSet is a log parse operation binding the contract event 0xf18663bc25fb7dbe12713e0b6098ff4cac24a0c1e1f47d5028885c4537688a33.
+// ParseReceiveLibraryTimeoutSet is a log parse operation binding the contract event 0x4e0a5bbfa0c11a64effb1ada324b5437a17272e1aed9320398715ef71bb20928.
 //
-// Solidity: event ReceiveLibraryTimeoutSet(address indexed oapp, uint32 indexed remoteEid, uint64 timeout)
+// Solidity: event ReceiveLibraryTimeoutSet(address receiver, uint32 eid, address oldLib, uint256 timeout)
 func (_EndpointV2 *EndpointV2Filterer) ParseReceiveLibraryTimeoutSet(log types.Log) (*EndpointV2ReceiveLibraryTimeoutSet, error) {
 	event := new(EndpointV2ReceiveLibraryTimeoutSet)
 	if err := _EndpointV2.contract.UnpackLog(event, "ReceiveLibraryTimeoutSet", log); err != nil {
@@ -3449,49 +4452,30 @@ func (it *EndpointV2SendLibrarySetIterator) Close() error {
 
 // EndpointV2SendLibrarySet represents a SendLibrarySet event raised by the EndpointV2 contract.
 type EndpointV2SendLibrarySet struct {
-	Oapp       common.Address
-	RemoteEid  uint32
-	OldSendLib common.Address
-	NewSendLib common.Address
-	Raw        types.Log // Blockchain specific contextual infos
+	Sender common.Address
+	Eid    uint32
+	NewLib common.Address
+	Raw    types.Log // Blockchain specific contextual infos
 }
 
-// FilterSendLibrarySet is a free log retrieval operation binding the contract event 0xa6aa125db2867f639108fa58cae0d45cd4df33fc3bf43501973817b163f5a985.
+// FilterSendLibrarySet is a free log retrieval operation binding the contract event 0x4cff966ebee29a156dcb34cf72c1d06231fb1777f6bdf6e8089819232f002b1c.
 //
-// Solidity: event SendLibrarySet(address indexed oapp, uint32 indexed remoteEid, address oldSendLib, address newSendLib)
-func (_EndpointV2 *EndpointV2Filterer) FilterSendLibrarySet(opts *bind.FilterOpts, oapp []common.Address, remoteEid []uint32) (*EndpointV2SendLibrarySetIterator, error) {
+// Solidity: event SendLibrarySet(address sender, uint32 eid, address newLib)
+func (_EndpointV2 *EndpointV2Filterer) FilterSendLibrarySet(opts *bind.FilterOpts) (*EndpointV2SendLibrarySetIterator, error) {
 
-	var oappRule []interface{}
-	for _, oappItem := range oapp {
-		oappRule = append(oappRule, oappItem)
-	}
-	var remoteEidRule []interface{}
-	for _, remoteEidItem := range remoteEid {
-		remoteEidRule = append(remoteEidRule, remoteEidItem)
-	}
-
-	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "SendLibrarySet", oappRule, remoteEidRule)
+	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "SendLibrarySet")
 	if err != nil {
 		return nil, err
 	}
 	return &EndpointV2SendLibrarySetIterator{contract: _EndpointV2.contract, event: "SendLibrarySet", logs: logs, sub: sub}, nil
 }
 
-// WatchSendLibrarySet is a free log subscription operation binding the contract event 0xa6aa125db2867f639108fa58cae0d45cd4df33fc3bf43501973817b163f5a985.
+// WatchSendLibrarySet is a free log subscription operation binding the contract event 0x4cff966ebee29a156dcb34cf72c1d06231fb1777f6bdf6e8089819232f002b1c.
 //
-// Solidity: event SendLibrarySet(address indexed oapp, uint32 indexed remoteEid, address oldSendLib, address newSendLib)
-func (_EndpointV2 *EndpointV2Filterer) WatchSendLibrarySet(opts *bind.WatchOpts, sink chan<- *EndpointV2SendLibrarySet, oapp []common.Address, remoteEid []uint32) (event.Subscription, error) {
+// Solidity: event SendLibrarySet(address sender, uint32 eid, address newLib)
+func (_EndpointV2 *EndpointV2Filterer) WatchSendLibrarySet(opts *bind.WatchOpts, sink chan<- *EndpointV2SendLibrarySet) (event.Subscription, error) {
 
-	var oappRule []interface{}
-	for _, oappItem := range oapp {
-		oappRule = append(oappRule, oappItem)
-	}
-	var remoteEidRule []interface{}
-	for _, remoteEidItem := range remoteEid {
-		remoteEidRule = append(remoteEidRule, remoteEidItem)
-	}
-
-	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "SendLibrarySet", oappRule, remoteEidRule)
+	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "SendLibrarySet")
 	if err != nil {
 		return nil, err
 	}
@@ -3523,429 +4507,12 @@ func (_EndpointV2 *EndpointV2Filterer) WatchSendLibrarySet(opts *bind.WatchOpts,
 	}), nil
 }
 
-// ParseSendLibrarySet is a log parse operation binding the contract event 0xa6aa125db2867f639108fa58cae0d45cd4df33fc3bf43501973817b163f5a985.
+// ParseSendLibrarySet is a log parse operation binding the contract event 0x4cff966ebee29a156dcb34cf72c1d06231fb1777f6bdf6e8089819232f002b1c.
 //
-// Solidity: event SendLibrarySet(address indexed oapp, uint32 indexed remoteEid, address oldSendLib, address newSendLib)
+// Solidity: event SendLibrarySet(address sender, uint32 eid, address newLib)
 func (_EndpointV2 *EndpointV2Filterer) ParseSendLibrarySet(log types.Log) (*EndpointV2SendLibrarySet, error) {
 	event := new(EndpointV2SendLibrarySet)
 	if err := _EndpointV2.contract.UnpackLog(event, "SendLibrarySet", log); err != nil {
-		return nil, err
-	}
-	event.Raw = log
-	return event, nil
-}
-
-// EndpointV2TokenFeeRefundedIterator is returned from FilterTokenFeeRefunded and is used to iterate over the raw logs and unpacked data for TokenFeeRefunded events raised by the EndpointV2 contract.
-type EndpointV2TokenFeeRefundedIterator struct {
-	Event *EndpointV2TokenFeeRefunded // Event containing the contract specifics and raw log
-
-	contract *bind.BoundContract // Generic contract to use for unpacking event data
-	event    string              // Event name to use for unpacking event data
-
-	logs chan types.Log        // Log channel receiving the found contract events
-	sub  ethereum.Subscription // Subscription for errors, completion and termination
-	done bool                  // Whether the subscription completed delivering logs
-	fail error                 // Occurred error to stop iteration
-}
-
-// Next advances the iterator to the subsequent event, returning whether there
-// are any more events found. In case of a retrieval or parsing error, false is
-// returned and Error() can be queried for the exact failure.
-func (it *EndpointV2TokenFeeRefundedIterator) Next() bool {
-	// If the iterator failed, stop iterating
-	if it.fail != nil {
-		return false
-	}
-	// If the iterator completed, deliver directly whatever's available
-	if it.done {
-		select {
-		case log := <-it.logs:
-			it.Event = new(EndpointV2TokenFeeRefunded)
-			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
-				it.fail = err
-				return false
-			}
-			it.Event.Raw = log
-			return true
-
-		default:
-			return false
-		}
-	}
-	// Iterator still in progress, wait for either a data or an error event
-	select {
-	case log := <-it.logs:
-		it.Event = new(EndpointV2TokenFeeRefunded)
-		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
-			it.fail = err
-			return false
-		}
-		it.Event.Raw = log
-		return true
-
-	case err := <-it.sub.Err():
-		it.done = true
-		it.fail = err
-		return it.Next()
-	}
-}
-
-// Error returns any retrieval or parsing error occurred during filtering.
-func (it *EndpointV2TokenFeeRefundedIterator) Error() error {
-	return it.fail
-}
-
-// Close terminates the iteration process, releasing any pending underlying
-// resources.
-func (it *EndpointV2TokenFeeRefundedIterator) Close() error {
-	it.sub.Unsubscribe()
-	return nil
-}
-
-// EndpointV2TokenFeeRefunded represents a TokenFeeRefunded event raised by the EndpointV2 contract.
-type EndpointV2TokenFeeRefunded struct {
-	Guid          [32]byte
-	RefundAddress common.Address
-	NativeAmount  *big.Int
-	Token         common.Address
-	TokenAmount   *big.Int
-	Raw           types.Log // Blockchain specific contextual infos
-}
-
-// FilterTokenFeeRefunded is a free log retrieval operation binding the contract event 0xd2c64a832daedd397cc212ef65075784a4878c38fed3eea32ebd33a63805f9b0.
-//
-// Solidity: event TokenFeeRefunded(bytes32 guid, address refundAddress, uint256 nativeAmount, address token, uint256 tokenAmount)
-func (_EndpointV2 *EndpointV2Filterer) FilterTokenFeeRefunded(opts *bind.FilterOpts) (*EndpointV2TokenFeeRefundedIterator, error) {
-
-	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "TokenFeeRefunded")
-	if err != nil {
-		return nil, err
-	}
-	return &EndpointV2TokenFeeRefundedIterator{contract: _EndpointV2.contract, event: "TokenFeeRefunded", logs: logs, sub: sub}, nil
-}
-
-// WatchTokenFeeRefunded is a free log subscription operation binding the contract event 0xd2c64a832daedd397cc212ef65075784a4878c38fed3eea32ebd33a63805f9b0.
-//
-// Solidity: event TokenFeeRefunded(bytes32 guid, address refundAddress, uint256 nativeAmount, address token, uint256 tokenAmount)
-func (_EndpointV2 *EndpointV2Filterer) WatchTokenFeeRefunded(opts *bind.WatchOpts, sink chan<- *EndpointV2TokenFeeRefunded) (event.Subscription, error) {
-
-	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "TokenFeeRefunded")
-	if err != nil {
-		return nil, err
-	}
-	return event.NewSubscription(func(quit <-chan struct{}) error {
-		defer sub.Unsubscribe()
-		for {
-			select {
-			case log := <-logs:
-				// New log arrived, parse the event and forward to the user
-				event := new(EndpointV2TokenFeeRefunded)
-				if err := _EndpointV2.contract.UnpackLog(event, "TokenFeeRefunded", log); err != nil {
-					return err
-				}
-				event.Raw = log
-
-				select {
-				case sink <- event:
-				case err := <-sub.Err():
-					return err
-				case <-quit:
-					return nil
-				}
-			case err := <-sub.Err():
-				return err
-			case <-quit:
-				return nil
-			}
-		}
-	}), nil
-}
-
-// ParseTokenFeeRefunded is a log parse operation binding the contract event 0xd2c64a832daedd397cc212ef65075784a4878c38fed3eea32ebd33a63805f9b0.
-//
-// Solidity: event TokenFeeRefunded(bytes32 guid, address refundAddress, uint256 nativeAmount, address token, uint256 tokenAmount)
-func (_EndpointV2 *EndpointV2Filterer) ParseTokenFeeRefunded(log types.Log) (*EndpointV2TokenFeeRefunded, error) {
-	event := new(EndpointV2TokenFeeRefunded)
-	if err := _EndpointV2.contract.UnpackLog(event, "TokenFeeRefunded", log); err != nil {
-		return nil, err
-	}
-	event.Raw = log
-	return event, nil
-}
-
-// EndpointV2TokenFeeWithdrawnIterator is returned from FilterTokenFeeWithdrawn and is used to iterate over the raw logs and unpacked data for TokenFeeWithdrawn events raised by the EndpointV2 contract.
-type EndpointV2TokenFeeWithdrawnIterator struct {
-	Event *EndpointV2TokenFeeWithdrawn // Event containing the contract specifics and raw log
-
-	contract *bind.BoundContract // Generic contract to use for unpacking event data
-	event    string              // Event name to use for unpacking event data
-
-	logs chan types.Log        // Log channel receiving the found contract events
-	sub  ethereum.Subscription // Subscription for errors, completion and termination
-	done bool                  // Whether the subscription completed delivering logs
-	fail error                 // Occurred error to stop iteration
-}
-
-// Next advances the iterator to the subsequent event, returning whether there
-// are any more events found. In case of a retrieval or parsing error, false is
-// returned and Error() can be queried for the exact failure.
-func (it *EndpointV2TokenFeeWithdrawnIterator) Next() bool {
-	// If the iterator failed, stop iterating
-	if it.fail != nil {
-		return false
-	}
-	// If the iterator completed, deliver directly whatever's available
-	if it.done {
-		select {
-		case log := <-it.logs:
-			it.Event = new(EndpointV2TokenFeeWithdrawn)
-			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
-				it.fail = err
-				return false
-			}
-			it.Event.Raw = log
-			return true
-
-		default:
-			return false
-		}
-	}
-	// Iterator still in progress, wait for either a data or an error event
-	select {
-	case log := <-it.logs:
-		it.Event = new(EndpointV2TokenFeeWithdrawn)
-		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
-			it.fail = err
-			return false
-		}
-		it.Event.Raw = log
-		return true
-
-	case err := <-it.sub.Err():
-		it.done = true
-		it.fail = err
-		return it.Next()
-	}
-}
-
-// Error returns any retrieval or parsing error occurred during filtering.
-func (it *EndpointV2TokenFeeWithdrawnIterator) Error() error {
-	return it.fail
-}
-
-// Close terminates the iteration process, releasing any pending underlying
-// resources.
-func (it *EndpointV2TokenFeeWithdrawnIterator) Close() error {
-	it.sub.Unsubscribe()
-	return nil
-}
-
-// EndpointV2TokenFeeWithdrawn represents a TokenFeeWithdrawn event raised by the EndpointV2 contract.
-type EndpointV2TokenFeeWithdrawn struct {
-	Uln    common.Address
-	Amount *big.Int
-	Raw    types.Log // Blockchain specific contextual infos
-}
-
-// FilterTokenFeeWithdrawn is a free log retrieval operation binding the contract event 0x8918ef8c3162ebbc94a323bf1b3b40a5ab34b6abc68c2258a4593e3b027299b0.
-//
-// Solidity: event TokenFeeWithdrawn(address indexed uln, uint256 amount)
-func (_EndpointV2 *EndpointV2Filterer) FilterTokenFeeWithdrawn(opts *bind.FilterOpts, uln []common.Address) (*EndpointV2TokenFeeWithdrawnIterator, error) {
-
-	var ulnRule []interface{}
-	for _, ulnItem := range uln {
-		ulnRule = append(ulnRule, ulnItem)
-	}
-
-	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "TokenFeeWithdrawn", ulnRule)
-	if err != nil {
-		return nil, err
-	}
-	return &EndpointV2TokenFeeWithdrawnIterator{contract: _EndpointV2.contract, event: "TokenFeeWithdrawn", logs: logs, sub: sub}, nil
-}
-
-// WatchTokenFeeWithdrawn is a free log subscription operation binding the contract event 0x8918ef8c3162ebbc94a323bf1b3b40a5ab34b6abc68c2258a4593e3b027299b0.
-//
-// Solidity: event TokenFeeWithdrawn(address indexed uln, uint256 amount)
-func (_EndpointV2 *EndpointV2Filterer) WatchTokenFeeWithdrawn(opts *bind.WatchOpts, sink chan<- *EndpointV2TokenFeeWithdrawn, uln []common.Address) (event.Subscription, error) {
-
-	var ulnRule []interface{}
-	for _, ulnItem := range uln {
-		ulnRule = append(ulnRule, ulnItem)
-	}
-
-	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "TokenFeeWithdrawn", ulnRule)
-	if err != nil {
-		return nil, err
-	}
-	return event.NewSubscription(func(quit <-chan struct{}) error {
-		defer sub.Unsubscribe()
-		for {
-			select {
-			case log := <-logs:
-				// New log arrived, parse the event and forward to the user
-				event := new(EndpointV2TokenFeeWithdrawn)
-				if err := _EndpointV2.contract.UnpackLog(event, "TokenFeeWithdrawn", log); err != nil {
-					return err
-				}
-				event.Raw = log
-
-				select {
-				case sink <- event:
-				case err := <-sub.Err():
-					return err
-				case <-quit:
-					return nil
-				}
-			case err := <-sub.Err():
-				return err
-			case <-quit:
-				return nil
-			}
-		}
-	}), nil
-}
-
-// ParseTokenFeeWithdrawn is a log parse operation binding the contract event 0x8918ef8c3162ebbc94a323bf1b3b40a5ab34b6abc68c2258a4593e3b027299b0.
-//
-// Solidity: event TokenFeeWithdrawn(address indexed uln, uint256 amount)
-func (_EndpointV2 *EndpointV2Filterer) ParseTokenFeeWithdrawn(log types.Log) (*EndpointV2TokenFeeWithdrawn, error) {
-	event := new(EndpointV2TokenFeeWithdrawn)
-	if err := _EndpointV2.contract.UnpackLog(event, "TokenFeeWithdrawn", log); err != nil {
-		return nil, err
-	}
-	event.Raw = log
-	return event, nil
-}
-
-// EndpointV2TreasuryUpdatedIterator is returned from FilterTreasuryUpdated and is used to iterate over the raw logs and unpacked data for TreasuryUpdated events raised by the EndpointV2 contract.
-type EndpointV2TreasuryUpdatedIterator struct {
-	Event *EndpointV2TreasuryUpdated // Event containing the contract specifics and raw log
-
-	contract *bind.BoundContract // Generic contract to use for unpacking event data
-	event    string              // Event name to use for unpacking event data
-
-	logs chan types.Log        // Log channel receiving the found contract events
-	sub  ethereum.Subscription // Subscription for errors, completion and termination
-	done bool                  // Whether the subscription completed delivering logs
-	fail error                 // Occurred error to stop iteration
-}
-
-// Next advances the iterator to the subsequent event, returning whether there
-// are any more events found. In case of a retrieval or parsing error, false is
-// returned and Error() can be queried for the exact failure.
-func (it *EndpointV2TreasuryUpdatedIterator) Next() bool {
-	// If the iterator failed, stop iterating
-	if it.fail != nil {
-		return false
-	}
-	// If the iterator completed, deliver directly whatever's available
-	if it.done {
-		select {
-		case log := <-it.logs:
-			it.Event = new(EndpointV2TreasuryUpdated)
-			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
-				it.fail = err
-				return false
-			}
-			it.Event.Raw = log
-			return true
-
-		default:
-			return false
-		}
-	}
-	// Iterator still in progress, wait for either a data or an error event
-	select {
-	case log := <-it.logs:
-		it.Event = new(EndpointV2TreasuryUpdated)
-		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
-			it.fail = err
-			return false
-		}
-		it.Event.Raw = log
-		return true
-
-	case err := <-it.sub.Err():
-		it.done = true
-		it.fail = err
-		return it.Next()
-	}
-}
-
-// Error returns any retrieval or parsing error occurred during filtering.
-func (it *EndpointV2TreasuryUpdatedIterator) Error() error {
-	return it.fail
-}
-
-// Close terminates the iteration process, releasing any pending underlying
-// resources.
-func (it *EndpointV2TreasuryUpdatedIterator) Close() error {
-	it.sub.Unsubscribe()
-	return nil
-}
-
-// EndpointV2TreasuryUpdated represents a TreasuryUpdated event raised by the EndpointV2 contract.
-type EndpointV2TreasuryUpdated struct {
-	NewTreasury common.Address
-	Raw         types.Log // Blockchain specific contextual infos
-}
-
-// FilterTreasuryUpdated is a free log retrieval operation binding the contract event 0x7dae230f18360d76a040c81f050aa14eb9d6dc7901b20fc5d855e2a20fe814d1.
-//
-// Solidity: event TreasuryUpdated(address newTreasury)
-func (_EndpointV2 *EndpointV2Filterer) FilterTreasuryUpdated(opts *bind.FilterOpts) (*EndpointV2TreasuryUpdatedIterator, error) {
-
-	logs, sub, err := _EndpointV2.contract.FilterLogs(opts, "TreasuryUpdated")
-	if err != nil {
-		return nil, err
-	}
-	return &EndpointV2TreasuryUpdatedIterator{contract: _EndpointV2.contract, event: "TreasuryUpdated", logs: logs, sub: sub}, nil
-}
-
-// WatchTreasuryUpdated is a free log subscription operation binding the contract event 0x7dae230f18360d76a040c81f050aa14eb9d6dc7901b20fc5d855e2a20fe814d1.
-//
-// Solidity: event TreasuryUpdated(address newTreasury)
-func (_EndpointV2 *EndpointV2Filterer) WatchTreasuryUpdated(opts *bind.WatchOpts, sink chan<- *EndpointV2TreasuryUpdated) (event.Subscription, error) {
-
-	logs, sub, err := _EndpointV2.contract.WatchLogs(opts, "TreasuryUpdated")
-	if err != nil {
-		return nil, err
-	}
-	return event.NewSubscription(func(quit <-chan struct{}) error {
-		defer sub.Unsubscribe()
-		for {
-			select {
-			case log := <-logs:
-				// New log arrived, parse the event and forward to the user
-				event := new(EndpointV2TreasuryUpdated)
-				if err := _EndpointV2.contract.UnpackLog(event, "TreasuryUpdated", log); err != nil {
-					return err
-				}
-				event.Raw = log
-
-				select {
-				case sink <- event:
-				case err := <-sub.Err():
-					return err
-				case <-quit:
-					return nil
-				}
-			case err := <-sub.Err():
-				return err
-			case <-quit:
-				return nil
-			}
-		}
-	}), nil
-}
-
-// ParseTreasuryUpdated is a log parse operation binding the contract event 0x7dae230f18360d76a040c81f050aa14eb9d6dc7901b20fc5d855e2a20fe814d1.
-//
-// Solidity: event TreasuryUpdated(address newTreasury)
-func (_EndpointV2 *EndpointV2Filterer) ParseTreasuryUpdated(log types.Log) (*EndpointV2TreasuryUpdated, error) {
-	event := new(EndpointV2TreasuryUpdated)
-	if err := _EndpointV2.contract.UnpackLog(event, "TreasuryUpdated", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log
