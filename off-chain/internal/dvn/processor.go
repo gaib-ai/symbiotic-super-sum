@@ -399,7 +399,8 @@ func abiEncodeSymbioticProof(epoch uint64, proof []byte) []byte {
 		{Type: bytesT},  // proof
 	}
 
-	encoded, err := args.Pack(uint64(epoch), proof)
+	// The go-ethereum ABI packer expects a *big.Int for uint types that are not native Go sizes (e.g., uint48).
+	encoded, err := args.Pack(new(big.Int).SetUint64(epoch), proof)
 	if err != nil {
 		// This should not happen with correct types
 		panic(err)
