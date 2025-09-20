@@ -25,7 +25,7 @@ import (
 )
 
 // Use a fixed, absolute path inside the container
-const deploymentConfigPath = "/deploy-data/dvn_deployment.json"
+const deploymentConfigPath = "/app/temp-network/deploy-data/dvn_deployment.json"
 
 type DvnConfig struct {
 	ChainA struct {
