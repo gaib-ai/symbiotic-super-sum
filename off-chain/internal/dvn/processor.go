@@ -265,15 +265,9 @@ func (p *Processor) handlePacket(ctx context.Context, packet *Packet) error {
 	// 2. Request the signature from the Relay.
 	// CRITICAL: We send the ABI-encoded message itself, not its hash.
 	// The relay will hash this message internally to create the request hash.
-	suggestedEpoch, err := p.relayClient.GetSuggestedEpoch(ctx, &v1.GetSuggestedEpochRequest{})
-	if err != nil {
-		return errors.Errorf("failed to get suggested epoch from relay: %w", err)
-	}
-
 	signResp, err := p.relayClient.SignMessage(ctx, &v1.SignMessageRequest{
-		KeyTag:        15, // Default BLS key tag
-		Message:       message,
-		RequiredEpoch: &suggestedEpoch.Epoch,
+		KeyTag:  15, // Default BLS key tag
+		Message: message,
 	})
 	if err != nil {
 		return errors.Errorf("failed to request signature from relay: %w", err)
