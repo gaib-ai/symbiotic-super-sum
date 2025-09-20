@@ -243,35 +243,46 @@ func (p *Processor) pollForPackets(ctx context.Context, eid uint32, client *ethc
 }
 
 func (p *Processor) handlePacket(ctx context.Context, packet *Packet) error {
-	// 1. Construct the message to be signed by the Symbiotic Relay network.
 	// This must match *exactly* the hashing logic inside SymbioticLzDVN.sol:
-	// keccak256(abi.encode(_packetHeader, _payloadHash))
+	// abi.encode(keccak256(abi.encode(_packetHeader, _payloadHash)))
 	bytesT, _ := abi.NewType("bytes", "", nil)
 	bytes32T, _ := abi.NewType("bytes32", "", nil)
 	args := abi.Arguments{
 		{Type: bytesT},
 		{Type: bytes32T},
 	}
-	message, err := args.Pack(packet.PacketHeader, packet.PayloadHash)
+	// 1. First, pack the header and payload hash, same as on-chain.
+	packedData, err := args.Pack(packet.PacketHeader, packet.PayloadHash)
 	if err != nil {
-		return errors.Errorf("failed to pack message for signing: %w", err)
+		return errors.Errorf("failed to pack header and payload hash: %w", err)
+	}
+
+	// 2. Then, compute the keccak256 hash of the packed data.
+	messageToSign := crypto.Keccak256Hash(packedData)
+
+	// 3. The final message sent to the settlement contract is the abi.encode of the hash.
+	// However, the message signed by the relay is the hash itself (messageToSign).
+	finalMessageForContract := abi.Arguments{{Type: bytes32T}}
+	message, err := finalMessageForContract.Pack(messageToSign)
+	if err != nil {
+		return errors.Errorf("failed to pack final message for signing: %w", err)
 	}
 	messageHash := crypto.Keccak256Hash(message)
 
 	p.logger.Info("Requesting signature from Symbiotic Relay",
 		"payloadHash", hexutil.Encode(packet.PayloadHash[:]),
+		"messageToSign", messageToSign.Hex(),
 		"finalMessageHash", hexutil.Encode(messageHash[:]))
 
 	// 2. Request the signature from the Relay.
-	// CRITICAL: We send the ABI-encoded message itself, not its hash.
-	// The relay will hash this message internally to create the request hash.
+	// CRITICAL: We send the hash of the packet data to be signed, not the packed data itself.
 	suggestedEpoch, err := p.relayClient.GetSuggestedEpoch(ctx, &v1.GetSuggestedEpochRequest{})
 	if err != nil {
 		return errors.Errorf("failed to get suggested epoch from relay: %w", err)
 	}
 	signResp, err := p.relayClient.SignMessage(ctx, &v1.SignMessageRequest{
 		KeyTag:        15, // Default BLS key tag
-		Message:       message,
+		Message:       messageToSign.Bytes(),
 		RequiredEpoch: &suggestedEpoch.Epoch,
 	})
 	if err != nil {
