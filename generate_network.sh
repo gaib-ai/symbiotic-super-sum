@@ -268,15 +268,11 @@ EOF
     for i in $(seq 1 $operators); do
         local sum_port=$((sum_start_port + i - 1))
         
-        # Generate DVN node key if it doesn't exist
-        DVN_NODE_KEY_FILE="$network_dir/deploy-data/keys/dvn-node-$i.key"
-        if [ ! -f $DVN_NODE_KEY_FILE ]; then
-            echo "Generating key for DVN Node $i..."
-            cast wallet new > $DVN_NODE_KEY_FILE
-        fi
-
-        # Extract DVN node private key, removing the 0x prefix
-        DVN_NODE_PRIVATE_KEY_NO_0x=$(grep "Private key" $DVN_NODE_KEY_FILE | awk '{print $3}' | sed 's/0x//')
+        # Calculate the private key for the operator, which will also be used by the DVN node.
+        # This ensures the DVN node has a funded account to submit transactions.
+        local key_index=$((i - 1))
+        SYMB_PRIVATE_KEY_DECIMAL=$(($BASE_PRIVATE_KEY + $key_index))
+        SYMB_PRIVATE_KEY_HEX=$(printf "%064x" $SYMB_PRIVATE_KEY_DECIMAL)
 
         cat >> "$network_dir/docker-compose.yml" << EOF
 
@@ -287,7 +283,7 @@ EOF
       dockerfile: Dockerfile
     container_name: symbiotic-dvn-node-$i
     entrypoint: ["/workspace/network-scripts/dvn-node-start.sh"]
-    command: ["relay-sidecar-$i:8080", "$DVN_NODE_PRIVATE_KEY_NO_0x"]
+    command: ["relay-sidecar-$i:8080", "$SYMB_PRIVATE_KEY_HEX"]
     volumes:
       - ../:/workspace
       - ./deploy-data:/app/temp-network/deploy-data
