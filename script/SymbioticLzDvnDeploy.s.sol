@@ -17,12 +17,14 @@ import {SendUln302} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/uln3
 import {UlnConfig, SetDefaultUlnConfigParam} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/UlnBase.sol";
 import {SetConfigParam} from "@layerzerolabs/lz-evm-protocol-v2/contracts/interfaces/IMessageLibManager.sol";
 import {ExecutorConfig} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/SendLibBase.sol";
-import {PriceFeed} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/PriceFeed.sol";
-import {Executor} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/Executor.sol";
+import {PriceFeed, ILayerZeroPriceFeed} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/PriceFeed.sol";
+import {Executor, IExecutor} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/Executor.sol";
+import {ExecutorFeeLib} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/ExecutorFeeLib.sol";
+import {DVNFeeLib} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/dvn/DVNFeeLib.sol";
 import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
 // Custom Integrated Contracts
-import {SymbioticLzDVN} from "../src/SymbioticLzDVN.sol";
+import {SymbioticLzDVN, IDVN} from "../src/SymbioticLzDVN.sol";
 import {ReceiveUlnSymbiotic} from "../src/uln/ReceiveUlnSymbiotic.sol";
 
 // Application Contracts
@@ -147,6 +149,8 @@ contract SymbioticLzDvnDeploy is Script {
         root = string.concat(root, '"dvn":"', vm.toString(address(dvnA)), '",');
         root = string.concat(root, '"adapter":"', vm.toString(address(adapterA)), '",');
         root = string.concat(root, '"aid":"', vm.toString(address(aidA)), '",');
+        root = string.concat(root, '"minter":"', vm.toString(address(minterA)), '",');
+        root = string.concat(root, '"asset":"', vm.toString(address(assetA)), '",');
         root = string.concat(root, '"eid":', vm.toString(localChainA_Eid));
         root = string.concat(root, '},"chainB":{');
 
@@ -156,6 +160,8 @@ contract SymbioticLzDvnDeploy is Script {
         root = string.concat(root, '"dvn":"', vm.toString(address(dvnB)), '",');
         root = string.concat(root, '"adapter":"', vm.toString(address(adapterB)), '",');
         root = string.concat(root, '"aid":"', vm.toString(address(aidB)), '",');
+        root = string.concat(root, '"minter":"', vm.toString(address(minterB)), '",');
+        root = string.concat(root, '"asset":"', vm.toString(address(assetB)), '",');
         root = string.concat(root, '"eid":', vm.toString(localChainB_Eid));
         root = string.concat(root, "}}");
 
@@ -219,16 +225,20 @@ contract SymbioticLzDvnDeploy is Script {
         internal
         returns (EndpointV2, SendUln302, ReceiveUlnSymbiotic, SymbioticLzDVN, PriceFeed, Executor)
     {
-        EndpointV2 endpoint = new EndpointV2(uint32(block.chainid), _deployer);
+        uint32 eid = uint32(block.chainid);
+        EndpointV2 endpoint = new EndpointV2(eid, _deployer);
         SendUln302 sendLib = new SendUln302(address(endpoint), 200000, 250000);
         ReceiveUlnSymbiotic receiveLib = new ReceiveUlnSymbiotic(address(endpoint));
         PriceFeed priceFeed = new PriceFeed();
         priceFeed.initialize(_deployer);
 
         address settlementContract = settlements.get(block.chainid);
-        SymbioticLzDVN dvn = new SymbioticLzDVN(uint32(block.chainid), address(priceFeed), settlementContract, address(receiveLib));
+        SymbioticLzDVN dvn = new SymbioticLzDVN(eid, address(priceFeed), settlementContract, address(receiveLib));
+        DVNFeeLib dvnFeeLib = new DVNFeeLib(eid, 10 ** 18);
+        dvn.setWorkerFeeLib(address(dvnFeeLib));
 
         // Deploy Executor
+        ExecutorFeeLib executorFeeLib = new ExecutorFeeLib(eid, 10 ** 18);
         Executor executorImpl = new Executor();
         address[] memory messageLibs = new address[](1);
         messageLibs[0] = address(sendLib);
@@ -239,6 +249,7 @@ contract SymbioticLzDvnDeploy is Script {
         );
         ERC1967Proxy executorProxy = new ERC1967Proxy(address(executorImpl), executorInitData);
         Executor executor = Executor(address(executorProxy));
+        executor.setWorkerFeeLib(address(executorFeeLib));
 
         return (endpoint, sendLib, receiveLib, dvn, priceFeed, executor);
     }
@@ -345,5 +356,40 @@ contract SymbioticLzDvnDeploy is Script {
         // Set default libraries for the OApp-peer pair
         _endpoint.setSendLibrary(address(_adapter), _peerEid, address(_sendLib));
         _endpoint.setReceiveLibrary(address(_adapter), _peerEid, address(_receiveLib), 0);
+
+        // --- Configure PriceFeed ---
+        _priceFeed.setPriceUpdater(vm.addr(localChainA_PrivateKey), true);
+        ILayerZeroPriceFeed.UpdatePrice[] memory prices = new ILayerZeroPriceFeed.UpdatePrice[](1);
+        prices[0] = ILayerZeroPriceFeed.UpdatePrice({
+            eid: _peerEid,
+            price: ILayerZeroPriceFeed.Price({
+                priceRatio: 1e20,
+                gasPriceInUnit: 1e8,
+                gasPerByte: 1
+            })
+        });
+        _priceFeed.setPrice(prices);
+
+        // --- Configure DVN ---
+        IDVN.DstConfigParam[] memory dvnConfig = new IDVN.DstConfigParam[](1);
+        dvnConfig[0] = IDVN.DstConfigParam({
+            dstEid: _peerEid,
+            gas: 200000,
+            multiplierBps: 10000,
+            floorMarginUSD: 0
+        });
+        _dvn.setDstConfig(dvnConfig);
+
+        // --- Configure Executor ---
+        IExecutor.DstConfigParam[] memory execConfig = new IExecutor.DstConfigParam[](1);
+        execConfig[0] = IExecutor.DstConfigParam({
+            dstEid: _peerEid,
+            lzReceiveBaseGas: 200000,
+            multiplierBps: 10000,
+            floorMarginUSD: 0,
+            nativeCap: 1 ether,
+            lzComposeBaseGas: 0
+        });
+        _executor.setDstConfig(execConfig);
     }
 }

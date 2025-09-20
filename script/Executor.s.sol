@@ -13,6 +13,7 @@ import {AddressCast} from "@layerzerolabs/lz-evm-protocol-v2/contracts/libs/Addr
 import {ReceiveUlnSymbiotic} from "../src/uln/ReceiveUlnSymbiotic.sol";
 import {EndpointV2View} from "@layerzerolabs/lz-evm-protocol-v2/contracts/EndpointV2View.sol";
 import {ExecutionState} from "@layerzerolabs/lz-evm-protocol-v2/contracts/EndpointV2ViewUpgradeable.sol";
+// Using the 302 view as it's compatible for checking verification state
 import {ReceiveUln302View, VerificationState} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/uln302/ReceiveUln302View.sol";
 
 
@@ -21,7 +22,10 @@ contract Executor is Script {
 
     string constant DEPLOYMENT_INFO_FILE = "temp-network/deploy-data/dvn_deployment.json";
     
+    // PacketSent(bytes encodedPacket, bytes options, address sendLibrary)
     bytes32 constant PACKET_SENT_TOPIC = keccak256("PacketSent(bytes,bytes,address)");
+    // In our custom DVN, this event is emitted when the DVN worker verifies a payload
+    bytes32 constant PAYLOAD_VERIFIED_TOPIC = keccak256("PayloadVerified(address,bytes,uint256,bytes32)");
 
     function run() external {
         uint256 deployerPrivateKey = vm.envOr("PRIVATE_KEY", uint256(0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80));
@@ -60,7 +64,9 @@ contract Executor is Script {
         bytes32 payloadHash = keccak256(abi.encodePacked(packet.guid, packet.message));
         Origin memory origin = Origin({srcEid: packet.srcEid, sender: AddressCast.toBytes32(packet.sender), nonce: packet.nonce});
         address receiver = AddressCast.toAddress(packet.receiver);
-        bytes memory packetHeader = slice(encodedPacket, 1, 112); // Skip 1 version byte, take 112 bytes for header
+        // The header is the encoded packet without the message itself.
+        bytes memory packetHeader = slice(encodedPacket, 0, 113); // Version (1) + Nonce (8) + srcEid (4) + Sender (32) + dstEid (4) + Receiver (32) + GUID (32) = 113
+        bytes32 packetHash = keccak256(packetHeader);
 
         // --- 4. Switch to Chain B for execution ---
         vm.createSelectFork(rpcB);
@@ -77,15 +83,38 @@ contract Executor is Script {
         EndpointV2 endpointB = EndpointV2(endpointB_Addr);
 
         // --- 5. Check Verification Status and Commit ---
+        // This part simulates the Committer role.
+        // It first checks if the DVN worker has already published its verification on-chain.
         console.log("\n--- Committer Role ---");
+        
+        // Listen for verification events from our SymbioticLzDVN
+        bytes32[] memory verificationTopics = new bytes32[](1);
+        verificationTopics[0] = PAYLOAD_VERIFIED_TOPIC;
+        logs = vm.eth_getLogs(0, block.number, address(0), verificationTopics); // Search all addresses as event is on DVN
+        
+        bool foundVerification = false;
+        for (uint i = 0; i < logs.length; i++) {
+            (, bytes memory header, , bytes32 proofHash) =
+                abi.decode(logs[i].data, (address, bytes, uint256, bytes32));
+
+            if (proofHash == payloadHash && keccak256(header) == packetHash) {
+                foundVerification = true;
+                break;
+            }
+        }
+
+        if (!foundVerification) {
+            console.log("Error: DVN verification not found on-chain. Is the dvn-worker running and processing the message?");
+            return;
+        }
+        console.log("Found DVN verification. Proceeding to check verifiable state.");
+
         VerificationState vState = receiveUln302ViewB.verifiable(packetHeader, payloadHash);
 
         if (vState == VerificationState.Verified) {
             console.log("Info: Packet verification already committed. Skipping commit.");
         } else if (vState == VerificationState.Verifying) {
-            // In our setup, with only one DVN, it should go from NotVerified to Verifiable directly.
-            // This state implies something is wrong or more DVNs are needed.
-            console.log("Error: Packet is still verifying. Not enough DVN signatures aggregated?");
+            console.log("Error: Packet is still verifying.");
             return;
         } else { // State is Verifiable (or NotVerified and we will try to commit)
             console.log("Packet is verifiable. Broadcasting 'commitVerification'...");
@@ -120,9 +149,18 @@ contract Executor is Script {
     }
 
     function _parsePacket(bytes memory encodedPacket) internal pure returns (Packet memory packet) {
+        // The packet is abi.encodePacked with the following structure:
+        // 1 byte: version
+        // 8 bytes: nonce
+        // 4 bytes: srcEid
+        // 32 bytes: sender
+        // 4 bytes: dstEid
+        // 32 bytes: receiver
+        // 32 bytes: guid
+        // N bytes: message
         uint64 nonce;
         uint32 srcEid;
-        address sender;
+        bytes32 sender;
         uint32 dstEid;
         bytes32 receiver;
         bytes32 guid;
@@ -139,14 +177,12 @@ contract Executor is Script {
 
         packet.nonce = nonce;
         packet.srcEid = srcEid;
-        packet.sender = sender;
+        packet.sender = AddressCast.toAddress(sender);
         packet.dstEid = dstEid;
         packet.receiver = receiver;
         packet.guid = guid;
         
-        // The packetHeader is everything up to and including the guid.
-        // There is no version byte in the packed header for verify, but there is in the full encodedPacket for parsing.
-        uint256 messageOffset = 113; // 1 byte version + 112 byte header
+        uint256 messageOffset = 113; // 1 + 8 + 4 + 32 + 4 + 32 + 32
         uint256 messageLength = encodedPacket.length - messageOffset;
         packet.message = slice(encodedPacket, messageOffset, messageLength);
     }

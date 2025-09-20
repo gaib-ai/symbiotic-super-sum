@@ -26,6 +26,8 @@ contract Bridge is Script {
         // Load deployment info
         string memory deploymentInfo = vm.readFile(DEPLOYMENT_INFO_FILE);
         address aidAddress = vm.parseJsonAddress(deploymentInfo, ".chainA.aid");
+        address minterAddress = vm.parseJsonAddress(deploymentInfo, ".chainA.minter");
+        address assetAddress = vm.parseJsonAddress(deploymentInfo, ".chainA.asset");
         address adapterAddress = vm.parseJsonAddress(deploymentInfo, ".chainA.adapter");
         uint32 dstEid = uint32(vm.parseJsonUint(deploymentInfo, ".chainB.eid"));
         
@@ -36,18 +38,26 @@ contract Bridge is Script {
 
         // Attach to existing contracts on Chain A
         AID aid = AID(aidAddress);
+        Minter minter = Minter(minterAddress);
+        MockERC20 asset = MockERC20(assetAddress);
         AidOFTAdapter adapter = AidOFTAdapter(adapterAddress);
 
         // --- Step 1: Mint & Approve ---
-        // For this test, we assume the deployer already has AID tokens from the deployment script.
-        // If not, you would add minting logic here.
         vm.startBroadcast(deployerPrivateKey);
+        console.log("Approving Minter to spend asset...");
+        asset.approve(address(minter), MINT_AMOUNT);
+        console.log("Minting AID tokens...");
+        minter.mint(sender, MINT_AMOUNT);
+        console.log("Successfully minted %d AID tokens for %s", MINT_AMOUNT / (10 ** 18), sender);
+
+        // --- Step 2: Approve Adapter to spend AID ---
         console.log("Approving Adapter to spend AID tokens...");
         aid.approve(address(adapter), BRIDGE_AMOUNT);
         vm.stopBroadcast();
 
         // --- Step 2: Quote the cross-chain fee ---
         bytes32 toAddress = bytes32(uint256(uint160(recipient)));
+        // Here, 200000 is the gas limit you are pre-paying for the Executor to use on the destination chain.
         bytes memory options = OptionsBuilder.newOptions().addExecutorLzReceiveOption(200000, 0);
 
         SendParam memory sendParam = SendParam({
