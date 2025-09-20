@@ -49,22 +49,22 @@ It's important to note that the `generate_network.sh` script automatically creat
 sequenceDiagram
     participant User
     participant ChainA as "Anvil Chain A (Src)"
-    participant dvn-worker as "Off-Chain DVN Worker"
+    participant dvn-node as "Off-Chain DVN Node"
     participant relay-network as "Symbiotic Relay Network"
     participant ChainB as "Anvil Chain B (Dst)"
     participant Executor as "Executor Script"
 
     User->>ChainA: 1. OApp.send() (pays fee)
     activate ChainA
-    ChainA-->>dvn-worker: 2. Emits PacketSent Event
+    ChainA-->>dvn-node: 2. Emits PacketSent Event
     deactivate ChainA
 
-    dvn-worker->>relay-network: 3. Request proof for packet
+    dvn-node->>relay-network: 3. Request proof for packet
     activate relay-network
-    relay-network-->>dvn-worker: 4. Returns aggregated BLS signature (proof)
+    relay-network-->>dvn-node: 4. Returns aggregated BLS signature (proof)
     deactivate relay-network
     
-    dvn-worker->>ChainB: 5. SymbioticLzDVN.verifyWithSymbiotic(proof)
+    dvn-node->>ChainB: 5. SymbioticLzDVN.verifyWithSymbiotic(proof)
     activate ChainB
     ChainB-->>ChainB: 6. DVN calls Settlement.verify() & ReceiveUln.verify()
     ChainB-->>Executor: 7. Emits PayloadVerified Event
@@ -113,11 +113,11 @@ The `SymbioticLzDvnDeploy.s.sol` script deploys a complete set of contracts on *
 
 ## Local Simulation vs. Production System
 
-It is crucial to understand that this project provides a **high-fidelity logical simulation**, not a production-ready system. The `dvn-worker` and Forge-based `Executor` are designed for local testing and verification of on-chain logic. Building and operating resilient, secure off-chain services requires significant additional engineering effort.
+It is crucial to understand that this project provides a **high-fidelity logical simulation**, not a production-ready system. The `dvn-node` and Forge-based `Executor` are designed for local testing and verification of on-chain logic. Building and operating resilient, secure off-chain services requires significant additional engineering effort.
 
 **What's Not Included (The Path to a Production System):**
 
-*   **Production-Grade Service Architecture:** The `dvn-worker` is a simple application. A real-world system requires continuously running, fault-tolerant services with robust process management, automated restarts, and comprehensive logging.
+*   **Production-Grade Service Architecture:** The `dvn-node` is a simple application. A real-world system requires continuously running, fault-tolerant services with robust process management, automated restarts, and comprehensive logging.
 *   **Persistent State Management:** Production workers need a robust database (e.g., PostgreSQL) to track in-flight messages, transaction statuses, and retry counts to ensure data integrity during service restarts.
 *   **Secure Private Key Management:** Using private keys from a local `.env` file is insecure. A live system demands a secure key management solution like HashiCorp Vault.
 *   **RPC Redundancy and Error Handling:** Production services must handle RPC provider downtime by implementing logic for failover to redundant nodes and sophisticated retry mechanisms.
@@ -185,7 +185,7 @@ This script creates a `temp-network` directory containing a `docker-compose.yml`
 
 ### Step 3: Start the Local Network
 
-Navigate into the newly created directory and start all services in the background. This will pull necessary Docker images, build the `dvn-worker`, and start the two blockchains, the Symbiotic relay sidecars, and the DVN worker.
+Navigate into the newly created directory and start all services in the background. This will pull necessary Docker images, build the `dvn-node`, and start the two blockchains, the Symbiotic relay sidecars, and the DVN worker.
 
 ```bash
 cd temp-network && docker compose up --build -d && cd ..
@@ -227,9 +227,9 @@ This step simulates the roles of both the DVN and the Executor.
 
 ### Step 7: Verify the Result
 
-1.  **Watch the logs** of the `dvn-worker` to see the process in action:
+1.  **Watch the logs** of the `dvn-node` to see the process in action:
     ```bash
-    docker compose logs -f dvn-worker
+    docker compose logs -f dvn-node-1 dvn-node-2 #... and so on
     ```
     You should see output indicating that a `PacketSent` event was received, a proof was requested, and a verification transaction was submitted.
 

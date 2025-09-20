@@ -209,22 +209,18 @@ func (p *Processor) pollForPackets(ctx context.Context, eid uint32, client *ethc
 		go func(e *contracts.EndpointV2PacketSent) {
 			p.logger.Info("-> Detected PacketSent event", "srcEID", eid, "txHash", e.Raw.TxHash.Hex())
 
-			// The PacketSent event in LZv2 doesn't have a named `payload` field.
-			// The encoded packet is in the `Raw.Data` field. We need to unpack it.
-			var decoded struct {
-				EncodedPacket []byte
-				Options       []byte
-				SendLibrary   common.Address
-			}
-			err := endpointABI.UnpackIntoInterface(&decoded, "PacketSent", e.Raw.Data)
+			// The PacketSent event in LZv2 doesn't have named fields in its data.
+			// It's an ABI-encoded tuple of (bytes, bytes, address). We need the first element.
+			results, err := endpointABI.Events["PacketSent"].Inputs.Unpack(e.Raw.Data)
 			if err != nil {
 				p.logger.Error("Error unpacking PacketSent event data", "txHash", e.Raw.TxHash.Hex(), "error", err)
 				return
 			}
+			encodedPacket := results[0].([]byte)
 			
 			// The PacketSent event contains the full encoded packet (header + message).
 			// We need to parse it to extract the components for verification.
-			packet, err := parsePacket(decoded.EncodedPacket)
+			packet, err := parsePacket(encodedPacket)
 			if err != nil {
 				p.logger.Error("Error parsing packet", "txHash", e.Raw.TxHash.Hex(), "error", err)
 				return
@@ -267,14 +263,16 @@ func (p *Processor) handlePacket(ctx context.Context, packet *Packet) error {
 		"finalMessageHash", hexutil.Encode(messageHash[:]))
 
 	// 2. Request the signature from the Relay.
+	// CRITICAL: We send the ABI-encoded message itself, not its hash.
+	// The relay will hash this message internally to create the request hash.
 	signResp, err := p.relayClient.SignMessage(ctx, &v1.SignMessageRequest{
 		KeyTag:  15, // Default BLS key tag
-		Message: messageHash.Bytes(),
+		Message: message,
 	})
 	if err != nil {
 		return errors.Errorf("failed to request signature from relay: %w", err)
 	}
-	p.logger.Info("Signature request submitted", "requestHash", signResp.RequestHash, "epoch", signResp.Epoch)
+	p.logger.Info("Signature request submitted", "requestHash_from_relay", signResp.RequestHash, "our_calculated_hash", hexutil.Encode(messageHash[:]), "epoch", signResp.Epoch)
 
 	// 3. Poll the relay for the aggregated proof.
 	var aggProof *v1.AggregationProof
