@@ -37,20 +37,15 @@ contract SymbioticLzDVN is DVN {
         // Step 1: Verify the proof against the Symbiotic Settlement contract
         (uint48 epoch, bytes memory proof) = abi.decode(_symbioticProof, (uint48, bytes));
 
-        // Create a fixed-size message hash to be verified. This must match the message sent by the off-chain worker to the relay.
-        bytes32 message = keccak256(abi.encode(_packetHeader, _payloadHash));
+        // The message to be verified is the ABI-encoded packet header and payload hash.
+        // This is sent directly to the settlement contract. The SigVerifier within the settlement contract
+        // will then compute the keccak256 hash of this message before verifying the proof.
+        bytes memory message = abi.encode(_packetHeader, _payloadHash);
 
         ISettlement settlement = ISettlement(settlementContract);
 
-        // Convert the bytes32 message hash to bytes memory to pass to the verification function.
-        bytes memory messageBytes = new bytes(32);
-        assembly {
-            mstore(add(messageBytes, 32), message)
-        }
-
-        // Pass the fixed-size hash (as bytes) to the settlement contract for verification.
         bool success = settlement.verifyQuorumSigAt(
-            messageBytes,
+            message,
             settlement.getRequiredKeyTagFromValSetHeaderAt(epoch),
             settlement.getQuorumThresholdFromValSetHeaderAt(epoch),
             proof,

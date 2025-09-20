@@ -249,28 +249,25 @@ func (p *Processor) handlePacket(ctx context.Context, packet *Packet) error {
 		{Type: bytesT},
 		{Type: bytes32T},
 	}
-	// 1. Pack the header and payload hash to match the on-chain abi.encode.
-	packedForHash, err := args.Pack(packet.PacketHeader, packet.PayloadHash)
+	// 1. Pack the header and payload hash. This variable-length data is the message that will be sent to the relay.
+	// The relay network will hash this message internally before signing.
+	messageForRelay, err := args.Pack(packet.PacketHeader, packet.PayloadHash)
 	if err != nil {
 		return errors.Errorf("failed to pack header and payload hash: %w", err)
 	}
 
-	// 2. Compute the keccak256 hash. This fixed-size hash will be the message for the relay.
-	messageForRelay := crypto.Keccak256Hash(packedForHash)
-
-
 	p.logger.Info("Requesting signature from Symbiotic Relay",
 		"payloadHash", hexutil.Encode(packet.PayloadHash[:]),
-		"messageForRelay", messageForRelay.Hex())
+		"messageForRelay", hexutil.Encode(messageForRelay))
 
-	// 3. Request the signature from the Relay using the fixed-size hash.
+	// 2. Request the signature from the Relay using the raw packed data.
 	suggestedEpoch, err := p.relayClient.GetSuggestedEpoch(ctx, &v1.GetSuggestedEpochRequest{})
 	if err != nil {
 		return errors.Errorf("failed to get suggested epoch from relay: %w", err)
 	}
 	signResp, err := p.relayClient.SignMessage(ctx, &v1.SignMessageRequest{
 		KeyTag:        15, // Default BLS key tag
-		Message:       messageForRelay.Bytes(),
+		Message:       messageForRelay,
 		RequiredEpoch: &suggestedEpoch.Epoch,
 	})
 	if err != nil {
@@ -278,7 +275,7 @@ func (p *Processor) handlePacket(ctx context.Context, packet *Packet) error {
 	}
 	p.logger.Info("Signature request submitted", "requestHash_from_relay", signResp.RequestHash, "epoch", signResp.Epoch)
 
-	// 4. Poll the relay for the aggregated proof.
+	// 3. Poll the relay for the aggregated proof.
 	var aggProof *v1.AggregationProof
 	for {
 		select {
