@@ -30,7 +30,7 @@ This project runs multiple instances of a Go application that acts as the bridge
 1.  **Listens** for `PacketSent` events on the source chain's LayerZero `EndpointV2`.
 2.  Upon receiving an event, all nodes will **construct a task** for the Symbiotic relay network.
 3.  Each node **requests a proof** (an aggregated BLS signature) from its local `relay-sidecar` network.
-4.  The nodes then **race to submit a transaction** to the `SymbioticLzDVN` contract on the destination chain. Only the first transaction will succeed; others will fail, which is expected behavior in a decentralized network simulation.
+4.  The nodes then **race to submit a verification transaction** to the `SymbioticLzDVN` contract on the destination chain. Due to the idempotent design of LayerZero's core contracts, multiple nodes may successfully submit this transaction on-chain. However, only the first transaction to be mined will change the packet's state to "verified". Subsequent transactions will succeed but have no further effect, consuming gas without altering the state. This is expected behavior in a decentralized network.
 5.  This action completes the verification, allowing the cross-chain message to be executed by a separate Executor.
 
 ##### DVN Node Identity and Funding
@@ -220,7 +220,7 @@ This step involves two distinct parts: the automated off-chain DVN worker proces
     ```bash
     docker compose logs -f dvn-node-1 dvn-node-2 #... and so on
     ```
-    You should see one node successfully submit the verification, while the others will report a (safe and expected) failure because the packet was already verified by the winner of the race.
+    You should see multiple nodes successfully submitting verification transactions. Because the LayerZero `ReceiveUln` contract is idempotent, only the first transaction to be processed actually marks the packet as verified. The others are also successful on-chain but do not result in a state change. This "race" is a safe and expected outcome.
 
 2.  **Manually Run the Executor**: After a DVN node has successfully submitted its verification on Chain B, the packet is ready for delivery. Run the `Executor` script to complete the process. This script finds the verified packet and calls `lzReceive` to deliver the message to the destination OApp.
     ```bash
