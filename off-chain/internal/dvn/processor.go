@@ -464,7 +464,7 @@ SUBMIT_PROOF:
 		packet.PacketHeader,
 		packet.PayloadHash,
 		requiredConfirmations, // Use the dynamically fetched confirmations
-		uint48(signResp.Epoch),
+		new(big.Int).SetUint64(signResp.Epoch),
 		aggProof.Proof,
 	)
 
