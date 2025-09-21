@@ -295,4 +295,5 @@ The local environment consists of the following services:
 ## Cleanup
 
 To stop and remove all running containers and networks, run the following command from within the `temp-network` directory:
-```
+```bash
+docker compose down -v
