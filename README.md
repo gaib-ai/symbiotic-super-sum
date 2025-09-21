@@ -18,11 +18,11 @@ The system runs a local, containerized network consisting of two independent blo
 
 -   **`SymbioticLzDVN.sol`**: A custom LayerZero DVN contract.
     -   **On the source chain**, it implements the `IDVN` interface to provide fee quotes for its verification services.
-    -   **On the destination chain**, it exposes a `verifyWithSymbiotic` function, which accepts a proof from the Symbiotic network. After successfully verifying this proof against the on-chain `Settlement` contract, it calls the standard `ReceiveUln302.verify()` function.
+    -   **On the destination chain**, it exposes a `verifyWithSymbiotic` function. This function accepts a proof from the Symbiotic network, verifies it against the on-chain `Settlement` contract, and—if valid—calls the standard `ReceiveUln302.verify()` function to inform LayerZero of the successful verification.
 -   **`ReceiveUln302.sol`**: The **standard** LayerZero "receive" Message Library.
     - It is *not* a custom contract. We use the official, audited version.
-    - Through standard LayerZero configuration, it is set up to trust *only* the `SymbioticLzDVN` contract's address as a valid verifier for our application.
--   **Symbiotic & LayerZero Stacks**: The full suite of Symbiotic contracts (`Settlement`, `ValSetDriver`, etc.) and the standard LayerZero contracts (`EndpointV2`, `SendUln302`, etc.) are deployed, along with the `AID` OApp.
+    - Through standard LayerZero configuration for the `AID` OApp, it is set up to trust *only* the `SymbioticLzDVN` contract's address as a valid verifier.
+-   **Symbiotic & LayerZero Stacks**: The full suite of Symbiotic contracts (`Settlement`, `ValSetDriver`, etc.) and the standard LayerZero contracts (`EndpointV2`, `SendUln302`, etc.) are deployed. The Symbiotic contracts are deployed by the `LocalDeploy.s.sol` script during the Docker network setup, while the LayerZero stack and the `AID` OApp are deployed by the `SymbioticLzDvnDeploy.s.sol` script.
 
 ### Off-Chain Nodes (`dvn-node`)
 
@@ -67,7 +67,8 @@ sequenceDiagram
     dvn-node->>ChainB: 7. SymbioticLzDVN.verifyWithSymbiotic(proof)
     activate ChainB
     ChainB-->>ChainB: 8. DVN re-creates hash, calls Settlement.verify() & ReceiveUln302.verify()
-    ChainB-->>Executor: 9. Emits PayloadVerified Event
+    Note over ChainB: ReceiveUln302 emits <br/> PayloadVerified event
+    ChainB-->>Executor: 9. DVN worker's action is now complete
     deactivate ChainB
 
     User->>Executor: 10. Runs executor script
@@ -87,27 +88,27 @@ The `SymbioticLzDvnDeploy.s.sol` script deploys a complete set of contracts on *
 | `AID` | The core ERC-20 token contract, using upgradeable proxies. |
 | `Minter` | Mints new `AID` tokens against a stablecoin (`MockERC20`). |
 | `MockERC20` | A mock stablecoin used as collateral. |
-| `AidOFTAdapter` | The OApp entry point, initiating cross-chain transfers. |
-| `AidOFTMintBurner` | Handles the burning and minting of `AID` across chains. |
+| `AidOFTAdapter` | The OApp entry point, responsible for initiating cross-chain `AID` transfers. |
+| `AidOFTMintBurner` | Handles the burning and minting of `AID` tokens on behalf of the adapter. |
 
 #### LayerZero v2 Protocol Stack
 | Contract | Role |
 | :--- | :--- |
-| `EndpointV2` | The main LayerZero entry point on each chain. |
-| `SendUln302` | The "send" message library for fee calculation and packet formatting. |
-| `ReceiveUln302`| **Standard** "receive" library, configured to trust our `SymbioticLzDVN`.|
-| `PriceFeed` | Provides gas price data for fee calculation. |
+| `EndpointV2` | The main LayerZero entry point on each chain for sending and receiving messages. |
+| `SendUln302` | **Standard** "send" message library for fee calculation and packet formatting. |
+| `ReceiveUln302`| **Standard** "receive" library, configured to trust our `SymbioticLzDVN` for this OApp. |
+| `PriceFeed` | Provides gas price data for cross-chain fee calculation. |
 | `SymbioticLzDVN`| **Custom** DVN contract that provides fee quotes and verifies proofs against the Symbiotic `Settlement` contract. |
-| `Executor` | A standard LayerZero contract for message delivery (simulated via script). |
+| `Executor` | A standard LayerZero contract responsible for final message delivery. |
 
 #### Symbiotic Protocol Stack
 | Contract | Role |
 | :--- | :--- |
-| `SymbioticCore` | The set of core contracts managing vaults, operators, and networks. |
-| `KeyRegistry` | Stores operators’ BLS and ECDSA keys. |
-| `VotingPowers` | Derives validator voting power from vault stakes. |
-| `ValSetDriver` | Exposes epoched validator sets to the off-chain relay nodes. |
 | `Settlement` | Per-chain contract that verifies aggregated BLS signatures from the relay network. |
+| `ValSetDriver` | Exposes epoched validator sets to the off-chain relay nodes. |
+| `KeyRegistry` | Stores operators’ BLS and ECDSA keys. |
+| `VotingPowerProvider` | Derives validator voting power from vault stakes. |
+| *Core Contracts* | Other core contracts managing vaults, operators, and networks, deployed via the local setup scripts. |
 
 ---
 
@@ -209,43 +210,38 @@ With everything deployed and running, use the `Bridge` script to send 50 `AID` t
 forge script script/Bridge.s.sol --rpc-url http://localhost:8545 --broadcast --ffi
 ```
 
-### Step 6: Process the Packet with Off-Chain Services
+### Step 6: Observe the DVN and Run the Executor
 
-This step simulates the roles of both the DVN and the Executor.
+This step involves two distinct parts: the automated off-chain DVN worker processing the packet, and the manual execution of the delivery.
 
-1.  **Observe the DVN Nodes**: The `dvn-node` services are already running via Docker. Watch their logs to see them compete to process the packet:
+1.  **Observe the Automated DVN Worker**: The `dvn-node` services, which you started with Docker, are constantly monitoring Chain A. Once they detect the `PacketSent` event from the previous step, they will automatically fetch a proof from the Symbiotic network and submit a verification transaction to Chain B.
+
+    You can watch this happen in real-time by viewing the logs:
     ```bash
     docker compose logs -f dvn-node-1 dvn-node-2 #... and so on
     ```
-    You should see one node successfully submit the verification transaction, while others will report a (safe and expected) failure because the task was already processed.
+    You should see one node successfully submit the verification, while the others will report a (safe and expected) failure because the packet was already verified by the winner of the race.
 
-2.  **Run the Executor**: After one of the DVN nodes has successfully submitted the verification, run the `Executor` script to complete the message delivery.
+2.  **Manually Run the Executor**: After a DVN node has successfully submitted its verification on Chain B, the packet is ready for delivery. Run the `Executor` script to complete the process. This script finds the verified packet and calls `lzReceive` to deliver the message to the destination OApp.
     ```bash
     forge script script/Executor.s.sol --rpc-url http://localhost:8546 --broadcast --ffi
     ```
-    This script will commit the verification to the LayerZero Endpoint and execute the final `lzReceive` call.
 
 ### Step 7: Verify the Result
 
-1.  **Watch the logs** of the `dvn-node` to see the process in action:
-    ```bash
-    docker compose logs -f dvn-node-1 dvn-node-2 #... and so on
-    ```
-    You should see output indicating that a `PacketSent` event was received, a proof was requested, and a verification transaction was submitted.
+Check your `AID` token balance on the destination chain (Chain B) to confirm the cross-chain transfer was successful.
 
-2.  **Verify the balance** on Chain B. Once the worker's logs show the transaction as successful, use `cast` to check your `AID` token balance on the destination chain.
+```bash
+# Get your address from the private key in your .env file
+SENDER=$(cast wallet address --private-key $(grep PRIVATE_KEY .env | cut -d '=' -f2))
 
-    ```bash
-    # Get your address from the private key
-    SENDER=$(cast wallet address --private-key $(grep PRIVATE_KEY .env | cut -d '=' -f2))
+# Get the AID contract address on Chain B from the deployment file
+AID_B=$(jq -r '.chainB.aid' temp-network/deploy-data/dvn_deployment.json)
 
-    # Get the AID contract address on Chain B from the deployment file
-    AID_B=$(jq -r '.chainB.aid' temp-network/deploy-data/dvn_deployment.json)
-
-    # Check the balance
-    cast call $AID_B "balanceOf(address)" $SENDER --rpc-url http://localhost:8546 | cast --to-dec
-    ```
-    The result should be `50000000000000000000` (50 tokens with 18 decimals).
+# Check the balance
+cast call $AID_B "balanceOf(address)" $SENDER --rpc-url http://localhost:8546 | cast --to-dec
+```
+The result should be `50000000000000000000` (which is 50 tokens, as `AID` has 18 decimals).
 
 ---
 
