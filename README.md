@@ -231,7 +231,7 @@ The first startup may take a few minutes. You can monitor the progress with `doc
 
 ### Step 4: Deploy and Configure Contracts
 
-Once all services are running, run the unified deployment script. This Forge script will deploy and configure the entire Symbiotic and LayerZero stack on both local chains.
+Once all services are running, run the unified deployment script. This Forge script will deploy and configure the entire LayerZero stack and the `AID` OApp on both local chains. The core Symbiotic contracts will have already been deployed by the `deployer` service during the Docker network startup.
 
 ```bash
 forge script script/SymbioticLzDvnDeploy.s.sol --rpc-url http://localhost:8545 --broadcast --ffi
@@ -287,14 +287,12 @@ The local environment consists of the following services:
 
 -   `anvil`: The source blockchain (Chain A, EID 31337) running on port `8545`.
 -   `anvil-settlement`: The destination blockchain (Chain B, EID 31338) running on port `8546`.
--   `deployer`: A short-lived service that waits for the chains to be healthy.
--   `genesis-generator`: A short-lived service that generates the configuration for the Symbiotic relay network.
--   `relay-sidecar-*`: The nodes of the Symbiotic relay network.
--   `dvn-node-*`: The off-chain nodes that listen for LayerZero events and compete to submit Symbiotic-backed verifications.
+-   `deployer`: A short-lived service that runs a Forge script (`network-scripts/deploy.sh`) to deploy the entire on-chain Symbiotic protocol stack (e.g., `ValSetDriver`, `Settlement`, etc.) on both local Anvil chains.
+-   `genesis-generator`: A short-lived service that runs after the on-chain contracts are deployed. It executes the Symbiotic `relay_utils` tool to perform the relay network's "genesis." This critical step initializes the Symbiotic protocol by committing the first validator set to the on-chain contracts, effectively bootstrapping the off-chain network. It also funds the operator accounts associated with the genesis validators.
+-   `relay-sidecar-*`: The individual nodes that comprise the off-chain Symbiotic relay network. They become active after the `genesis-generator` has successfully initialized the protocol.
+-   `dvn-node-*`: The custom off-chain DVN workers. They monitor for LayerZero `PacketSent` events and interact with the `relay-sidecar` network to obtain verification proofs.
 
 ## Cleanup
 
 To stop and remove all running containers and networks, run the following command from within the `temp-network` directory:
-```bash
-docker compose down -v
 ```
