@@ -374,22 +374,22 @@ func (p *Processor) handlePacket(ctx context.Context, packet *Packet) error {
 
 	// --- 3. Request signature from Symbiotic Relay ---
 	// The message sent to the relay for signing must match what the SymbioticLzDVN contract
-	// constructs for verification. This is the keccak256 hash of the abi.encodePacked(packetHeader, payloadHash).
+	// constructs for verification. Following the `symbiotic-super-sum` example, we send the
+	// raw packed data, and the Symbiotic Relay network handles hashing it internally before signing.
 	bytesT, _ := abi.NewType("bytes", "", nil)
 	bytes32T, _ := abi.NewType("bytes32", "", nil)
 	args := abi.Arguments{
 		{Type: bytesT},
 		{Type: bytes32T},
 	}
-	packedData, err := args.Pack(packet.PacketHeader, packet.PayloadHash)
+	messageForRelay, err := args.Pack(packet.PacketHeader, packet.PayloadHash)
 	if err != nil {
-		return errors.Errorf("failed to pack data for hashing: %w", err)
+		return errors.Errorf("failed to pack data for signing: %w", err)
 	}
-	messageForRelay := crypto.Keccak256(packedData)
 
 	p.logger.Info("Requesting signature from Symbiotic Relay",
 		"payloadHash", hexutil.Encode(packet.PayloadHash[:]),
-		"messageHashForRelay", hexutil.Encode(messageForRelay)) // Changed log key for clarity
+		"messageForRelay", hexutil.Encode(messageForRelay))
 
 	// Request the signature from the Relay using the raw packed data.
 	suggestedEpoch, err := p.relayClient.GetSuggestedEpoch(ctx, &v1.GetSuggestedEpochRequest{})
