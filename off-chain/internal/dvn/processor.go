@@ -383,6 +383,8 @@ func (p *Processor) handlePacket(ctx context.Context, packet *Packet) error {
 		{Type: bytes32T},
 		{Type: bytes32T},
 	}
+	// Per the `sum-node` example, use Pack for `abi.encodePacked`.
+	// For two bytes32 types, the result is identical to `abi.encode`.
 	messageForRelay, err := args.Pack(packetHeaderHash, packet.PayloadHash)
 	if err != nil {
 		return errors.Errorf("failed to pack data for signing: %w", err)

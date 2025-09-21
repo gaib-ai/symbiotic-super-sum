@@ -38,9 +38,9 @@ contract SymbioticLzDVN is DVN {
         // Step 1: Verify the proof against the Symbiotic Settlement contract
         // The message to be verified must exactly match the message sent by the off-chain worker to the relay.
         // To align with the `sumtask` example and simplify the data structure, we first hash the dynamic-length
-        // packet header, and then pack the two resulting hashes together.
+        // packet header, and then pack the two resulting hashes together using standard ABI encoding.
         bytes32 packetHeaderHash = keccak256(_packetHeader);
-        bytes32 messageHash = keccak256(abi.encodePacked(packetHeaderHash, _payloadHash));
+        bytes32 messageHash = keccak256(abi.encode(packetHeaderHash, _payloadHash));
 
         ISettlement settlement = ISettlement(settlementContract);
 
