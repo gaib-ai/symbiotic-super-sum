@@ -57,21 +57,23 @@ sequenceDiagram
     ChainA-->>dvn-node: 2. Emits PacketSent Event
     deactivate ChainA
 
-    dvn-node->>relay-network: 3. Request proof for packet
+    dvn-node->>dvn-node: 3. Hashes header, packs with payload hash
+    dvn-node->>relay-network: 4. Request proof for packed data
     activate relay-network
-    relay-network-->>dvn-node: 4. Returns aggregated BLS signature (proof)
+    relay-network-->>relay-network: 5. Hashes packed data, gets signatures
+    relay-network-->>dvn-node: 6. Returns aggregated BLS signature (proof)
     deactivate relay-network
     
-    dvn-node->>ChainB: 5. SymbioticLzDVN.verifyWithSymbiotic(proof)
+    dvn-node->>ChainB: 7. SymbioticLzDVN.verifyWithSymbiotic(proof)
     activate ChainB
-    ChainB-->>ChainB: 6. DVN calls Settlement.verify() & ReceiveUln302.verify()
-    ChainB-->>Executor: 7. Emits PayloadVerified Event
+    ChainB-->>ChainB: 8. DVN re-creates hash, calls Settlement.verify() & ReceiveUln302.verify()
+    ChainB-->>Executor: 9. Emits PayloadVerified Event
     deactivate ChainB
 
-    User->>Executor: 8. Runs executor script
-    Executor->>ChainB: 9. commitVerification() & lzReceive()
+    User->>Executor: 10. Runs executor script
+    Executor->>ChainB: 11. commitVerification() & lzReceive()
     activate ChainB
-    ChainB-->>User: 10. Message Delivered
+    ChainB-->>User: 12. Message Delivered
     deactivate ChainB
 ```
 
@@ -238,7 +240,7 @@ This step simulates the roles of both the DVN and the Executor.
     SENDER=$(cast wallet address --private-key $(grep PRIVATE_KEY .env | cut -d '=' -f2))
 
     # Get the AID contract address on Chain B from the deployment file
-    AID_B=$(jq -r '.chainB.aid' deploy-data/dvn_deployment.json)
+    AID_B=$(jq -r '.chainB.aid' temp-network/deploy-data/dvn_deployment.json)
 
     # Check the balance
     cast call $AID_B "balanceOf(address)" $SENDER --rpc-url http://localhost:8546 | cast --to-dec
