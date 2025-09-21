@@ -18,6 +18,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/go-errors/errors"
 	v1 "github.com/symbioticfi/relay/api/client/v1"
 	"google.golang.org/grpc"
@@ -93,6 +94,30 @@ type Packet struct {
 	PayloadHash  common.Hash
 }
 
+// PacketStatus defines the state of a packet in the processing pipeline.
+type PacketStatus uint8
+
+const (
+	PacketStatus_None PacketStatus = iota
+	PacketStatus_Detected
+	PacketStatus_SignatureRequested
+	PacketStatus_ProofReceived
+	PacketStatus_Submitted
+	PacketStatus_Failed // for terminal failure states
+)
+
+// PacketState holds the state and data for a packet being processed.
+type PacketState struct {
+	Packet         *Packet
+	Status         PacketStatus
+	SigEpoch       uint64
+	SigRequestHash string
+	AggProof       []byte
+	TxHash         common.Hash // To store the submission tx hash
+	LastError      string      // To store the last error message
+	Retries        int         // To count retries for certain operations
+}
+
 type Processor struct {
 	relayClient       *v1.SymbioticClient
 	ethClients        map[uint32]*ethclient.Client
@@ -104,6 +129,7 @@ type Processor struct {
 	logger            *slog.Logger
 	config            *DvnConfig
 	lastBlocks        map[uint32]uint64
+	packets           map[common.Hash]*PacketState // Key: PayloadHash
 }
 
 func NewProcessor(
@@ -185,6 +211,7 @@ func NewProcessor(
 		logger:            logger,
 		config:            &config,
 		lastBlocks:        lastBlocks,
+		packets:           make(map[common.Hash]*PacketState),
 	}, nil
 }
 
@@ -199,28 +226,37 @@ func (p *Processor) Listen(ctx context.Context) error {
 		select {
 		case <-ctx.Done():
 			p.logger.Info("Listener shutting down.")
-			return nil
+			return ctx.Err()
 		case <-ticker.C:
-			for eid, client := range p.ethClients {
-				if err := p.pollForPackets(ctx, eid, client); err != nil {
+			// 1. Poll for new packets and add them to the state map sequentially
+			for eid := range p.ethClients {
+				if err := p.pollForPackets(ctx, eid); err != nil {
+					// Log and continue to the next chain; a single chain failure shouldn't stop the whole worker.
 					p.logger.Error("Error polling for packets", "eid", eid, "error", err)
-					// In a production system, you might want more robust error handling here.
 				}
 			}
+
+			// 2. Process all packets based on their current state
+			p.processPackets(ctx)
 		}
 	}
 }
 
-func (p *Processor) pollForPackets(ctx context.Context, eid uint32, client *ethclient.Client) error {
-	// Get the latest finalized block number
-	latestBlock, err := client.BlockByNumber(ctx, nil) // nil for latest
+func (p *Processor) pollForPackets(ctx context.Context, eid uint32) error {
+	client := p.ethClients[eid]
+	// Get the latest finalized block number for reorg protection
+	finalizedBlock, err := client.BlockByNumber(ctx, big.NewInt(rpc.FinalizedBlockNumber.Int64()))
 	if err != nil {
-		return errors.Errorf("failed to get latest block number: %w", err)
+		// Fallback to latest if finalized is not supported (e.g., some local testnets)
+		finalizedBlock, err = client.BlockByNumber(ctx, nil)
+		if err != nil {
+			return errors.Errorf("failed to get latest/finalized block number: %w", err)
+		}
 	}
-	latestBlockNumber := latestBlock.NumberU64()
+	latestBlockNumber := finalizedBlock.NumberU64()
 
 	fromBlock := p.lastBlocks[eid]
-	if fromBlock == 0 { // First run, start from the current block
+	if fromBlock == 0 { // First run, start from the current block to avoid processing history
 		fromBlock = latestBlockNumber
 	}
 
@@ -231,8 +267,7 @@ func (p *Processor) pollForPackets(ctx context.Context, eid uint32, client *ethc
 	}
 
 	if fromBlock > toBlock {
-		// Nothing to process yet
-		p.lastBlocks[eid] = latestBlockNumber
+		p.lastBlocks[eid] = latestBlockNumber // Still update last block to keep pace
 		return nil
 	}
 
@@ -259,72 +294,36 @@ func (p *Processor) pollForPackets(ctx context.Context, eid uint32, client *ethc
 		event := iterator.Event
 		p.logger.Debug("Found PacketSent event, checking if assigned", "txHash", event.Raw.TxHash.Hex())
 
-		// Check if this DVN was assigned and paid in the same transaction.
 		receipt, err := client.TransactionReceipt(ctx, event.Raw.TxHash)
 		if err != nil {
 			p.logger.Error("Failed to get receipt for PacketSent tx", "txHash", event.Raw.TxHash.Hex(), "error", err)
 			continue
 		}
 
-		myDvnAddress := p.dvnAddrs[eid]
-		sendLibAddress := p.sendLibAddrs[eid]
-		assigned := false
-		for _, log := range receipt.Logs {
-			if log.Address == sendLibAddress && len(log.Topics) > 0 && log.Topics[0] == dvnFeePaidTopic {
-				var feePaidEvent struct {
-					RequiredDVNs []common.Address
-					OptionalDVNs []common.Address
-					Fees         []*big.Int
-				}
-				// The actual event data is in log.Data, and topics are for indexed fields (none here)
-				if err := sendLibABI.UnpackIntoInterface(&feePaidEvent, "DVNFeePaid", log.Data); err != nil {
-					p.logger.Error("Failed to unpack DVNFeePaid event", "txHash", event.Raw.TxHash.Hex(), "error", err)
-					continue // continue to next log
-				}
-				for _, dvn := range feePaidEvent.RequiredDVNs {
-					if dvn == myDvnAddress {
-						assigned = true
-						break
-					}
-				}
-				if assigned {
-					break
-				}
-			}
-		}
-
-		if !assigned {
-			p.logger.Debug("DVN not assigned for this packet, skipping", "txHash", event.Raw.TxHash.Hex(), "dvn_address", myDvnAddress.Hex())
+		if !p.isDvnAssigned(receipt, eid) {
+			p.logger.Debug("DVN not assigned for this packet, skipping", "txHash", event.Raw.TxHash.Hex())
 			continue
 		}
 
 		p.logger.Info("DVN is assigned to packet, processing...", "txHash", event.Raw.TxHash.Hex())
 
-		// Process each event in a separate goroutine to avoid blocking the polling loop.
-		go func(e *contracts.EndpointV2PacketSent) {
-			p.logger.Info("-> Detected PacketSent event", "srcEID", eid, "txHash", e.Raw.TxHash.Hex())
+		packet, err := p.unpackAndParsePacket(endpointABI, event)
+		if err != nil {
+			p.logger.Error("Error unpacking and parsing packet", "txHash", event.Raw.TxHash.Hex(), "error", err)
+			continue
+		}
 
-			// The PacketSent event in LZv2 doesn't have named fields in its data.
-			// It's an ABI-encoded tuple of (bytes, bytes, address). We need the first element.
-			results, err := endpointABI.Events["PacketSent"].Inputs.Unpack(e.Raw.Data)
-			if err != nil {
-				p.logger.Error("Error unpacking PacketSent event data", "txHash", e.Raw.TxHash.Hex(), "error", err)
-				return
-			}
-			encodedPacket := results[0].([]byte)
+		// Check if packet is already being processed
+		if _, exists := p.packets[packet.PayloadHash]; exists {
+			p.logger.Debug("Packet already detected, skipping", "payloadHash", hexutil.Encode(packet.PayloadHash[:]))
+			continue
+		}
 
-			// The PacketSent event contains the full encoded packet (header + message).
-			// We need to parse it to extract the components for verification.
-			packet, err := parsePacket(encodedPacket)
-			if err != nil {
-				p.logger.Error("Error parsing packet", "txHash", e.Raw.TxHash.Hex(), "error", err)
-				return
-			}
-
-			if err := p.handlePacket(context.Background(), packet); err != nil {
-				p.logger.Error("Error handling packet", "payloadHash", hexutil.Encode(packet.PayloadHash[:]), "error", err)
-			}
-		}(event)
+		p.logger.Info("New packet detected, adding to processing queue", "payloadHash", hexutil.Encode(packet.PayloadHash[:]))
+		p.packets[packet.PayloadHash] = &PacketState{
+			Packet: packet,
+			Status: PacketStatus_Detected,
+		}
 	}
 
 	if err := iterator.Error(); err != nil {
@@ -337,68 +336,79 @@ func (p *Processor) pollForPackets(ctx context.Context, eid uint32, client *ethc
 	return nil
 }
 
-func (p *Processor) handlePacket(ctx context.Context, packet *Packet) error {
-	// --- 1. Destination chain setup and pre-flight checks ---
-	dstEid := packet.DstEid
-	dvnContract, ok := p.dvnContracts[dstEid]
+// processPackets iterates through tracked packets and advances them through the state machine.
+func (p *Processor) processPackets(ctx context.Context) {
+	for payloadHash, state := range p.packets {
+		var err error
+		currentState := state
+
+		l := p.logger.With("payloadHash", hexutil.Encode(payloadHash[:]), "status", currentState.Status)
+
+		switch currentState.Status {
+		case PacketStatus_Detected:
+			l.Info("Processing detected packet")
+			err = p.handleDetectedState(ctx, currentState)
+		case PacketStatus_SignatureRequested:
+			l.Info("Processing signature request")
+			err = p.handleSignatureRequestedState(ctx, currentState)
+		case PacketStatus_ProofReceived:
+			l.Info("Processing received proof")
+			err = p.handleSubmitProofState(ctx, currentState)
+		case PacketStatus_Submitted:
+			l.Info("Packet already submitted, cleaning up")
+			delete(p.packets, payloadHash) // Clean up finished tasks
+			continue
+		case PacketStatus_Failed:
+			l.Warn("Packet is in a failed state, ignoring", "reason", currentState.LastError)
+			continue
+		}
+
+		if err != nil {
+			l.Error("Error processing packet", "error", err)
+			currentState.Retries++
+			currentState.LastError = err.Error()
+			if currentState.Retries > 5 {
+				l.Error("Packet failed after multiple retries, moving to Failed state")
+				currentState.Status = PacketStatus_Failed
+			}
+		}
+	}
+}
+
+// handleDetectedState performs pre-flight checks and requests a signature from the relay.
+func (p *Processor) handleDetectedState(ctx context.Context, state *PacketState) error {
+	packet := state.Packet
+	_, ok := p.ethClients[packet.DstEid]
 	if !ok {
-		return errors.Errorf("no DVN contract found for destination EID: %d", dstEid)
+		return errors.Errorf("no client found for destination EID: %d", packet.DstEid)
 	}
-	client := p.ethClients[dstEid]
 
-	receiveUlnAddrString, err := p.config.GetReceiveUln(dstEid)
+	// Check if this DVN has already verified this packet.
+	isVerified, err := p.isAlreadyVerified(ctx, packet)
 	if err != nil {
-		return err
+		p.logger.Warn("Failed to lookup packet hash, proceeding with verification attempt anyway", "error", err)
+		// Don't return error, as the on-chain submission will correctly revert if already verified.
 	}
-	receiveUlnAddr := common.HexToAddress(receiveUlnAddrString)
-	receiveUlnContract, err := contracts.NewReceiveUln302(receiveUlnAddr, client)
-	if err != nil {
-		return errors.Errorf("failed to instantiate ReceiveUln302 contract: %w", err)
+	if isVerified {
+		p.logger.Info("Packet already verified by this DVN, marking as submitted")
+		state.Status = PacketStatus_Submitted
+		return nil
 	}
 
-	// --- 2. Check if this DVN has already verified this packet (hashLookup) ---
-	packetHash := crypto.Keccak256Hash(packet.PacketHeader)
-	dvnAddrOnDest := p.dvnAddrs[dstEid] // The address of our SymbioticLzDVN contract on the destination chain.
+	p.logger.Info("Packet not yet verified, requesting signature from Symbiotic Relay")
 
-	// The hashLookup function is part of the ReceiveUln302 standard. We expect our binding to have it.
-	lookupResult, err := receiveUlnContract.HashLookup(&bind.CallOpts{Context: ctx}, packetHash, packet.PayloadHash, dvnAddrOnDest)
-	if err != nil {
-		// We log the error but proceed. A failure to lookup shouldn't block verification,
-		// as the on-chain submission will correctly revert if already verified.
-		p.logger.Warn("Failed to lookup packet hash, proceeding with verification attempt anyway", "payloadHash", hexutil.Encode(packet.PayloadHash[:]), "error", err)
-	} else if lookupResult.Submitted {
-		p.logger.Info("Packet already verified by this DVN, skipping", "payloadHash", hexutil.Encode(packet.PayloadHash[:]))
-		return nil // Success, nothing more to do.
-	}
-	p.logger.Info("Packet not yet verified by this DVN, proceeding...", "payloadHash", hexutil.Encode(packet.PayloadHash[:]))
-
-	// --- 3. Request signature from Symbiotic Relay ---
-	// The message sent to the relay for signing must match what the SymbioticLzDVN contract
-	// constructs for verification. Following the `symbiotic-super-sum` example, we first hash the
-	// dynamic-length packet header, then pack the two resulting hashes together. The Symbiotic
-	// Relay network handles the final hashing internally before signing.
+	// The message sent to the relay for signing must match what the SymbioticLzDVN contract constructs.
 	packetHeaderHash := crypto.Keccak256Hash(packet.PacketHeader)
-	bytes32T, _ := abi.NewType("bytes32", "", nil)
-	args := abi.Arguments{
-		{Type: bytes32T},
-		{Type: bytes32T},
-	}
-	// Per the `sum-node` example, use Pack for `abi.encodePacked`.
-	// For two bytes32 types, the result is identical to `abi.encode`.
-	messageForRelay, err := args.Pack(packetHeaderHash, packet.PayloadHash)
+	messageForRelay, err := p.constructMessageForRelay(packetHeaderHash, packet.PayloadHash)
 	if err != nil {
-		return errors.Errorf("failed to pack data for signing: %w", err)
+		return errors.Errorf("failed to construct message for relay: %w", err)
 	}
 
-	p.logger.Info("Requesting signature from Symbiotic Relay",
-		"payloadHash", hexutil.Encode(packet.PayloadHash[:]),
-		"messageForRelay", hexutil.Encode(messageForRelay))
-
-	// Request the signature from the Relay using the raw packed data.
 	suggestedEpoch, err := p.relayClient.GetSuggestedEpoch(ctx, &v1.GetSuggestedEpochRequest{})
 	if err != nil {
 		return errors.Errorf("failed to get suggested epoch from relay: %w", err)
 	}
+
 	signResp, err := p.relayClient.SignMessage(ctx, &v1.SignMessageRequest{
 		KeyTag:        15, // Default BLS key tag
 		Message:       messageForRelay,
@@ -407,93 +417,212 @@ func (p *Processor) handlePacket(ctx context.Context, packet *Packet) error {
 	if err != nil {
 		return errors.Errorf("failed to request signature from relay: %w", err)
 	}
-	p.logger.Info("Signature request submitted", "requestHash_from_relay", signResp.RequestHash, "epoch", signResp.Epoch)
 
-	// --- 4. Poll the relay for the aggregated proof ---
-	var aggProof *v1.AggregationProof
-	for {
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		case <-time.After(2 * time.Second): // Poll every 2 seconds
-			proofResp, err := p.relayClient.GetAggregationProof(ctx, &v1.GetAggregationProofRequest{
-				RequestHash: signResp.RequestHash,
-			})
-			if err != nil {
-				// Not ready yet, wait and retry.
-				if strings.Contains(err.Error(), "not found") {
-					p.logger.Debug("Proof not ready yet, waiting...", "requestHash", signResp.RequestHash)
-					continue
-				}
-				return errors.Errorf("failed to get aggregation proof: %w", err)
-			}
-			aggProof = proofResp.AggregationProof
-			p.logger.Info("<- Aggregated proof received from Symbiotic Relay", "epoch", signResp.Epoch, "proof_len", len(aggProof.Proof))
-			goto SUBMIT_PROOF
-		}
-	}
+	p.logger.Info("Signature request submitted to relay", "requestHash", signResp.RequestHash, "epoch", signResp.Epoch)
 
-SUBMIT_PROOF:
-	// --- 5. Submit the proof to the SymbioticLzDVN contract on the destination chain ---
-	// The config is keyed by the receiver OApp address on the destination chain and the source EID.
-	receiverAddress := common.BytesToAddress(packet.Receiver.Bytes())
-	ulnConfig, err := receiveUlnContract.GetUlnConfig(&bind.CallOpts{Context: ctx}, receiverAddress, packet.SrcEid)
+	state.Status = PacketStatus_SignatureRequested
+	state.SigRequestHash = signResp.RequestHash
+	state.SigEpoch = signResp.Epoch
+	state.Retries = 0 // Reset retries for the next stage
+	state.LastError = ""
+
+	return nil
+}
+
+// handleSignatureRequestedState polls the relay for the aggregation proof.
+func (p *Processor) handleSignatureRequestedState(ctx context.Context, state *PacketState) error {
+	proofResp, err := p.relayClient.GetAggregationProof(ctx, &v1.GetAggregationProofRequest{
+		RequestHash: state.SigRequestHash,
+	})
 	if err != nil {
-		return errors.Errorf("failed to get ULN config from destination chain for oapp %s: %w", receiverAddress.Hex(), err)
+		if strings.Contains(err.Error(), "not found") {
+			p.logger.Debug("Proof not ready yet, waiting...", "requestHash", state.SigRequestHash)
+			return nil // Not an error, just not ready
+		}
+		return errors.Errorf("failed to get aggregation proof: %w", err)
 	}
-	requiredConfirmations := ulnConfig.Confirmations
+
+	p.logger.Info("<- Aggregated proof received from Symbiotic Relay", "epoch", state.SigEpoch)
+	state.AggProof = proofResp.AggregationProof.Proof
+	state.Status = PacketStatus_ProofReceived
+	state.Retries = 0
+	state.LastError = ""
+
+	return nil
+}
+
+// handleSubmitProofState submits the verification proof to the destination chain.
+func (p *Processor) handleSubmitProofState(ctx context.Context, state *PacketState) error {
+	packet := state.Packet
+	dstEid := packet.DstEid
+	dvnContract, ok := p.dvnContracts[dstEid]
+	if !ok {
+		return errors.Errorf("no DVN contract found for destination EID: %d", dstEid)
+	}
+
+	// Get required confirmations from the destination ULN.
+	requiredConfirmations, err := p.getRequiredConfirmations(ctx, packet)
+	if err != nil {
+		return errors.Errorf("failed to get required confirmations: %w", err)
+	}
 	p.logger.Info("Got required confirmations from on-chain config", "confirmations", requiredConfirmations)
 
 	pk, err := crypto.HexToECDSA(p.privateKey)
 	if err != nil {
 		return errors.Errorf("failed to parse private key: %w", err)
 	}
-
 	chainID, err := p.ethClients[dstEid].ChainID(ctx)
 	if err != nil {
 		return errors.Errorf("failed to get chain ID for EID %d: %w", dstEid, err)
 	}
-
 	txOpts, err := bind.NewKeyedTransactorWithChainID(pk, chainID)
 	if err != nil {
 		return errors.Errorf("failed to create transactor: %w", err)
 	}
 
-	p.logger.Info("Submitting verification transaction to destination chain", "dstEID", dstEid, "epoch", signResp.Epoch)
+	p.logger.Info("Submitting verification transaction to destination chain", "dstEID", dstEid, "epoch", state.SigEpoch)
 
-	// We now have all the correct components to call the verification function.
 	tx, err := dvnContract.VerifyWithSymbiotic(
 		txOpts,
 		packet.PacketHeader,
 		packet.PayloadHash,
-		requiredConfirmations, // Use the dynamically fetched confirmations
-		new(big.Int).SetUint64(signResp.Epoch),
-		aggProof.Proof,
+		requiredConfirmations,
+		new(big.Int).SetUint64(state.SigEpoch),
+		state.AggProof,
 	)
-
 	if err != nil {
-		// It's possible another node submitted the transaction first.
 		if strings.Contains(err.Error(), "MessageAlreadyVerified") || strings.Contains(err.Error(), "ValidVerification") {
-			p.logger.Warn("Transaction failed because message was already verified, which is expected in a race.", "payloadHash", hexutil.Encode(packet.PayloadHash[:]))
+			p.logger.Warn("Transaction failed because message was already verified, which is expected in a race.")
+			state.Status = PacketStatus_Submitted // Mark as done
 			return nil
 		}
 		return errors.Errorf("failed to submit verification transaction: %w", err)
 	}
 
 	p.logger.Info("Verification transaction submitted successfully!", "txHash", tx.Hash().Hex())
+	state.TxHash = tx.Hash()
 
-	receipt, err := bind.WaitMined(ctx, p.ethClients[dstEid], tx)
-	if err != nil {
-		return errors.Errorf("failed to wait for transaction to be mined: %w", err)
-	}
+	// Asynchronously wait for the transaction to be mined and update the final status.
+	go func() {
+		receipt, err := bind.WaitMined(context.Background(), p.ethClients[dstEid], tx)
+		if err != nil {
+			p.logger.Error("Failed to wait for transaction to be mined", "txHash", tx.Hash().Hex(), "error", err)
+			state.LastError = "mining failed: " + err.Error() // Store error, but don't move to failed state yet.
+			return
+		}
 
-	if receipt.Status == types.ReceiptStatusFailed {
-		p.logger.Error("Verification transaction failed!", "txHash", tx.Hash().Hex())
-	} else {
-		p.logger.Info("Verification transaction mined successfully!", "txHash", tx.Hash().Hex(), "blockNumber", receipt.BlockNumber)
-	}
+		if receipt.Status == types.ReceiptStatusFailed {
+			p.logger.Error("Verification transaction failed on-chain!", "txHash", tx.Hash().Hex())
+			state.Status = PacketStatus_Failed
+			state.LastError = "transaction reverted"
+		} else {
+			p.logger.Info("Verification transaction mined successfully!", "txHash", tx.Hash().Hex(), "blockNumber", receipt.BlockNumber)
+			state.Status = PacketStatus_Submitted
+			state.Retries = 0
+			state.LastError = ""
+		}
+	}()
 
+	// We optimistically move to Submitted state; the goroutine will handle the final outcome.
+	// This prevents re-submission while waiting for mining.
+	state.Status = PacketStatus_Submitted
 	return nil
+}
+
+// --- Helper Functions ---
+
+func (p *Processor) isDvnAssigned(receipt *types.Receipt, eid uint32) bool {
+	myDvnAddress := p.dvnAddrs[eid]
+	sendLibAddress := p.sendLibAddrs[eid]
+	for _, log := range receipt.Logs {
+		if log.Address == sendLibAddress && len(log.Topics) > 0 && log.Topics[0] == dvnFeePaidTopic {
+			var feePaidEvent struct {
+				RequiredDVNs []common.Address
+				OptionalDVNs []common.Address
+				Fees         []*big.Int
+			}
+			if err := sendLibABI.UnpackIntoInterface(&feePaidEvent, "DVNFeePaid", log.Data); err != nil {
+				p.logger.Error("Failed to unpack DVNFeePaid event", "txHash", receipt.TxHash.Hex(), "error", err)
+				continue
+			}
+			for _, dvn := range feePaidEvent.RequiredDVNs {
+				if dvn == myDvnAddress {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func (p *Processor) unpackAndParsePacket(endpointABI abi.ABI, event *contracts.EndpointV2PacketSent) (*Packet, error) {
+	results, err := endpointABI.Events["PacketSent"].Inputs.Unpack(event.Raw.Data)
+	if err != nil {
+		return nil, errors.Errorf("failed to unpack PacketSent event data: %w", err)
+	}
+	encodedPacket := results[0].([]byte)
+	return parsePacket(encodedPacket)
+}
+
+func (p *Processor) isAlreadyVerified(ctx context.Context, packet *Packet) (bool, error) {
+	dstEid := packet.DstEid
+	client, ok := p.ethClients[dstEid]
+	if !ok {
+		return false, errors.Errorf("no client found for destination EID: %d", dstEid)
+	}
+
+	receiveUlnAddrString, err := p.config.GetReceiveUln(dstEid)
+	if err != nil {
+		return false, err
+	}
+	receiveUlnAddr := common.HexToAddress(receiveUlnAddrString)
+	receiveUlnContract, err := contracts.NewReceiveUln302(receiveUlnAddr, client)
+	if err != nil {
+		return false, errors.Errorf("failed to instantiate ReceiveUln302 contract: %w", err)
+	}
+
+	packetHash := crypto.Keccak256Hash(packet.PacketHeader)
+	dvnAddrOnDest := p.dvnAddrs[dstEid]
+
+	lookupResult, err := receiveUlnContract.HashLookup(&bind.CallOpts{Context: ctx}, packetHash, packet.PayloadHash, dvnAddrOnDest)
+	if err != nil {
+		return false, errors.Errorf("failed to call hashLookup: %w", err)
+	}
+
+	return lookupResult.Submitted, nil
+}
+
+func (p *Processor) constructMessageForRelay(packetHeaderHash, payloadHash common.Hash) ([]byte, error) {
+	bytes32T, _ := abi.NewType("bytes32", "", nil)
+	args := abi.Arguments{
+		{Type: bytes32T},
+		{Type: bytes32T},
+	}
+	return args.Pack(packetHeaderHash, payloadHash)
+}
+
+func (p *Processor) getRequiredConfirmations(ctx context.Context, packet *Packet) (uint64, error) {
+	dstEid := packet.DstEid
+	client, ok := p.ethClients[dstEid]
+	if !ok {
+		return 0, errors.Errorf("no client found for destination EID: %d", dstEid)
+	}
+	receiveUlnAddrString, err := p.config.GetReceiveUln(dstEid)
+	if err != nil {
+		return 0, err
+	}
+	receiveUlnAddr := common.HexToAddress(receiveUlnAddrString)
+	receiveUlnContract, err := contracts.NewReceiveUln302(receiveUlnAddr, client)
+	if err != nil {
+		return 0, errors.Errorf("failed to instantiate ReceiveUln302 contract: %w", err)
+	}
+
+	receiverAddress := common.BytesToAddress(packet.Receiver.Bytes())
+	ulnConfig, err := receiveUlnContract.GetUlnConfig(&bind.CallOpts{Context: ctx}, receiverAddress, packet.SrcEid)
+	if err != nil {
+		return 0, errors.Errorf("failed to get ULN config for oapp %s: %w", receiverAddress.Hex(), err)
+	}
+	return ulnConfig.Confirmations, nil
 }
 
 // parsePacket decodes the raw encoded packet from the PacketSent event.
