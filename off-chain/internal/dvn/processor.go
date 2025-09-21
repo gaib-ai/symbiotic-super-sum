@@ -374,15 +374,16 @@ func (p *Processor) handlePacket(ctx context.Context, packet *Packet) error {
 
 	// --- 3. Request signature from Symbiotic Relay ---
 	// The message sent to the relay for signing must match what the SymbioticLzDVN contract
-	// constructs for verification. Following the `symbiotic-super-sum` example, we send the
-	// raw packed data, and the Symbiotic Relay network handles hashing it internally before signing.
-	bytesT, _ := abi.NewType("bytes", "", nil)
+	// constructs for verification. Following the `symbiotic-super-sum` example, we first hash the
+	// dynamic-length packet header, then pack the two resulting hashes together. The Symbiotic
+	// Relay network handles the final hashing internally before signing.
+	packetHeaderHash := crypto.Keccak256Hash(packet.PacketHeader)
 	bytes32T, _ := abi.NewType("bytes32", "", nil)
 	args := abi.Arguments{
-		{Type: bytesT},
+		{Type: bytes32T},
 		{Type: bytes32T},
 	}
-	messageForRelay, err := args.Pack(packet.PacketHeader, packet.PayloadHash)
+	messageForRelay, err := args.Pack(packetHeaderHash, packet.PayloadHash)
 	if err != nil {
 		return errors.Errorf("failed to pack data for signing: %w", err)
 	}
