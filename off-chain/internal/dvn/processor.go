@@ -374,22 +374,15 @@ func (p *Processor) handlePacket(ctx context.Context, packet *Packet) error {
 
 	// --- 3. Request signature from Symbiotic Relay ---
 	// The message sent to the relay for signing must match what the SymbioticLzDVN contract
-	// constructs for verification. Based on the LayerZero DVN standard, this should be
-	// the ABI encoding of the 81-byte packet header and the 32-byte payload hash.
-	bytesT, _ := abi.NewType("bytes", "", nil)
-	bytes32T, _ := abi.NewType("bytes32", "", nil)
-	args := abi.Arguments{
-		{Type: bytesT},
-		{Type: bytes32T},
-	}
-	messageForRelay, err := args.Pack(packet.PacketHeader, packet.PayloadHash)
-	if err != nil {
-		return errors.Errorf("failed to pack header and payload hash for relay: %w", err)
-	}
+	// constructs for verification. This is the keccak256 hash of the abi.encodePacked(packetHeader, payloadHash).
+	var dataToHash []byte
+	dataToHash = append(dataToHash, packet.PacketHeader...)
+	dataToHash = append(dataToHash, packet.PayloadHash[:]...)
+	messageForRelay := crypto.Keccak256(dataToHash)
 
 	p.logger.Info("Requesting signature from Symbiotic Relay",
 		"payloadHash", hexutil.Encode(packet.PayloadHash[:]),
-		"messageForRelay", hexutil.Encode(messageForRelay))
+		"messageHashForRelay", hexutil.Encode(messageForRelay)) // Changed log key for clarity
 
 	// Request the signature from the Relay using the raw packed data.
 	suggestedEpoch, err := p.relayClient.GetSuggestedEpoch(ctx, &v1.GetSuggestedEpochRequest{})
