@@ -375,10 +375,17 @@ func (p *Processor) handlePacket(ctx context.Context, packet *Packet) error {
 	// --- 3. Request signature from Symbiotic Relay ---
 	// The message sent to the relay for signing must match what the SymbioticLzDVN contract
 	// constructs for verification. This is the keccak256 hash of the abi.encodePacked(packetHeader, payloadHash).
-	var dataToHash []byte
-	dataToHash = append(dataToHash, packet.PacketHeader...)
-	dataToHash = append(dataToHash, packet.PayloadHash[:]...)
-	messageForRelay := crypto.Keccak256(dataToHash)
+	bytesT, _ := abi.NewType("bytes", "", nil)
+	bytes32T, _ := abi.NewType("bytes32", "", nil)
+	args := abi.Arguments{
+		{Type: bytesT},
+		{Type: bytes32T},
+	}
+	packedData, err := args.Pack(packet.PacketHeader, packet.PayloadHash)
+	if err != nil {
+		return errors.Errorf("failed to pack data for hashing: %w", err)
+	}
+	messageForRelay := crypto.Keccak256(packedData)
 
 	p.logger.Info("Requesting signature from Symbiotic Relay",
 		"payloadHash", hexutil.Encode(packet.PayloadHash[:]),
@@ -452,14 +459,13 @@ SUBMIT_PROOF:
 	p.logger.Info("Submitting verification transaction to destination chain", "dstEID", dstEid, "epoch", signResp.Epoch)
 
 	// We now have all the correct components to call the verification function.
-	symbioticProof := abiEncodeSymbioticProof(signResp.Epoch, aggProof.Proof)
-
 	tx, err := dvnContract.VerifyWithSymbiotic(
 		txOpts,
 		packet.PacketHeader,
 		packet.PayloadHash,
 		requiredConfirmations, // Use the dynamically fetched confirmations
-		symbioticProof,
+		uint48(signResp.Epoch),
+		aggProof.Proof,
 	)
 
 	if err != nil {
@@ -516,23 +522,4 @@ func parsePacket(encodedPacket []byte) (*Packet, error) {
 	p.PayloadHash = crypto.Keccak256Hash(packedPayload)
 
 	return p, nil
-}
-
-func abiEncodeSymbioticProof(epoch uint64, proof []byte) []byte {
-	// This function ABI-encodes the epoch and proof to match what the SymbioticLzDVN.verifyWithSymbiotic expects.
-	uint48T, _ := abi.NewType("uint48", "", nil)
-	bytesT, _ := abi.NewType("bytes", "", nil)
-
-	args := abi.Arguments{
-		{Type: uint48T}, // epoch
-		{Type: bytesT},  // proof
-	}
-
-	// The go-ethereum ABI packer expects a *big.Int for uint types that are not native Go sizes (e.g., uint48).
-	encoded, err := args.Pack(new(big.Int).SetUint64(epoch), proof)
-	if err != nil {
-		// This should not happen with correct types
-		panic(err)
-	}
-	return encoded
 }

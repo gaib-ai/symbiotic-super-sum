@@ -32,11 +32,10 @@ contract SymbioticLzDVN is DVN {
         bytes calldata _packetHeader,
         bytes32 _payloadHash,
         uint64 _confirmations,
-        bytes calldata _symbioticProof // Contains epoch and proof bytes
+        uint48 _epoch,
+        bytes calldata _proof
     ) external {
         // Step 1: Verify the proof against the Symbiotic Settlement contract
-        (uint48 epoch, bytes memory proof) = abi.decode(_symbioticProof, (uint48, bytes));
-
         // The message to be verified must exactly match the message sent by the off-chain worker to the relay.
         // This is the keccak256 hash of the abi.encodePacked packet header and payload hash.
         bytes32 messageHash = keccak256(abi.encodePacked(_packetHeader, _payloadHash));
@@ -47,10 +46,10 @@ contract SymbioticLzDVN is DVN {
         // so we pass the hash. `abi.encode` will convert the bytes32 to a 32-byte bytes array.
         bool success = settlement.verifyQuorumSigAt(
             abi.encode(messageHash),
-            settlement.getRequiredKeyTagFromValSetHeaderAt(epoch),
-            settlement.getQuorumThresholdFromValSetHeaderAt(epoch),
-            proof,
-            epoch,
+            settlement.getRequiredKeyTagFromValSetHeaderAt(_epoch),
+            settlement.getQuorumThresholdFromValSetHeaderAt(_epoch),
+            _proof,
+            _epoch,
             new bytes(0)
         );
         require(success, "SymbioticLzDVN: symbiotic verification failed");
