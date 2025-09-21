@@ -15,6 +15,7 @@ import {EndpointV2View} from "@layerzerolabs/lz-evm-protocol-v2/contracts/Endpoi
 import {ExecutionState} from "@layerzerolabs/lz-evm-protocol-v2/contracts/EndpointV2ViewUpgradeable.sol";
 // Using the 302 view as it's compatible for checking verification state
 import {ReceiveUln302View, VerificationState} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/uln302/ReceiveUln302View.sol";
+import {UlnConfig} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/UlnBase.sol";
 
 
 contract Executor is Script {
@@ -24,6 +25,8 @@ contract Executor is Script {
     
     // PacketSent(bytes encodedPacket, bytes options, address sendLibrary)
     bytes32 constant PACKET_SENT_TOPIC = keccak256("PacketSent(bytes,bytes,address)");
+    // ExecutorFeePaid(address executor, uint256 fee)
+    bytes32 constant EXECUTOR_FEE_PAID_TOPIC = keccak256("ExecutorFeePaid(address,uint256)");
     // In our custom DVN, this event is emitted when the DVN worker verifies a payload
     bytes32 constant PAYLOAD_VERIFIED_TOPIC = keccak256("PayloadVerified(address,bytes,uint256,bytes32)");
 
@@ -36,6 +39,10 @@ contract Executor is Script {
         // --- Chain A Setup (to find the event) ---
         string memory rpcA = "http://localhost:8545";
         address endpointA_Addr = deploymentJson.readAddress(".chainA.endpoint");
+        // These addresses are needed to check if the executor was paid.
+        // Ensure your deployment script writes these to the deployment file.
+        address sendLibA_Addr = deploymentJson.readAddress(".chainA.sendLib");
+        address executorA_Addr = deploymentJson.readAddress(".chainA.executor");
 
         // --- Chain B Setup ---
         string memory rpcB = "http://localhost:8546";
@@ -59,13 +66,35 @@ contract Executor is Script {
         (bytes memory encodedPacket, , ) = abi.decode(logs[logs.length - 1].data, (bytes, bytes, address));
         console.log("Found PacketSent event!");
         
+        // --- 2b. Find the ExecutorFeePaid event to confirm assignment ---
+        // The fee paid events are emitted by the Send Library, not the Executor contract itself.
+        topics[0] = EXECUTOR_FEE_PAID_TOPIC;
+        logs = vm.eth_getLogs(0, block.number, sendLibA_Addr, topics);
+
+        bool executorPaid = false;
+        if (logs.length > 0) {
+            for (uint i = 0; i < logs.length; i++) {
+                (address executor, ) = abi.decode(logs[i].data, (address, uint256));
+                if (executor == executorA_Addr) {
+                    executorPaid = true;
+                    break;
+                }
+            }
+        }
+
+        if (!executorPaid) {
+            console.log("Error: Executor was not paid for this packet based on ExecutorFeePaid event.");
+            return;
+        }
+        console.log("Found ExecutorFeePaid event, Executor is assigned and paid.");
+
         // --- 3. Decode packet and prepare data ---
         Packet memory packet = _parsePacket(encodedPacket);
         bytes32 payloadHash = keccak256(abi.encodePacked(packet.guid, packet.message));
         Origin memory origin = Origin({srcEid: packet.srcEid, sender: AddressCast.toBytes32(packet.sender), nonce: packet.nonce});
         address receiver = AddressCast.toAddress(packet.receiver);
-        // The header is the encoded packet without the message itself.
-        bytes memory packetHeader = slice(encodedPacket, 0, 113); // Version (1) + Nonce (8) + srcEid (4) + Sender (32) + dstEid (4) + Receiver (32) + GUID (32) = 113
+        // The header is the encoded packet without the message and guid.
+        bytes memory packetHeader = slice(encodedPacket, 0, 81); // Version (1) + Nonce (8) + srcEid (4) + Sender (32) + dstEid (4) + Receiver (32) = 81
         bytes32 packetHash = keccak256(packetHeader);
 
         // --- 4. Switch to Chain B for execution ---
@@ -87,27 +116,22 @@ contract Executor is Script {
         // It first checks if the DVN worker has already published its verification on-chain.
         console.log("\n--- Committer Role ---");
         
-        // Listen for verification events from our SymbioticLzDVN
-        bytes32[] memory verificationTopics = new bytes32[](1);
-        verificationTopics[0] = PAYLOAD_VERIFIED_TOPIC;
-        logs = vm.eth_getLogs(0, block.number, address(0), verificationTopics); // Search all addresses as event is on DVN
-        
-        bool foundVerification = false;
-        for (uint i = 0; i < logs.length; i++) {
-            (, bytes memory header, , bytes32 proofHash) =
-                abi.decode(logs[i].data, (address, bytes, uint256, bytes32));
+        // Dynamically get the required number of DVN confirmations from the ULN config
+        UlnConfig memory ulnConfig = receiveLibB.getUlnConfig(receiver, packet.srcEid);
+        uint8 requiredDVNs = uint8(ulnConfig.confirmations);
+        console.log("Required DVN confirmations for this packet: %d", requiredDVNs);
 
-            if (proofHash == payloadHash && keccak256(header) == packetHash) {
-                foundVerification = true;
-                break;
-            }
-        }
+        uint foundVerifications = _findVerifications(receiveLibB_Addr, payloadHash, packetHash);
 
-        if (!foundVerification) {
-            console.log("Error: DVN verification not found on-chain. Is the dvn-worker running and processing the message?");
+        if (foundVerifications < requiredDVNs) {
+            console.log(
+                "Error: Not enough DVN verifications found on-chain. Expected %d, found %d. Is the dvn-worker running?",
+                requiredDVNs,
+                foundVerifications
+            );
             return;
         }
-        console.log("Found DVN verification. Proceeding to check verifiable state.");
+        console.log("Found %d DVN verifications. Proceeding to check verifiable state.", foundVerifications);
 
         VerificationState vState = receiveUln302ViewB.verifiable(packetHeader, payloadHash);
 
@@ -146,6 +170,23 @@ contract Executor is Script {
         console.log("\n-------------------------------------------------");
         console.log("Done. Executor successful. Message has been delivered!");
         console.log("-------------------------------------------------");
+    }
+
+    function _findVerifications(address receiveLibB_Addr, bytes32 payloadHash, bytes32 packetHash) private returns (uint) {
+        bytes32[] memory verificationTopics = new bytes32[](1);
+        verificationTopics[0] = PAYLOAD_VERIFIED_TOPIC;
+        Vm.EthGetLogs[] memory logs = vm.eth_getLogs(0, block.number, receiveLibB_Addr, verificationTopics);
+        
+        uint foundVerifications = 0;
+        for (uint i = 0; i < logs.length; i++) {
+            (, bytes memory header, , bytes32 proofHash) =
+                abi.decode(logs[i].data, (address, bytes, uint256, bytes32));
+
+            if (proofHash == payloadHash && keccak256(header) == packetHash) {
+                foundVerifications++;
+            }
+        }
+        return foundVerifications;
     }
 
     function _parsePacket(bytes memory encodedPacket) internal pure returns (Packet memory packet) {
