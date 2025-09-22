@@ -35,11 +35,17 @@ This project runs multiple instances of a Go application that acts as the bridge
 
 ##### DVN Node Identity and Funding
 
-It's important to note that the `generate_network.sh` script configures each `dvn-node` instance to use the **private key of its corresponding Symbiotic operator**.
+A critical aspect of this local testnet is how the `dvn-node` instances are funded to pay for gas fees on the destination chain. The setup script orchestrates a three-step process to ensure each DVN node has a funded wallet without any manual intervention.
 
--   **How it Works**: The script generates a set of operator keys for the Symbiotic relay network. In a real-world scenario, these operators would stake assets to secure the network. In our local simulation, the `genesis-generator` service automatically funds these operator addresses with plenty of test ETH on both Anvil chains.
--   **Why it Matters**: By reusing the funded operator keys, the `dvn-node` has a pre-funded wallet that can pay the gas fees required to submit verification transactions to the destination chain. This eliminates the need to generate and manually fund separate wallets for the DVN workers.
--   **On Other Testnets**: If you adapt this project for a public testnet, you would need to ensure the operator addresses are funded on all participating chains.
+-   **1. Anvil Pre-Funded Accounts**: When the two Anvil blockchain containers start, they are configured to create 10 test accounts, each pre-funded with 10,000 test ETH. The first of these accounts is used by the `deployer` service.
+
+-   **2. Operator Key Generation**: The `generate_network.sh` script deterministically generates a unique private key for each Symbiotic operator that will participate in the relay network. These keys are distinct from Anvil's default funded keys.
+
+-   **3. Automated Funding Transfer**: During the network setup, the `deployer` service executes the `network-scripts/deploy.sh` script. This script performs its primary duty of deploying the Symbiotic contracts, and it also iterates through the generated operator addresses and **sends them test ETH** from its own pre-funded account.
+
+-   **4. Shared Identity**: Finally, each `dvn-node` instance is configured to use the exact same private key as its corresponding Symbiotic operator. Because the operator address was funded in the previous step, the `dvn-node` automatically has a funded wallet, ready to submit verification transactions. This elegant design eliminates the need for a separate funding step for the DVN workers.
+
+-   **On Other Testnets**: If you adapt this project for a public testnet, you would need to manually fund the operator addresses on all participating chains.
 
 ### Workflow Sequence Diagram
 
@@ -297,3 +303,4 @@ The local environment consists of the following services:
 To stop and remove all running containers and networks, run the following command from within the `temp-network` directory:
 ```bash
 docker compose down -v
+```
