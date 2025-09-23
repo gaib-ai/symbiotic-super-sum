@@ -92,14 +92,14 @@ generate_docker_compose() {
     local commiters=$2
     local aggregators=$3
     
-    local network_dir="temp-network"
-    
-    if [ -d "$network_dir" ]; then
-        print_status "Cleaning up existing $network_dir directory..."
-        rm -rf "$network_dir"
-    fi
-    
+    # Generate a directory for the network
+    network_dir="temp-network"
+    rm -rf "$network_dir"
+    mkdir -p "$network_dir"
     mkdir -p "$network_dir/deploy-data"
+
+    # Copy the common sidecar config
+    cp sidecar.common.yaml "$network_dir/sidecar.common.yaml"
     
     for i in $(seq 1 $operators); do
         local storage_dir="$network_dir/data-$(printf "%02d" $i)"
@@ -211,6 +211,17 @@ EOF
         SYMB_PRIVATE_KEY_HEX=$(printf "%064x" $SYMB_PRIVATE_KEY_DECIMAL)
         SYMB_SECONDARY_PRIVATE_KEY_HEX=$(printf "%064x" $SYMB_SECONDARY_PRIVATE_KEY_DECIMAL)
 
+        local role_name="Signer"
+        local role_params=""
+
+        if [ $i -le $commiters ]; then
+            role_name="Committer"
+            role_params="      - --committer\n      - \"true\""
+        elif [ $i -le $((commiters + aggregators)) ]; then
+            role_name="Aggregator"
+            role_params="      - --aggregator\n      - \"true\""
+        fi
+
         # Validate ECDSA secp256k1 private key range (must be between 1 and n-1)
         # Maximum valid key: 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364140
         if [ $SYMB_PRIVATE_KEY_DECIMAL -eq 0 ]; then
@@ -228,6 +239,7 @@ EOF
       - /workspace/network-scripts/sidecar-start.sh 
       - symb/0/15/0x$SYMB_PRIVATE_KEY_HEX,symb/0/11/0x$SYMB_SECONDARY_PRIVATE_KEY_HEX,symb/1/0/0x$SYMB_PRIVATE_KEY_HEX,evm/1/31337/0x$SYMB_PRIVATE_KEY_HEX,evm/1/31338/0x$SYMB_PRIVATE_KEY_HEX,p2p/1/0/$SWARM_KEY,p2p/1/1/$SYMB_PRIVATE_KEY_HEX
       - /app/$storage_dir
+$(echo -e "$role_params")
     ports:
       - "$port:8080"
     volumes:
@@ -242,34 +254,53 @@ EOF
     restart: unless-stopped
 
 EOF
+    done
 
-        local relay_port=$((relay_start_port + i - 1))
+    # Create .env file for the dvn-worker
+    cat > "$network_dir/.env" << EOF
+RPC_URL_A=http://anvil:8545
+RPC_URL_B=http://anvil-settlement:8546
+# This is the default anvil private key for the deployer
+PRIVATE_KEY=ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+EOF
+
+    # Generate the dvn-worker service
+    for i in $(seq 1 $operators); do
         local sum_port=$((sum_start_port + i - 1))
         
+        # Calculate the private key for the operator, which will also be used by the DVN node.
+        # This ensures the DVN node has a funded account to submit transactions.
+        local key_index=$((i - 1))
+        SYMB_PRIVATE_KEY_DECIMAL=$(($BASE_PRIVATE_KEY + $key_index))
+        SYMB_PRIVATE_KEY_HEX=$(printf "%064x" $SYMB_PRIVATE_KEY_DECIMAL)
+
         cat >> "$network_dir/docker-compose.yml" << EOF
 
-  # Sum node $i
-  sum-node-$i:
+  # DVN Node $i
+  dvn-node-$i:
     build:
       context: ../off-chain
       dockerfile: Dockerfile
-    container_name: symbiotic-sum-node-$i
-    entrypoint: ["/workspace/network-scripts/sum-node-start.sh"]
+    container_name: symbiotic-dvn-node-$i
+    entrypoint: ["/workspace/network-scripts/dvn-node-start.sh"]
     command: ["relay-sidecar-$i:8080", "$SYMB_PRIVATE_KEY_HEX"]
     volumes:
       - ../:/workspace
-      - ./deploy-data:/deploy-data
+      - ./deploy-data:/app/temp-network/deploy-data
     ports:
-      - "$sum_port:8080"
+      - "$sum_port:$sum_port"
     depends_on:
       relay-sidecar-$i:
         condition: service_started
     networks:
       - symbiotic-network
     restart: unless-stopped
-
+    env_file:
+      - .env
 EOF
     done
+    
+    # Remove the single dvn-worker and its .env file generation
     
     cat >> "$network_dir/docker-compose.yml" << EOF
 

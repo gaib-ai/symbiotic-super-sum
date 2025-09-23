@@ -459,17 +459,35 @@ contract LocalDeploy is SymbioticCoreInit {
         });
         driver =
             IValSetDriver.CrossChainAddress({chainId: relayContracts.driver.chainId, addr: relayContracts.driver.addr});
-        stakingTokens.clear();
+        
+        // Manual clear since OpenZeppelin v4 EnumerableMap doesn't have a clear() function.
+        uint256[] memory stakingTokensKeys = stakingTokens.keys();
+        for (uint256 i = 0; i < stakingTokensKeys.length; i++) {
+            stakingTokens.remove(stakingTokensKeys[i]);
+        }
+
         for (uint256 i; i < relayContracts.stakingTokens.length; ++i) {
             stakingTokens.set(relayContracts.stakingTokens[i].chainId, relayContracts.stakingTokens[i].addr);
         }
-        votingPowerProviders.clear();
+
+        // Manual clear since OpenZeppelin v4 EnumerableMap doesn't have a clear() function.
+        uint256[] memory votingPowerProvidersKeys = votingPowerProviders.keys();
+        for (uint256 i = 0; i < votingPowerProvidersKeys.length; i++) {
+            votingPowerProviders.remove(votingPowerProvidersKeys[i]);
+        }
+
         for (uint256 i; i < relayContracts.votingPowerProviders.length; ++i) {
             votingPowerProviders.set(
                 relayContracts.votingPowerProviders[i].chainId, relayContracts.votingPowerProviders[i].addr
             );
         }
-        settlements.clear();
+
+        // Manual clear since OpenZeppelin v4 EnumerableMap doesn't have a clear() function.
+        uint256[] memory settlementsKeys = settlements.keys();
+        for (uint256 i = 0; i < settlementsKeys.length; i++) {
+            settlements.remove(settlementsKeys[i]);
+        }
+
         for (uint256 i; i < relayContracts.settlements.length; ++i) {
             settlements.set(relayContracts.settlements[i].chainId, relayContracts.settlements[i].addr);
         }
@@ -482,7 +500,12 @@ contract LocalDeploy is SymbioticCoreInit {
         bytes memory data = vm.parseJson(json);
         SumTaskContracts memory sumTaskContracts = abi.decode(data, (SumTaskContracts));
 
-        sumTasks.clear();
+        // Manual clear since OpenZeppelin v4 EnumerableMap doesn't have a clear() function.
+        uint256[] memory sumTasksKeys = sumTasks.keys();
+        for (uint256 i = 0; i < sumTasksKeys.length; i++) {
+            sumTasks.remove(sumTasksKeys[i]);
+        }
+        
         for (uint256 i; i < sumTaskContracts.sumTasks.length; ++i) {
             sumTasks.set(sumTaskContracts.sumTasks[i].chainId, sumTaskContracts.sumTasks[i].addr);
         }

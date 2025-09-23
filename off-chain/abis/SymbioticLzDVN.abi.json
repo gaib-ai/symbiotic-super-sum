@@ -1,0 +1,175 @@
+[
+  {
+    "inputs": [
+      { "internalType": "uint32", "name": "_localEid", "type": "uint32" },
+      { "internalType": "address", "name": "_priceFeed", "type": "address" },
+      { "internalType": "address", "name": "_settlementContract", "type": "address" },
+      { "internalType": "address", "name": "_receiveUlnContract", "type": "address" }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          { "internalType": "uint32", "name": "dstEid", "type": "uint32" },
+          { "internalType": "uint64", "name": "gas", "type": "uint64" },
+          { "internalType": "uint16", "name": "multiplierBps", "type": "uint16" },
+          { "internalType": "uint128", "name": "floorMarginUSD", "type": "uint128" }
+        ],
+        "indexed": false,
+        "internalType": "struct IDVN.DstConfigParam[]",
+        "name": "params",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "SetDstConfig",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          { "internalType": "uint32", "name": "dstEid", "type": "uint32" },
+          { "internalType": "bytes", "name": "packetHeader", "type": "bytes" },
+          { "internalType": "bytes32", "name": "payloadHash", "type": "bytes32" },
+          { "internalType": "uint64", "name": "confirmations", "type": "uint64" },
+          { "internalType": "address", "name": "sender", "type": "address" }
+        ],
+        "internalType": "struct ILayerZeroDVN.AssignJobParam",
+        "name": "_param",
+        "type": "tuple"
+      },
+      { "internalType": "bytes", "name": "_options", "type": "bytes" }
+    ],
+    "name": "assignJob",
+    "outputs": [{ "internalType": "uint256", "name": "fee", "type": "uint256" }],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint32", "name": "_dstEid", "type": "uint32" }],
+    "name": "dstConfig",
+    "outputs": [
+      { "internalType": "uint64", "name": "gas", "type": "uint64" },
+      { "internalType": "uint16", "name": "multiplierBps", "type": "uint16" },
+      { "internalType": "uint128", "name": "floorMarginUSD", "type": "uint128" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint32", "name": "", "type": "uint32" }],
+    "name": "dstConfigLookup",
+    "outputs": [
+      { "internalType": "uint64", "name": "gas", "type": "uint64" },
+      { "internalType": "uint16", "name": "multiplierBps", "type": "uint16" },
+      { "internalType": "uint128", "name": "floorMarginUSD", "type": "uint128" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "feeLib",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint32", "name": "_dstEid", "type": "uint32" },
+      { "internalType": "uint64", "name": "", "type": "uint64" },
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "bytes", "name": "", "type": "bytes" }
+    ],
+    "name": "getFee",
+    "outputs": [
+      { "internalType": "uint256", "name": "nativeFee", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "localEid",
+    "outputs": [{ "internalType": "uint32", "name": "", "type": "uint32" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "priceFeed",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "receiveUlnContract",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "settlementContract",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          { "internalType": "uint32", "name": "dstEid", "type": "uint32" },
+          { "internalType": "uint64", "name": "gas", "type": "uint64" },
+          { "internalType": "uint16", "name": "multiplierBps", "type": "uint16" },
+          { "internalType": "uint128", "name": "floorMarginUSD", "type": "uint128" }
+        ],
+        "internalType": "struct IDVN.DstConfigParam[]",
+        "name": "_params",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "setDstConfig",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "name": "setWorkerFeeLib",
+    "outputs": [],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes", "name": "_packetHeader", "type": "bytes" },
+      { "internalType": "bytes32", "name": "_payloadHash", "type": "bytes32" },
+      { "internalType": "uint64", "name": "_confirmations", "type": "uint64" },
+      { "internalType": "bytes", "name": "_symbioticProof", "type": "bytes" }
+    ],
+    "name": "verifyWithSymbiotic",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "worker",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "pure",
+    "type": "function"
+  }
+]

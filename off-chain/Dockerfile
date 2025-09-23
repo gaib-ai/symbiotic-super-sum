@@ -18,10 +18,7 @@ RUN go mod download
 COPY . .
 
 # Build the application with optimizations for production
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
-    -ldflags="-w -s" \
-    -o /app/sum-node \
-    ./cmd/node
+RUN CGO_ENABLED=0 GOOS=linux go build -o /go/bin/dvn-node ./cmd/dvn-node
 
 # Runtime stage
 FROM alpine:3.19
@@ -33,13 +30,13 @@ RUN apk add --no-cache ca-certificates tzdata jq
 WORKDIR /app
 
 # Copy binary from builder stage
-COPY --from=builder /app/sum-node .
+COPY --from=builder /go/bin/dvn-node .
 
 # Expose port if needed (adjust based on your application)
 # EXPOSE 8080
 
 # Set the entrypoint
-ENTRYPOINT ["./sum-node"]
+ENTRYPOINT ["./dvn-node"]
 
 # Default command (can be overridden)
 CMD ["--help"] 

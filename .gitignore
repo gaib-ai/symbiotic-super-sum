@@ -10,6 +10,7 @@ node_modules/
 /broadcast/*/31337/
 /broadcast/*/31338/
 /broadcast/**/dry-run/
+/broadcast/multi
 
 # Docs
 docs/

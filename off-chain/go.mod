@@ -1,4 +1,4 @@
-module sum
+module dvn-node
 
 go 1.24.5
 
@@ -8,7 +8,6 @@ require (
 	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0
 	github.com/spf13/cobra v1.9.1
 	github.com/symbioticfi/relay v0.2.1-0.20250802065445-3f8139849d3f
-	golang.org/x/sync v0.15.0
 	google.golang.org/grpc v1.67.3
 )
 
@@ -38,6 +37,7 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	golang.org/x/crypto v0.39.0 // indirect
 	golang.org/x/net v0.41.0 // indirect
+	golang.org/x/sync v0.15.0 // indirect
 	golang.org/x/sys v0.34.0 // indirect
 	golang.org/x/text v0.26.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20241223144023-3abc09e42ca8 // indirect
