@@ -223,10 +223,10 @@ This guide will walk you through setting up the local network, deploying all con
 When you run `forge build`, you may see a series of errors at the beginning of the output, similar to the following:
 
 ```
-ERROR foundry_compilers_artifacts_solc::sources: error="/Users/havencross/Workspace/symbiotic-dvn/lib/openzeppelin-contracts-v4/contracts/utils/Bytes.sol": No such file or directory (os error 2)
+ERROR foundry_compilers_artifacts_solc::sources: error="/Users/username/Workspace/symbiotic-dvn/lib/openzeppelin-contracts-v4/contracts/utils/Bytes.sol": No such file or directory (os error 2)
 ...
 Unable to resolve imports:
-      "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol" in "/Users/havencross/Workspace/symbiotic-dvn/node_modules/@symbioticfi/relay-contracts/src/modules/base/OzEIP712.sol"
+      "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol" in "/Users/username/Workspace/symbiotic-dvn/node_modules/@symbioticfi/relay-contracts/src/modules/base/OzEIP712.sol"
 ...
 ```
 
