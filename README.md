@@ -213,6 +213,29 @@ This guide will walk you through setting up the local network, deploying all con
     find lib/openzeppelin-contracts-upgradeable-v5 -type f -name "*.sol" -exec sed -i '' 's|from "@openzeppelin/contracts/|from "@openzeppelin-v5/contracts/|g' {} +
     ```
 
+5.  **Build the Project**
+    ```bash
+    forge build
+    ```
+
+### A Note on Build Warnings
+
+When you run `forge build`, you may see a series of errors at the beginning of the output, similar to the following:
+
+```
+ERROR foundry_compilers_artifacts_solc::sources: error="/Users/havencross/Workspace/symbiotic-dvn/lib/openzeppelin-contracts-v4/contracts/utils/Bytes.sol": No such file or directory (os error 2)
+...
+Unable to resolve imports:
+      "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol" in "/Users/havencross/Workspace/symbiotic-dvn/node_modules/@symbioticfi/relay-contracts/src/modules/base/OzEIP712.sol"
+...
+```
+
+**These errors are expected and can be safely ignored.**
+
+They occur because this project includes multiple versions of the OpenZeppelin library (`v4` and `v5`) to support its various dependencies. Some dependencies reference older `v4` files that are not actually used in this DVN implementation.
+
+As long as the process finishes with a `Compiler run successful` message, the build is correct and you can proceed with the next steps.
+
 ### Step 1: Setup Environment File
 
 The Forge scripts require a `PRIVATE_KEY` to be set in the environment. Copy the provided example file.
@@ -294,16 +317,4 @@ The result should be `50000000000000000000` (which is 50 tokens, as `AID` has 18
 
 The local environment consists of the following services:
 
--   `anvil`: The source blockchain (Chain A, EID 31337) running on port `8545`.
--   `anvil-settlement`: The destination blockchain (Chain B, EID 31338) running on port `8546`.
--   `deployer`: A short-lived service that runs a Forge script (`network-scripts/deploy.sh`) to deploy the entire on-chain Symbiotic protocol stack (e.g., `ValSetDriver`, `Settlement`, etc.) on both local Anvil chains.
--   `genesis-generator`: A short-lived service that runs after the on-chain contracts are deployed. It executes the Symbiotic `relay_utils` tool to perform the relay network's "genesis." This critical step initializes the Symbiotic protocol by committing the first validator set to the on-chain contracts, effectively bootstrapping the off-chain network. It also funds the operator accounts associated with the genesis validators.
--   `relay-sidecar-*`: The individual nodes that comprise the off-chain Symbiotic relay network. They become active after the `genesis-generator` has successfully initialized the protocol.
--   `dvn-node-*`: The custom off-chain DVN workers. They monitor for LayerZero `PacketSent` events and interact with the `relay-sidecar` network to obtain verification proofs.
-
-## Cleanup
-
-To stop and remove all running containers and networks, run the following command from within the `temp-network` directory:
-```bash
-docker compose down -v
-```
+-   `
