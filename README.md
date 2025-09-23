@@ -174,6 +174,8 @@ It is crucial to understand that this project provides a **high-fidelity logical
 
 ## Quick Start: End-to-End Local Test
 
+> **Note on Re-running the Test**: If you have run the test before and wish to start over, it is critical to completely clean up the old environment first. This involves stopping the Docker containers and **deleting the entire `temp-network` directory**. Please follow the instructions in the [Cleanup and Re-running the Test](#cleanup-and-re-running-the-test) section at the end of this guide before starting the steps below.
+
 This guide will walk you through setting up the local network, deploying all contracts, and sending a cross-chain transaction.
 
 ### Prerequisites
@@ -223,10 +225,10 @@ This guide will walk you through setting up the local network, deploying all con
 When you run `forge build`, you may see a series of errors at the beginning of the output, similar to the following:
 
 ```
-ERROR foundry_compilers_artifacts_solc::sources: error="/Users/username/Workspace/symbiotic-dvn/lib/openzeppelin-contracts-v4/contracts/utils/Bytes.sol": No such file or directory (os error 2)
+ERROR foundry_compilers_artifacts_solc::sources: error="/Users/havencross/Workspace/symbiotic-dvn/lib/openzeppelin-contracts-v4/contracts/utils/Bytes.sol": No such file or directory (os error 2)
 ...
 Unable to resolve imports:
-      "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol" in "/Users/username/Workspace/symbiotic-dvn/node_modules/@symbioticfi/relay-contracts/src/modules/base/OzEIP712.sol"
+      "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol" in "/Users/havencross/Workspace/symbiotic-dvn/node_modules/@symbioticfi/relay-contracts/src/modules/base/OzEIP712.sol"
 ...
 ```
 
@@ -317,4 +319,37 @@ The result should be `50000000000000000000` (which is 50 tokens, as `AID` has 18
 
 The local environment consists of the following services:
 
--   `
+-   `anvil`: The source blockchain (Chain A, EID 31337) running on port `8545`.
+-   `anvil-settlement`: The destination blockchain (Chain B, EID 31338) running on port `8546`.
+-   `deployer`: A short-lived service that runs a Forge script (`network-scripts/deploy.sh`) to deploy the entire on-chain Symbiotic protocol stack (e.g., `ValSetDriver`, `Settlement`, etc.) on both local Anvil chains.
+-   `genesis-generator`: A short-lived service that runs after the on-chain contracts are deployed. It executes the Symbiotic `relay_utils` tool to perform the relay network's "genesis." This critical step initializes the Symbiotic protocol by committing the first validator set to the on-chain contracts, effectively bootstrapping the off-chain network. It also funds the operator accounts associated with the genesis validators.
+-   `relay-sidecar-*`: The individual nodes that comprise the off-chain Symbiotic relay network. They become active after the `genesis-generator` has successfully initialized the protocol.
+-   `dvn-node-*`: The custom off-chain DVN workers. They monitor for LayerZero `PacketSent` events and interact with the `relay-sidecar` network to obtain verification proofs.
+
+---
+
+## Cleanup and Re-running the Test
+
+To completely clean your environment for a fresh run, follow these steps in order.
+
+### 1. Stop and Remove Docker Containers
+
+If you are inside the `temp-network` directory, run the following command. The `-v` flag is important as it also removes the data volumes used by the blockchains.
+
+```bash
+docker compose down -v
+```
+
+### 2. Remove the Network Directory
+
+After stopping the containers, navigate back to the project root and delete the `temp-network` directory.
+
+```bash
+# If you are inside temp-network/
+cd ..
+rm -rf temp-network
+```
+
+**This step is mandatory before starting a new test run.** It ensures that all old configurations, deployment artifacts (`dvn_deployment.json`), and logs are cleared. Failure to do so can cause difficult-to-diagnose issues, such as a `symbiotic verification failed` error. This can happen if the `dvn-node` starts with stale configuration or if other components use old deployment addresses.
+
+Once you have completed these cleanup steps, you can begin the process again from [Step 2: Generate Network Configuration](#step-2-generate-network-configuration).
