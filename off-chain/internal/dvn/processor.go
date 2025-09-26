@@ -404,15 +404,22 @@ func (p *Processor) handleDetectedState(ctx context.Context, state *PacketState)
 		return errors.Errorf("failed to construct message for relay: %w", err)
 	}
 
-	suggestedEpoch, err := p.relayClient.GetSuggestedEpoch(ctx, &v1.GetSuggestedEpochRequest{})
+	suggestedEpoch := uint64(0)
+	epochInfos, err := p.relayClient.GetLastAllCommitted(ctx, &v1.GetLastAllCommittedRequest{})
 	if err != nil {
-		return errors.Errorf("failed to get suggested epoch from relay: %w", err)
+		return errors.Errorf("failed to get last committed epochs from relay: %w", err)
+	} else {
+		for _, info := range epochInfos.EpochInfos {
+			if suggestedEpoch == 0 || info.GetLastCommittedEpoch() < suggestedEpoch {
+				suggestedEpoch = info.GetLastCommittedEpoch()
+			}
+		}
 	}
 
 	signResp, err := p.relayClient.SignMessage(ctx, &v1.SignMessageRequest{
 		KeyTag:        15, // Default BLS key tag
 		Message:       messageForRelay,
-		RequiredEpoch: &suggestedEpoch.Epoch,
+		RequiredEpoch: &suggestedEpoch,
 	})
 	if err != nil {
 		return errors.Errorf("failed to request signature from relay: %w", err)

@@ -38,6 +38,7 @@ contract Executor is Script {
 
         // --- Chain A Setup (to find the event) ---
         string memory rpcA = "http://localhost:8545";
+        uint256 forkA = vm.createFork(rpcA);
         address endpointA_Addr = deploymentJson.readAddress(".chainA.endpoint");
         // These addresses are needed to check if the executor was paid.
         // Ensure your deployment script writes these to the deployment file.
@@ -46,11 +47,12 @@ contract Executor is Script {
 
         // --- Chain B Setup ---
         string memory rpcB = "http://localhost:8546";
+        uint256 forkB = vm.createFork(rpcB);
         address endpointB_Addr = deploymentJson.readAddress(".chainB.endpoint");
         address receiveLibB_Addr = deploymentJson.readAddress(".chainB.receiveUln");
 
         // --- 2. Find the latest PacketSent event on Chain A ---
-        vm.createSelectFork(rpcA);
+        vm.selectFork(forkA);
         console.log("Switched to Chain A to find the latest PacketSent event...");
 
         bytes32[] memory topics = new bytes32[](1);
@@ -63,113 +65,166 @@ contract Executor is Script {
             return;
         }
         
-        (bytes memory encodedPacket, , ) = abi.decode(logs[logs.length - 1].data, (bytes, bytes, address));
-        console.log("Found PacketSent event!");
-        
-        // --- 2b. Find the ExecutorFeePaid event to confirm assignment ---
-        // The fee paid events are emitted by the Send Library, not the Executor contract itself.
-        topics[0] = EXECUTOR_FEE_PAID_TOPIC;
-        logs = vm.eth_getLogs(0, block.number, sendLibA_Addr, topics);
+        for (uint i = 0; i < logs.length; i++) {
+            vm.selectFork(forkA); // Re-select Chain A fork at the start of each iteration
+            (bytes memory encodedPacket, , ) = abi.decode(logs[i].data, (bytes, bytes, address));
+            console.log("\nProcessing PacketSent event %d...", i);
 
-        bool executorPaid = false;
-        if (logs.length > 0) {
-            for (uint i = 0; i < logs.length; i++) {
-                (address executor, ) = abi.decode(logs[i].data, (address, uint256));
-                if (executor == executorA_Addr) {
-                    executorPaid = true;
-                    break;
-                }
+            bool success = _processPacket(
+                encodedPacket,
+                deployerPrivateKey,
+                forkB,
+                endpointB_Addr,
+                receiveLibB_Addr,
+                sendLibA_Addr,
+                executorA_Addr
+            );
+
+            if (!success) {
+                console.log("Halting script due to an error in packet processing.");
+                return; // Stop the entire script
             }
         }
+    }
 
-        if (!executorPaid) {
-            console.log("Error: Executor was not paid for this packet based on ExecutorFeePaid event.");
-            return;
+    function _processPacket(
+        bytes memory encodedPacket,
+        uint256 deployerPrivateKey,
+        uint256 forkB,
+        address endpointB_Addr,
+        address receiveLibB_Addr,
+        address sendLibA_Addr,
+        address executorA_Addr
+    ) private returns (bool) {
+        // --- 2b. Check for executor fee on Chain A ---
+        {
+            bytes32[] memory topics = new bytes32[](1);
+            topics[0] = EXECUTOR_FEE_PAID_TOPIC;
+            Vm.EthGetLogs[] memory feeLogs = vm.eth_getLogs(0, block.number, sendLibA_Addr, topics);
+            bool executorPaid = false;
+            if (feeLogs.length > 0) {
+                for (uint j = 0; j < feeLogs.length; j++) {
+                    (address executor, ) = abi.decode(feeLogs[j].data, (address, uint256));
+                    if (executor == executorA_Addr) {
+                        executorPaid = true;
+                        break;
+                    }
+                }
+            }
+            if (!executorPaid) {
+                console.log("Error: Executor was not paid for this packet.");
+                return false;
+            }
+            console.log("Found ExecutorFeePaid event, Executor is assigned and paid.");
         }
-        console.log("Found ExecutorFeePaid event, Executor is assigned and paid.");
 
         // --- 3. Decode packet and prepare data ---
         Packet memory packet = _parsePacket(encodedPacket);
-        bytes32 payloadHash = keccak256(abi.encodePacked(packet.guid, packet.message));
         Origin memory origin = Origin({srcEid: packet.srcEid, sender: AddressCast.toBytes32(packet.sender), nonce: packet.nonce});
         address receiver = AddressCast.toAddress(packet.receiver);
-        // The header is the encoded packet without the message and guid.
-        bytes memory packetHeader = slice(encodedPacket, 0, 81); // Version (1) + Nonce (8) + srcEid (4) + Sender (32) + dstEid (4) + Receiver (32) = 81
+        bytes memory packetHeader = slice(encodedPacket, 0, 81);
         bytes32 packetHash = keccak256(packetHeader);
+        bytes32 payloadHash = keccak256(abi.encodePacked(packet.guid, packet.message));
+        
+        // --- 4. Switch to Chain B ---
+        vm.selectFork(forkB);
+        console.log("Switched to Chain B to simulate Executor...");
 
-        // --- 4. Switch to Chain B for execution ---
-        vm.createSelectFork(rpcB);
-        console.log("\nSwitched to Chain B to simulate Executor...");
-
-        // Deploy View contracts for off-chain simulation
         EndpointV2View endpointViewB = new EndpointV2View();
         endpointViewB.initialize(endpointB_Addr);
-        ReceiveUln302View receiveUln302ViewB = new ReceiveUln302View();
-        // Our ReceiveUlnSymbiotic is compatible with the view for getUlnConfig and verifiable states
-        receiveUln302ViewB.initialize(endpointB_Addr, receiveLibB_Addr); 
-        
-        ReceiveUln302 receiveLibB = ReceiveUln302(receiveLibB_Addr);
-        EndpointV2 endpointB = EndpointV2(endpointB_Addr);
 
-        // --- 5. Check Verification Status and Commit ---
-        // This part simulates the Committer role.
-        // It first checks if the DVN worker has already published its verification on-chain.
+        // --- 5a. Check if already executed ---
+        if (endpointViewB.executable(origin, receiver) == ExecutionState.Executed) {
+            console.log("Info: Packet has already been executed. Skipping.");
+            return true; // Success, continue to next packet
+        }
+
+        // --- 5b. Commit verification ---
+        bool committed = _commitVerificationOnB(
+            packetHeader, payloadHash, packetHash, receiver, packet.srcEid, 
+            endpointB_Addr, receiveLibB_Addr, deployerPrivateKey
+        );
+        if (!committed) return false; // Error during commit
+
+        // --- 6. Execute Message ---
+        return _executeLzReceiveOnB(
+            origin, receiver, packet.guid, packet.message,
+            endpointViewB, endpointB_Addr, deployerPrivateKey
+        );
+    }
+
+    function _commitVerificationOnB(
+        bytes memory packetHeader,
+        bytes32 payloadHash,
+        bytes32 packetHash,
+        address receiver,
+        uint32 srcEid,
+        address endpointB_Addr,
+        address receiveLibB_Addr,
+        uint256 deployerPrivateKey
+    ) private returns (bool) {
         console.log("\n--- Committer Role ---");
+        ReceiveUln302View receiveUln302ViewB = new ReceiveUln302View();
+        receiveUln302ViewB.initialize(endpointB_Addr, receiveLibB_Addr);
+        ReceiveUln302 receiveLibB = ReceiveUln302(receiveLibB_Addr);
         
-        // Dynamically get the required number of DVN confirmations from the ULN config
-        UlnConfig memory ulnConfig = receiveLibB.getUlnConfig(receiver, packet.srcEid);
+        UlnConfig memory ulnConfig = receiveLibB.getUlnConfig(receiver, srcEid);
         uint8 requiredDVNs = uint8(ulnConfig.confirmations);
         console.log("Required DVN confirmations for this packet: %d", requiredDVNs);
 
         uint foundVerifications = _findVerifications(receiveLibB_Addr, payloadHash, packetHash);
 
         if (foundVerifications < requiredDVNs) {
-            console.log(
-                "Error: Not enough DVN verifications found on-chain. Expected %d, found %d. Is the dvn-worker running?",
-                requiredDVNs,
-                foundVerifications
-            );
-            return;
+            console.log("Error: Not enough DVN verifications found. Expected %d, found %d.", requiredDVNs, foundVerifications);
+            return false;
         }
-        console.log("Found %d DVN verifications. Proceeding to check verifiable state.", foundVerifications);
+        console.log("Found %d verification submissions from the DVN for this packet. Proceeding to check verifiable state.", foundVerifications);
 
         VerificationState vState = receiveUln302ViewB.verifiable(packetHeader, payloadHash);
-
         if (vState == VerificationState.Verified) {
             console.log("Info: Packet verification already committed. Skipping commit.");
         } else if (vState == VerificationState.Verifying) {
             console.log("Error: Packet is still verifying. Not enough DVN signatures aggregated?");
-            return;
-        } else { // State is Verifiable
+            return false;
+        } else { // Verifiable
             console.log("Packet is verifiable. Broadcasting 'commitVerification'...");
             vm.startBroadcast(deployerPrivateKey);
             receiveLibB.commitVerification(packetHeader, payloadHash);
             vm.stopBroadcast();
             console.log("Verification committed successfully.");
         }
+        return true;
+    }
 
-        // --- 6. Check Executable Status and Execute Message ---
+    function _executeLzReceiveOnB(
+        Origin memory origin,
+        address receiver,
+        bytes32 guid,
+        bytes memory message,
+        EndpointV2View endpointViewB,
+        address endpointB_Addr,
+        uint256 deployerPrivateKey
+    ) private returns (bool) {
         console.log("\n--- Executor Role ---");
         ExecutionState eState = endpointViewB.executable(origin, receiver);
         
-        if (eState == ExecutionState.Executed) {
-            console.log("Info: Packet has already been executed. Skipping execution.");
-            return;
-        } else if (eState == ExecutionState.NotExecutable) {
+        if (eState == ExecutionState.NotExecutable) {
             console.log("Error: Packet is not executable even after commit. Check nonce order or other issues.");
-            return;
-        } else { // State is Executable
+            return false;
+        } else if (eState == ExecutionState.Executable) {
             console.log("Packet is executable. Broadcasting 'lzReceive'...");
+            EndpointV2 endpointB = EndpointV2(endpointB_Addr);
             vm.startBroadcast(deployerPrivateKey);
             bytes memory extraData = abi.encodePacked(bytes32(0), bytes32(0));
-            endpointB.lzReceive(origin, receiver, packet.guid, packet.message, extraData);
+            endpointB.lzReceive(origin, receiver, guid, message, extraData);
             vm.stopBroadcast();
             console.log("Message delivered successfully via lzReceive.");
         }
-
-        console.log("\n-------------------------------------------------");
-        console.log("Done. Executor successful. Message has been delivered!");
+        
         console.log("-------------------------------------------------");
+        console.log("Executor successful. Message has been delivered!");
+        console.log("-------------------------------------------------");
+        return true;
     }
 
     function _findVerifications(address receiveLibB_Addr, bytes32 payloadHash, bytes32 packetHash) private returns (uint) {
